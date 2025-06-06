@@ -42,11 +42,13 @@
 
     <ul class="nav nav-tabs" id="toolTabs" role="tablist">
         <li class="nav-item">
-            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1" type="button">JSON ➜ map()
-            </button>
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1" type="button">JSON ➜ map()</button>
         </li>
         <li class="nav-item">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2" type="button">銀行對應工具</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab3" type="button">格式轉換工具</button>
         </li>
     </ul>
 
@@ -57,59 +59,62 @@
         <div class="tab-pane fade" id="tab2" role="tabpanel">
             <iframe src="Bank-Tool.html"></iframe>
         </div>
+        <div class="tab-pane fade" id="tab3" role="tabpanel">
+            <iframe src="DataFormat.html"></iframe>
+        </div>
     </div>
 </div>
 
 <script>
-  // 主題設定與切換邏輯
-  const htmlEl = document.documentElement;
+    // 主題設定與切換邏輯
+    const htmlEl = document.documentElement;
 
-  // 初始化主題：從 localStorage 或系統偏好載入
-  function initializeTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      htmlEl.setAttribute('data-bs-theme', savedTheme);
-    } else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      htmlEl.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
+    // 初始化主題：從 localStorage 或系統偏好載入
+    function initializeTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            htmlEl.setAttribute('data-bs-theme', savedTheme);
+        } else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            htmlEl.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
+        }
     }
-  }
 
-  // 將主題傳送給所有 iframe
-  function sendThemeToIframes(theme) {
-    document.querySelectorAll('iframe').forEach(iframe => {
-      iframe.contentWindow?.postMessage({ theme }, '*');
-    });
-  }
-
-  // 切換主題的事件處理
-  function toggleTheme() {
-    const current = htmlEl.getAttribute('data-bs-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    htmlEl.setAttribute('data-bs-theme', next);
-    localStorage.setItem('theme', next);
-    sendThemeToIframes(next);
-  }
-
-  // 當 iframe 要求主題時，回傳當前主題
-  function handleMessageFromIframe(event) {
-    if (event.data?.ask === 'theme') {
-      const currentTheme = htmlEl.getAttribute('data-bs-theme') || 'light';
-      event.source?.postMessage({ theme: currentTheme }, '*');
+    // 將主題傳送給所有 iframe
+    function sendThemeToIframes(theme) {
+        document.querySelectorAll('iframe').forEach(iframe => {
+            iframe.contentWindow?.postMessage({ theme }, '*');
+        });
     }
-  }
 
-  // 初始化邏輯綁定
-  function setup() {
-    initializeTheme();
-    sendThemeToIframes(htmlEl.getAttribute('data-bs-theme'));
+    // 切換主題的事件處理
+    function toggleTheme() {
+        const current = htmlEl.getAttribute('data-bs-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        htmlEl.setAttribute('data-bs-theme', next);
+        localStorage.setItem('theme', next);
+        sendThemeToIframes(next);
+    }
 
-    document.getElementById('toggleThemeBtn')?.addEventListener('click', toggleTheme);
-    window.addEventListener('message', handleMessageFromIframe);
-  }
+    // 當 iframe 要求主題時，回傳當前主題
+    function handleMessageFromIframe(event) {
+        if (event.data?.ask === 'theme') {
+            const currentTheme = htmlEl.getAttribute('data-bs-theme') || 'light';
+            event.source?.postMessage({ theme: currentTheme }, '*');
+        }
+    }
 
-  // 啟動初始化
-  setup();
+    // 初始化邏輯綁定
+    function setup() {
+        initializeTheme();
+        sendThemeToIframes(htmlEl.getAttribute('data-bs-theme'));
+
+        document.getElementById('toggleThemeBtn')?.addEventListener('click', toggleTheme);
+        window.addEventListener('message', handleMessageFromIframe);
+    }
+
+    // 啟動初始化
+    setup();
 </script>
 </body>
 </html>
