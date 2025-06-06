@@ -7,43 +7,52 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/vue@3"></script>
     <style>
+        /* 預設主題（light mode）下的背景與文字顏色 */
         body {
-            background-color: #f8f9fa;
-            color: #212529;
+            background-color: #f8f9fa;  /* 淺灰色背景 */
+            color: #212529;             /* 深灰文字（Bootstrap 預設文字色） */
         }
 
+        /* 當 HTML 元素具有 data-bs-theme="dark" 時，套用深色背景與亮色文字 */
         [data-bs-theme="dark"] body {
-            background-color: #212529 !important;
-            color: #f8f9fa !important;
+            background-color: #212529 !important;  /* 深灰背景 */
+            color: #f8f9fa !important;             /* 白色文字 */
         }
 
+        /* 統一設定表單欄位（輸入框、下拉選單、文字區）文字大小 */
         textarea, select, input {
             font-size: 0.9rem !important;
         }
 
+        /* 表單欄位在 light mode 的背景與文字顏色 */
         .form-control, .form-select {
-            background-color: #f5f5f5;
-            color: #000;
+            background-color: #f5f5f5;  /* 淺灰底色 */
+            color: #000;                /* 黑色文字 */
         }
 
+        /* 表單欄位在 dark mode 的背景與文字顏色 */
         [data-bs-theme="dark"] .form-control,
         [data-bs-theme="dark"] .form-select {
-            background-color: #343a40;
-            color: #f8f9fa;
+            background-color: #343a40;  /* 深灰底色 */
+            color: #f8f9fa;             /* 白色文字 */
         }
 
+        /* 表單 label 加粗以突顯欄位名稱 */
         .form-label {
             font-weight: bold;
         }
 
+        /* 調整按鈕字體大小 */
         .btn {
             font-size: 0.85rem;
         }
 
+        /* 為每欄位設定內邊距，讓畫面看起來更整齊 */
         .row .col {
             padding: 6px 12px;
         }
     </style>
+
 
 </head>
 <body>
@@ -52,114 +61,118 @@
 
 <!-- Vue Template：可擴充的 JSON to Map 工具 -->
 <template id="original-content">
-  <div class="mb-3">
-    <label class="form-label">請輸入 JSON：</label>
-    <textarea
-      v-model="jsonInput"
-      class="form-control form-control-sm"
-      rows="5"
-      placeholder='{"merchantNo":"82live","amount":"5.00"}'>
+    <div class="mb-3">
+        <label class="form-label">請輸入 JSON：</label>
+        <textarea
+                v-model="jsonInput"
+                class="form-control form-control-sm"
+                rows="5"
+                placeholder='{"merchantNo":"82live","amount":"5.00"}'>
     </textarea>
-    <div v-if="errorMessage" class="error text-danger mt-2 fw-bold">{{ errorMessage }}</div>
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label">轉換語言：</label>
-    <div class="d-flex align-items-center gap-2">
-      <!-- 語言選單 -->
-      <select v-model="targetLanguage" class="form-select form-select-sm w-auto">
-        <option value="java">Java</option>
-        <!-- 預留空間 -->
-      </select>
-  
-      <!-- 重新產生按鈕 -->
-      <button class="btn btn-sm btn-primary" @click="convert">
-        🔁 重新產生
-      </button>
+        <div v-if="errorMessage" class="error text-danger mt-2 fw-bold">{{ errorMessage }}</div>
     </div>
-  </div>
 
-  <div class="mb-3">
-    <label class="form-label">結果：</label>
-    <textarea class="form-control form-control-sm" rows="5" v-model="editableOutput" disabled>
+    <div class="mb-3">
+        <label class="form-label">轉換語言：</label>
+        <div class="d-flex align-items-center gap-2">
+            <!-- 語言選單 -->
+            <select v-model="targetLanguage" class="form-select form-select-sm w-auto">
+                <option value="java">Java</option>
+                <!-- 預留空間 -->
+            </select>
+
+            <!-- 重新產生按鈕 -->
+            <button class="btn btn-sm btn-primary" @click="convert">
+                🔁 重新產生
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">結果：</label>
+        <textarea class="form-control form-control-sm" rows="5" v-model="editableOutput" disabled>
     </textarea>
-  </div>
+    </div>
 </template>
 
 <script>
-  const { createApp, ref, watch } = Vue;
+    const {createApp, ref, watch} = Vue;
 
-  createApp({
-    data() {
-      return {
-        jsonInput: '', // 使用者輸入的 JSON 字串
-        targetLanguage: 'java', // 目標語言，預設為 Java，可擴充
-        output: '', // 自動產生的結果（readonly）
-        editableOutput: '', // 可編輯的輸出區
-        errorMessage: '', // 錯誤訊息
-        isValidJson: false // JSON 格式是否正確
-      };
-    },
-    watch: {
-      // 只要 jsonInput 或 targetLanguage 改變，就重新轉換
-      jsonInput: 'convert',
-      targetLanguage: 'convert'
-    },
-    methods: {
-      // 主要轉換方法
-      convert() {
-        this.errorMessage = '';
-        this.output = '';
-        this.editableOutput = '';
-        this.isValidJson = false;
+    createApp({
+        data() {
+            return {
+                jsonInput: '', // 使用者輸入的 JSON 字串
+                targetLanguage: 'java', // 目標語言，預設為 Java，可擴充
+                output: '', // 自動產生的結果（readonly）
+                editableOutput: '', // 可編輯的輸出區
+                errorMessage: '', // 錯誤訊息
+                isValidJson: false // JSON 格式是否正確
+            };
+        },
+        watch: {
+            // 只要 jsonInput 或 targetLanguage 改變，就重新轉換
+            jsonInput: 'convert',
+            targetLanguage: 'convert'
+        },
+        methods: {
+            // 主要轉換方法
+            convert() {
+                this.errorMessage = '';
+                this.output = '';
+                this.editableOutput = '';
+                this.isValidJson = false;
 
-        try {
-          const obj = JSON.parse(this.jsonInput);
-          this.isValidJson = true;
+                try {
+                    const obj = JSON.parse(this.jsonInput);
+                    this.isValidJson = true;
 
-          // 根據語言格式選擇對應的轉換方法
-          let result = '';
-          switch (this.targetLanguage) {
-            case 'java':
-              result = this.convertToJava(obj);
-              break;
-            // 可擴充其他語言：
-            // case 'kotlin':
-            //   result = this.convertToKotlin(obj); break;
-            // case 'csharp':
-            //   result = this.convertToCSharp(obj); break;
-            default:
-              result = '// 尚未支援的語言格式';
-          }
+                    // 根據語言格式選擇對應的轉換方法
+                    let result = '';
+                    switch (this.targetLanguage) {
+                        case 'java':
+                            result = this.convertToJava(obj);
+                            break;
+                        // 可擴充其他語言：
+                        // case 'kotlin':
+                        //   result = this.convertToKotlin(obj); break;
+                        // case 'csharp':
+                        //   result = this.convertToCSharp(obj); break;
+                        default:
+                            result = '// 尚未支援的語言格式';
+                    }
 
-          this.output = result;
-          this.editableOutput = result;
-        } catch (e) {
-          this.errorMessage = `❌ JSON 格式錯誤：${e.message}`;
+                    this.output = result;
+                    this.editableOutput = result;
+                } catch (e) {
+                    this.errorMessage = `❌ JSON 格式錯誤：${e.message}`;
+                }
+            },
+
+            // Java 的轉換邏輯：map.put("key", "value");
+            convertToJava(obj) {
+                return Object.entries(obj)
+                    .map(([key, value]) => `map.put("${key}", "${value}");`)
+                    .join('\n');
+            }
+
+            // 若日後需要擴充其他語言，新增下列函式：
+            // convertToKotlin(obj) { ... }
+            // convertToCSharp(obj) { ... }
+        },
+        template: '#original-content'
+    }).mount('#app');
+
+
+    // 接收外部頁面傳來的主題訊息（通常來自父層 iframe 或上層頁面）
+    // 並將主題（例如 'dark' 或 'light'）設為 HTML 根元素的屬性
+    window.addEventListener('message', (event) => {
+        const theme = event.data?.theme; // 從訊息中取得 theme 參數
+        if (theme) {
+            // 將主題設定在 <html> 上，供 Bootstrap 5 使用 data-bs-theme 切換樣式
+            document.documentElement.setAttribute('data-bs-theme', theme);
         }
-      },
+    });
 
-      // Java 的轉換邏輯：map.put("key", "value");
-      convertToJava(obj) {
-        return Object.entries(obj)
-          .map(([key, value]) => `map.put("${key}", "${value}");`)
-          .join('\n');
-      }
-
-      // 若日後需要擴充其他語言，新增下列函式：
-      // convertToKotlin(obj) { ... }
-      // convertToCSharp(obj) { ... }
-    },
-    template: '#original-content'
-  }).mount('#app');
-
-
-  window.addEventListener('message', (event) => {
-      const theme = event.data?.theme;
-      if (theme) {
-          document.documentElement.setAttribute('data-bs-theme', theme);
-      }
-  });
 </script>
 </body>
 </html>

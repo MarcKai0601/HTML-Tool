@@ -7,43 +7,52 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/vue@3"></script>
     <style>
+        /* 預設主題（light mode）下的背景與文字顏色 */
         body {
-            background-color: #f8f9fa;
-            color: #212529;
+            background-color: #f8f9fa; /* 淺灰色背景 */
+            color: #212529; /* 深灰文字（Bootstrap 預設文字色） */
         }
 
+        /* 當 HTML 元素具有 data-bs-theme="dark" 時，套用深色背景與亮色文字 */
         [data-bs-theme="dark"] body {
-            background-color: #212529 !important;
-            color: #f8f9fa !important;
+            background-color: #212529 !important; /* 深灰背景 */
+            color: #f8f9fa !important; /* 白色文字 */
         }
 
+        /* 統一設定表單欄位（輸入框、下拉選單、文字區）文字大小 */
         textarea, select, input {
             font-size: 0.9rem !important;
         }
 
+        /* 表單欄位在 light mode 的背景與文字顏色 */
         .form-control, .form-select {
-            background-color: #f5f5f5;
-            color: #000;
+            background-color: #f5f5f5; /* 淺灰底色 */
+            color: #000; /* 黑色文字 */
         }
 
+        /* 表單欄位在 dark mode 的背景與文字顏色 */
         [data-bs-theme="dark"] .form-control,
         [data-bs-theme="dark"] .form-select {
-            background-color: #343a40;
-            color: #f8f9fa;
+            background-color: #343a40; /* 深灰底色 */
+            color: #f8f9fa; /* 白色文字 */
         }
 
+        /* 表單 label 加粗以突顯欄位名稱 */
         .form-label {
             font-weight: bold;
         }
 
+        /* 調整按鈕字體大小 */
         .btn {
             font-size: 0.85rem;
         }
 
+        /* 為每欄位設定內邊距，讓畫面看起來更整齊 */
         .row .col {
             padding: 6px 12px;
         }
     </style>
+
 
 </head>
 <body>
@@ -68,12 +77,14 @@
     <div class="mb-3">
         <label class="form-label">
             金流商銀行代碼
-            <select v-model="thirdPartyBankCodeTypeSelect" @change="onChangeThirdPartyBankDataType" class="form-select form-select-sm d-inline w-auto mx-2">
+            <select v-model="thirdPartyBankCodeTypeSelect" @change="onChangeThirdPartyBankDataType"
+                    class="form-select form-select-sm d-inline w-auto mx-2">
                 <option v-for="item in thirdPartyBankCodeType">{{item.type}}</option>
             </select>
             <button type="button" class="btn btn-sm btn-primary" @click="generateQuerySql">產生</button>
         </label>
-        <textarea class="form-control form-control-sm" v-model="thirdPartyBankCodeData" rows="3" :placeholder="thirdPartyBankCodeSample"></textarea>
+        <textarea class="form-control form-control-sm" v-model="thirdPartyBankCodeData" rows="3"
+                  :placeholder="thirdPartyBankCodeSample"></textarea>
     </div>
     <div class="mb-3">
         <label class="form-label">DB 查詢 SQL</label>
@@ -115,7 +126,7 @@
 </template>
 
 <script>
-    const { createApp, ref } = Vue;
+    const {createApp, ref} = Vue;
     let app = createApp({
         data() {
             return {
@@ -127,10 +138,10 @@
                 dataList: null,
                 finalResult: null,
                 thirdPartyBankCodeType: [
-                    { type: 'json1', sample: '{"thirdBankName":"thirdBankCode","建設銀行":"001"}' },
-                    { type: 'json2', sample: '{"thirdBankCode":"thirdBankName","001":"建設銀行"}' },
-                    { type: 'csv1', sample: 'thirdBankName,thirdBankCode\n建設銀行,001' },
-                    { type: 'csv2', sample: 'thirdBankCode,thirdBankName\n001,建設銀行' },
+                    {type: 'json1', sample: '{"thirdBankName":"thirdBankCode","建設銀行":"001"}'},
+                    {type: 'json2', sample: '{"thirdBankCode":"thirdBankName","001":"建設銀行"}'},
+                    {type: 'csv1', sample: 'thirdBankName,thirdBankCode\n建設銀行,001'},
+                    {type: 'csv2', sample: 'thirdBankCode,thirdBankName\n001,建設銀行'},
                 ],
                 thirdPartyBankCodeSample: '{"thirdBankName":"thirdBankCode","建設銀行":"001"}',
             };
@@ -187,22 +198,25 @@
                     checkCodeSet.add(code);
                     const likeKey = this.preprocessingKey(key);
                     const sql = `SELECT group_concat(BankName) as bankNames, '${code}' AS code, '${key}' AS inputName
-                                FROM t_withdraw_channel_bank_code
-                                WHERE BankName LIKE '%${likeKey}%' AND Currency = '${this.currencySelect}'
-                                UNION ALL
-                                SELECT NULL AS bankNames, '${code}' AS code, '${key}' AS inputName
-                                FROM DUAL
-                                WHERE NOT EXISTS (
-                                    SELECT 1
-                                    FROM t_withdraw_channel_bank_code
-                                    WHERE BankName LIKE '%${likeKey}%' AND Currency = '${this.currencySelect}'
-                                ) group by Code, InputName`;
+                                 FROM t_withdraw_channel_bank_code
+                                 WHERE BankName LIKE '%${likeKey}%'
+                                   AND Currency = '${this.currencySelect}'
+                                 UNION ALL
+                                 SELECT NULL AS bankNames, '${code}' AS code, '${key}' AS inputName
+                                 FROM DUAL
+                                 WHERE NOT EXISTS (SELECT 1
+                                                   FROM t_withdraw_channel_bank_code
+                                                   WHERE BankName LIKE '%${likeKey}%'
+                                                     AND Currency = '${this.currencySelect}')
+                                 group by Code, InputName`;
                     sqlArr.push(sql);
                 }
 
                 this.generateQuerySqlResult = `SELECT JSON_ARRAYAGG(
-                    JSON_OBJECT('bankNames', bankNames, 'code', code, 'inputName', inputName)
-                ) AS jsonArray FROM ( ${sqlArr.join('\nUNION\n')} ) AS subquery;`;
+                                                              JSON_OBJECT('bankNames', bankNames, 'code', code,
+                                                                          'inputName', inputName)
+                                                      ) AS jsonArray
+                                               FROM (${sqlArr.join('\nUNION\n')}) AS subquery;`;
             },
             execJson() {
                 const dataArr = JSON.parse(this.dbDataJsonStr || '[]');
@@ -250,12 +264,16 @@
     });
     app.mount('#app');
 
+    // 接收外部頁面傳來的主題訊息（通常來自父層 iframe 或上層頁面）
+    // 並將主題（例如 'dark' 或 'light'）設為 HTML 根元素的屬性
     window.addEventListener('message', (event) => {
-        const theme = event.data?.theme;
+        const theme = event.data?.theme; // 從訊息中取得 theme 參數
         if (theme) {
+            // 將主題設定在 <html> 上，供 Bootstrap 5 使用 data-bs-theme 切換樣式
             document.documentElement.setAttribute('data-bs-theme', theme);
         }
     });
+
 
 </script>
 </body>
