@@ -9,32 +9,42 @@
     <style>
         body {
             background-color: #f8f9fa;
+            color: #212529;
         }
+
+        [data-bs-theme="dark"] body {
+            background-color: #212529 !important;
+            color: #f8f9fa !important;
+        }
+
         textarea, select, input {
             font-size: 0.9rem !important;
         }
+
         .form-control, .form-select {
             background-color: #f5f5f5;
+            color: #000;
         }
+
+        [data-bs-theme="dark"] .form-control,
+        [data-bs-theme="dark"] .form-select {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+
         .form-label {
             font-weight: bold;
         }
+
         .btn {
             font-size: 0.85rem;
         }
+
         .row .col {
             padding: 6px 12px;
         }
-        .error {
-            color: red;
-            font-weight: bold;
-        }
-        pre {
-            background-color: #eee;
-            padding: 1rem;
-            white-space: pre-wrap;
-        }
     </style>
+
 </head>
 <body>
 <!-- Vue 應用容器 -->
@@ -142,6 +152,14 @@
     },
     template: '#original-content'
   }).mount('#app');
+
+
+  window.addEventListener('message', (event) => {
+      const theme = event.data?.theme;
+      if (theme) {
+          document.documentElement.setAttribute('data-bs-theme', theme);
+      }
+  });
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-bs-theme="auto">
 <head>
   <meta charset="UTF-8">
   <title>工具整合頁</title>
@@ -11,10 +11,35 @@
       height: 800px;
       border: none;
     }
+
+    .tab-content {
+      padding: 1rem;
+      border: 1px solid #dee2e6;
+      border-top: none;
+      border-radius: 0 0 0.375rem 0.375rem;
+    }
+
+    [data-bs-theme="light"] .tab-content {
+      background-color: #ffffff;
+      color: #212529;
+    }
+
+    [data-bs-theme="dark"] .tab-content {
+      background-color: #1e1e1e;
+      color: #f8f9fa;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
   </style>
 </head>
 <body>
-<div class="container py-4">
+<div class="container py-4 position-relative">
+  <button class="btn btn-secondary theme-toggle" id="toggleThemeBtn">切換主題</button>
+
   <ul class="nav nav-tabs" id="toolTabs" role="tablist">
     <li class="nav-item">
       <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1" type="button">JSON ➜ map()</button>
@@ -33,5 +58,39 @@
     </div>
   </div>
 </div>
+
+<script>
+  const htmlEl = document.documentElement;
+  const savedTheme = localStorage.getItem('theme');
+
+  // 套用儲存的主題或系統主題
+  if (savedTheme) {
+    htmlEl.setAttribute('data-bs-theme', savedTheme);
+  } else {
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    htmlEl.setAttribute('data-bs-theme', systemDark ? 'dark' : 'light');
+  }
+
+  // 傳送主題給 iframe
+  function sendThemeToIframes(theme) {
+    const iframes = document.querySelectorAll('iframe');
+    iframes.forEach(iframe => {
+      iframe.contentWindow.postMessage({ theme }, '*');
+    });
+  }
+
+  sendThemeToIframes(htmlEl.getAttribute('data-bs-theme'));
+
+  // 切換主題
+  document.getElementById('toggleThemeBtn').addEventListener('click', () => {
+    const current = htmlEl.getAttribute('data-bs-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    htmlEl.setAttribute('data-bs-theme', next);
+    localStorage.setItem('theme', next);
+    sendThemeToIframes(next);
+  });
+
+
+</script>
 </body>
 </html>
