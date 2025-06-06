@@ -126,8 +126,12 @@
 </template>
 
 <script>
-    const {createApp, ref} = Vue;
-    let app = createApp({
+    const { createApp, ref } = Vue;
+
+    // ================================
+    // Vue 應用邏輯區
+    // ================================
+    const app = createApp({
         data() {
             return {
                 currencySelect: null,
@@ -138,10 +142,10 @@
                 dataList: null,
                 finalResult: null,
                 thirdPartyBankCodeType: [
-                    {type: 'json1', sample: '{"thirdBankName":"thirdBankCode","建設銀行":"001"}'},
-                    {type: 'json2', sample: '{"thirdBankCode":"thirdBankName","001":"建設銀行"}'},
-                    {type: 'csv1', sample: 'thirdBankName,thirdBankCode\n建設銀行,001'},
-                    {type: 'csv2', sample: 'thirdBankCode,thirdBankName\n001,建設銀行'},
+                    { type: 'json1', sample: '{"thirdBankName":"thirdBankCode","建設銀行":"001"}' },
+                    { type: 'json2', sample: '{"thirdBankCode":"thirdBankName","001":"建設銀行"}' },
+                    { type: 'csv1', sample: 'thirdBankName,thirdBankCode\n建設銀行,001' },
+                    { type: 'csv2', sample: 'thirdBankCode,thirdBankName\n001,建設銀行' },
                 ],
                 thirdPartyBankCodeSample: '{"thirdBankName":"thirdBankCode","建設銀行":"001"}',
             };
@@ -151,130 +155,146 @@
                 const type = this.thirdPartyBankCodeType.find(t => t.type === this.thirdPartyBankCodeTypeSelect);
                 this.thirdPartyBankCodeSample = type ? type.sample : '';
             },
+
             generateQuerySql() {
-                if (!this.currencySelect) {
-                    alert('請先選擇幣種');
-                    return;
-                }
-                if (!this.thirdPartyBankCodeData) {
-                    alert('請先輸入金流商銀行資訊');
-                    return;
-                }
+                if (!this.currencySelect) return alert('請先選擇幣種');
+                if (!this.thirdPartyBankCodeData) return alert('請先輸入金流商銀行資訊');
+
                 let bankObj = {};
-                switch (this.thirdPartyBankCodeTypeSelect) {
-                    case 'json1':
-                        bankObj = JSON.parse(this.thirdPartyBankCodeData);
-                        break;
-                    case 'json2':
-                        const temp = JSON.parse(this.thirdPartyBankCodeData);
-                        Object.keys(temp).forEach(key => bankObj[temp[key]] = key);
-                        break;
-                    case 'csv1':
-                        this.thirdPartyBankCodeData.split('\n').forEach(line => {
-                            const [name, code] = line.split(',');
-                            bankObj[name] = code;
-                        });
-                        break;
-                    case 'csv2':
-                        this.thirdPartyBankCodeData.split('\n').forEach(line => {
-                            const [code, name] = line.split(',');
-                            bankObj[name] = code;
-                        });
-                        break;
-                    default:
-                        alert('不支援的格式');
-                        return;
+
+                try {
+                    switch (this.thirdPartyBankCodeTypeSelect) {
+                        case 'json1':
+                            bankObj = JSON.parse(this.thirdPartyBankCodeData);
+                            break;
+                        case 'json2':
+                            const temp = JSON.parse(this.thirdPartyBankCodeData);
+                            Object.keys(temp).forEach(key => bankObj[temp[key]] = key);
+                            break;
+                        case 'csv1':
+                            this.thirdPartyBankCodeData.split('\n').forEach(line => {
+                                const [name, code] = line.split(',');
+                                bankObj[name] = code;
+                            });
+                            break;
+                        case 'csv2':
+                            this.thirdPartyBankCodeData.split('\n').forEach(line => {
+                                const [code, name] = line.split(',');
+                                bankObj[name] = code;
+                            });
+                            break;
+                        default:
+                            return alert('不支援的格式');
+                    }
+                } catch (e) {
+                    return alert('格式解析錯誤，請確認資料格式');
                 }
 
-                let sqlArr = [];
-                let checkCodeSet = new Set();
+                const sqlArr = [];
+                const codeSet = new Set();
 
                 for (const key in bankObj) {
                     const code = bankObj[key];
-                    if (checkCodeSet.has(code)) {
-                        alert('重複的銀行代碼：' + code);
-                        return;
-                    }
-                    checkCodeSet.add(code);
+                    if (codeSet.has(code)) return alert('重複的銀行代碼：' + code);
+                    codeSet.add(code);
+
                     const likeKey = this.preprocessingKey(key);
-                    const sql = `SELECT group_concat(BankName) as bankNames, '${code}' AS code, '${key}' AS inputName
-                                 FROM t_withdraw_channel_bank_code
-                                 WHERE BankName LIKE '%${likeKey}%'
-                                   AND Currency = '${this.currencySelect}'
-                                 UNION ALL
-                                 SELECT NULL AS bankNames, '${code}' AS code, '${key}' AS inputName
-                                 FROM DUAL
-                                 WHERE NOT EXISTS (SELECT 1
-                                                   FROM t_withdraw_channel_bank_code
-                                                   WHERE BankName LIKE '%${likeKey}%'
-                                                     AND Currency = '${this.currencySelect}')
-                                 group by Code, InputName`;
-                    sqlArr.push(sql);
+                    const sql = `
+                    SELECT group_concat(BankName) as bankNames, '${code}' AS code, '${key}' AS inputName
+                    FROM t_withdraw_channel_bank_code
+                    WHERE BankName LIKE '%${likeKey}%'
+                      AND Currency = '${this.currencySelect}'
+                    UNION ALL
+                    SELECT NULL AS bankNames, '${code}' AS code, '${key}' AS inputName
+                    FROM DUAL
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM t_withdraw_channel_bank_code
+                        WHERE BankName LIKE '%${likeKey}%'
+                          AND Currency = '${this.currencySelect}'
+                    )
+                    GROUP BY code, inputName
+                `;
+                    sqlArr.push(sql.trim());
                 }
 
-                this.generateQuerySqlResult = `SELECT JSON_ARRAYAGG(
-                                                              JSON_OBJECT('bankNames', bankNames, 'code', code,
-                                                                          'inputName', inputName)
-                                                      ) AS jsonArray
-                                               FROM (${sqlArr.join('\nUNION\n')}) AS subquery;`;
+                this.generateQuerySqlResult = `
+                SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT('bankNames', bankNames, 'code', code, 'inputName', inputName)
+                ) AS jsonArray
+                FROM (${sqlArr.join('\nUNION\n')}) AS subquery;
+            `.trim();
             },
+
             execJson() {
-                const dataArr = JSON.parse(this.dbDataJsonStr || '[]');
-                dataArr.forEach((data, index) => {
-                    data.id = index + 1;
-                    data.bankNames = data.bankNames ? data.bankNames.split(',') : [];
-                    data.bankName = data.bankNames[0] || '';
-                });
-                this.dataList = dataArr;
+                try {
+                    const dataArr = JSON.parse(this.dbDataJsonStr || '[]');
+                    dataArr.forEach((data, index) => {
+                        data.id = index + 1;
+                        data.bankNames = data.bankNames ? data.bankNames.split(',') : [];
+                        data.bankName = data.bankNames[0] || '';
+                    });
+                    this.dataList = dataArr;
+                } catch (e) {
+                    alert('JSON 格式錯誤');
+                }
             },
+
             generateFinalResult() {
                 const set = new Set();
                 const result = this.dataList.map(data => {
                     if (set.has(data.bankName)) {
                         alert('重複的銀行名稱: ' + data.bankName);
-                        return;
+                        return null;
                     }
                     set.add(data.bankName);
-                    return `bankCode.put("${data.bankName}","${data.code}");`;
+                    return `bankCode.put("${data.bankName}", "${data.code}");`;
                 });
                 this.finalResult = result.filter(Boolean).join('\n');
             },
+
             preprocessingKey(keyName) {
                 if (!keyName) return '';
-                keyName = keyName.toLowerCase()
+                let key = keyName.toLowerCase()
                     .replace(/bank/g, '')
                     .replace(/[.,\\/]/g, '')
                     .replace(/ - /g, ' ')
                     .trim();
+
                 switch (this.currencySelect) {
                     case 'thb':
-                        keyName = keyName.replace(/plc\.?| ltd| limited| na/g, '');
+                        key = key.replace(/plc\.?| ltd| limited| na/g, '');
                         break;
                     case 'idr':
-                        keyName = keyName.replace(/pt\.?|tbk|\(persero\)| na/gi, '');
+                        key = key.replace(/pt\.?|tbk|\(persero\)| na/gi, '');
                         break;
                     case 'vnd':
-                        keyName = keyName.replace(/nh /gi, '');
+                        key = key.replace(/nh /gi, '');
                         break;
                 }
-                return keyName.trim();
+
+                return key.trim();
             }
         },
         template: '#original-content'
     });
     app.mount('#app');
 
-    // 接收外部頁面傳來的主題訊息（通常來自父層 iframe 或上層頁面）
-    // 並將主題（例如 'dark' 或 'light'）設為 HTML 根元素的屬性
+
+    // ================================
+    // 主題偵測與同步（子頁）
+    // ================================
+
+    // 監聽父頁主題訊息（暗/亮主題）
     window.addEventListener('message', (event) => {
-        const theme = event.data?.theme; // 從訊息中取得 theme 參數
+        const theme = event.data?.theme;
         if (theme) {
-            // 將主題設定在 <html> 上，供 Bootstrap 5 使用 data-bs-theme 切換樣式
             document.documentElement.setAttribute('data-bs-theme', theme);
         }
     });
 
-
+    // 主動詢問父頁：請問目前主題？
+    window.parent?.postMessage({ ask: 'theme' }, '*');
 </script>
 </body>
 </html>

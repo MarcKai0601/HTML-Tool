@@ -9,14 +9,14 @@
     <style>
         /* 預設主題（light mode）下的背景與文字顏色 */
         body {
-            background-color: #f8f9fa;  /* 淺灰色背景 */
-            color: #212529;             /* 深灰文字（Bootstrap 預設文字色） */
+            background-color: #f8f9fa; /* 淺灰色背景 */
+            color: #212529; /* 深灰文字（Bootstrap 預設文字色） */
         }
 
         /* 當 HTML 元素具有 data-bs-theme="dark" 時，套用深色背景與亮色文字 */
         [data-bs-theme="dark"] body {
-            background-color: #212529 !important;  /* 深灰背景 */
-            color: #f8f9fa !important;             /* 白色文字 */
+            background-color: #212529 !important; /* 深灰背景 */
+            color: #f8f9fa !important; /* 白色文字 */
         }
 
         /* 統一設定表單欄位（輸入框、下拉選單、文字區）文字大小 */
@@ -26,15 +26,15 @@
 
         /* 表單欄位在 light mode 的背景與文字顏色 */
         .form-control, .form-select {
-            background-color: #f5f5f5;  /* 淺灰底色 */
-            color: #000;                /* 黑色文字 */
+            background-color: #f5f5f5; /* 淺灰底色 */
+            color: #000; /* 黑色文字 */
         }
 
         /* 表單欄位在 dark mode 的背景與文字顏色 */
         [data-bs-theme="dark"] .form-control,
         [data-bs-theme="dark"] .form-select {
-            background-color: #343a40;  /* 深灰底色 */
-            color: #f8f9fa;             /* 白色文字 */
+            background-color: #343a40; /* 深灰底色 */
+            color: #f8f9fa; /* 白色文字 */
         }
 
         /* 表單 label 加粗以突顯欄位名稱 */
@@ -96,26 +96,26 @@
 </template>
 
 <script>
-    const {createApp, ref, watch} = Vue;
+    const { createApp } = Vue;
 
+    // Vue 應用主邏輯
     createApp({
         data() {
             return {
-                jsonInput: '', // 使用者輸入的 JSON 字串
-                targetLanguage: 'java', // 目標語言，預設為 Java，可擴充
-                output: '', // 自動產生的結果（readonly）
-                editableOutput: '', // 可編輯的輸出區
-                errorMessage: '', // 錯誤訊息
-                isValidJson: false // JSON 格式是否正確
+                jsonInput: '',               // 使用者輸入的 JSON
+                targetLanguage: 'java',      // 預設轉換語言
+                output: '',                  // 轉換結果（唯讀）
+                editableOutput: '',          // 可編輯結果
+                errorMessage: '',            // 錯誤訊息
+                isValidJson: false           // JSON 是否有效
             };
         },
         watch: {
-            // 只要 jsonInput 或 targetLanguage 改變，就重新轉換
-            jsonInput: 'convert',
-            targetLanguage: 'convert'
+            jsonInput: 'convert',           // 當 JSON 輸入改變時觸發轉換
+            targetLanguage: 'convert'       // 當目標語言改變時觸發轉換
         },
         methods: {
-            // 主要轉換方法
+            // 主要轉換邏輯
             convert() {
                 this.errorMessage = '';
                 this.output = '';
@@ -126,17 +126,11 @@
                     const obj = JSON.parse(this.jsonInput);
                     this.isValidJson = true;
 
-                    // 根據語言格式選擇對應的轉換方法
                     let result = '';
                     switch (this.targetLanguage) {
                         case 'java':
                             result = this.convertToJava(obj);
                             break;
-                        // 可擴充其他語言：
-                        // case 'kotlin':
-                        //   result = this.convertToKotlin(obj); break;
-                        // case 'csharp':
-                        //   result = this.convertToCSharp(obj); break;
                         default:
                             result = '// 尚未支援的語言格式';
                     }
@@ -148,14 +142,14 @@
                 }
             },
 
-            // Java 的轉換邏輯：map.put("key", "value");
+            // Java 語言格式：map.put("key", "value");
             convertToJava(obj) {
                 return Object.entries(obj)
                     .map(([key, value]) => `map.put("${key}", "${value}");`)
                     .join('\n');
             }
 
-            // 若日後需要擴充其他語言，新增下列函式：
+            // 👉 可擴充其他語言，例如：
             // convertToKotlin(obj) { ... }
             // convertToCSharp(obj) { ... }
         },
@@ -163,16 +157,16 @@
     }).mount('#app');
 
 
-    // 接收外部頁面傳來的主題訊息（通常來自父層 iframe 或上層頁面）
-    // 並將主題（例如 'dark' 或 'light'）設為 HTML 根元素的屬性
+    // 👉 接收來自父層 iframe/postMessage 的主題設定
     window.addEventListener('message', (event) => {
-        const theme = event.data?.theme; // 從訊息中取得 theme 參數
+        const theme = event.data?.theme;
         if (theme) {
-            // 將主題設定在 <html> 上，供 Bootstrap 5 使用 data-bs-theme 切換樣式
             document.documentElement.setAttribute('data-bs-theme', theme);
         }
     });
 
+    // 👉 向父層主動詢問目前主題（dark/light）
+    window.parent?.postMessage({ ask: 'theme' }, '*');
 </script>
 </body>
 </html>
