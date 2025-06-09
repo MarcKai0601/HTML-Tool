@@ -5,54 +5,42 @@
     <title>格式轉換工具</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <style>
-        /* ====== 你提供的深色模式與共用樣式 ====== */
-
-        /* 預設主題（light mode）下的背景與文字顏色 */
         body {
-            background-color: #f8f9fa; /* 淺灰色背景 */
-            color: #212529; /* 深灰文字（Bootstrap 預設文字色） */
+            background-color: #f8f9fa;
+            color: #212529;
         }
 
-        /* 當有 data-bs-theme="dark" 屬性時，套用深色背景與亮色文字 */
         [data-bs-theme="dark"] body {
-            background-color: #212529 !important; /* 深灰背景 */
-            color: #f8f9fa !important; /* 白色文字 */
+            background-color: #212529 !important;
+            color: #f8f9fa !important;
         }
 
-        /* 統一設定表單欄位（輸入框、下拉選單、文字區）文字大小 */
         textarea, select, input {
             font-size: 0.9rem !important;
         }
 
-        /* 表單欄位在 light mode 的背景與文字顏色 */
         .form-control, .form-select {
-            background-color: #f5f5f5; /* 淺灰底色 */
-            color: #000; /* 黑色文字 */
+            background-color: #f5f5f5;
+            color: #000;
         }
 
-        /* 表單欄位在 dark mode 的背景與文字顏色 */
         [data-bs-theme="dark"] .form-control,
         [data-bs-theme="dark"] .form-select {
-            background-color: #343a40; /* 深灰底色 */
-            color: #f8f9fa; /* 白色文字 */
+            background-color: #343a40;
+            color: #f8f9fa;
         }
 
-        /* 表單 label 加粗以突顯欄位名稱 */
         .form-label {
             font-weight: bold;
         }
 
-        /* 調整按鈕字體大小 */
         .btn {
             font-size: 0.85rem;
         }
 
-        /* 為每欄位設定內邊距，讓畫面看起來更整齊 */
         .row .col {
             padding: 6px 12px;
         }
-
-        /* ====== 格式轉換工具專用 CSS ====== */
 
         textarea {
             font-family: monospace;
@@ -60,48 +48,19 @@
             resize: vertical;
         }
 
-        /* 浮水印（placeholder）顯示用 */
-        #outputData {
-            max-height: 400px;
-            overflow: auto;
-            background-color: #f8f9fa;
-            color: #212529;
-            border: 1px solid #ced4da;
-            border-radius: 0.375rem;
-            padding: 0.5rem 0.75rem;
-            font-family: monospace;
-            white-space: pre-wrap;
-            min-height: 160px;
-            position: relative;
-        }
-
-        #outputData.empty::before {
-            content: attr(data-placeholder);
-            position: absolute;
-            top: 0.5rem;
-            left: 0.75rem;
+        #outputData::placeholder {
             color: #6c757d;
             font-style: italic;
-            pointer-events: none;
-            user-select: none;
             white-space: pre-wrap;
         }
 
-        /* 深色模式下的輸出區 */
-        [data-bs-theme="dark"] #outputData {
-            background-color: #2c2c2c;
-            color: #f8f9fa;
-            border-color: #444;
-        }
-
-        [data-bs-theme="dark"] #outputData.empty::before {
+        [data-bs-theme="dark"] #outputData::placeholder {
             color: #868e96;
         }
     </style>
 </head>
 <body>
 <div class="container py-4">
-
     <div class="row mb-3 g-3 align-items-center">
         <div class="col-auto">
             <label for="inputFormat" class="form-label">輸入格式</label>
@@ -132,18 +91,17 @@
         <button class="btn btn-primary btn-sm" onclick="convert()">轉換</button>
     </div>
 
-    <label for="outputData" class="form-label">轉換結果：</label>
-    <pre
-            id="outputData"
-            class="empty"
-            data-placeholder='{
-  "thirdBankName": "thirdBankCode"
-}'
-    ></pre>
+    <div class="mb-3">
+        <label for="outputData" class="form-label">轉換結果：</label>
+        <textarea id="outputData"
+                  class="form-control form-control-sm"
+                  rows="8"
+                  placeholder='{"thirdBankName": "thirdBankCode"}'
+                  disabled></textarea>
+    </div>
 </div>
 
 <script>
-    // 各輸出格式對應的 placeholder 範例
     const outputPlaceholders = {
         json1: `{\n  "thirdBankName": "thirdBankCode"\n}`,
         json2: `{\n  "thirdBankCode": "thirdBankName"\n}`,
@@ -151,34 +109,21 @@
         csv2: `thirdBankCode,thirdBankName`,
     };
 
-    /**
-     * 更新輸出區 placeholder，依據目前選擇的輸出格式決定示範格式
-     */
     function updatePlaceholder() {
         const outputFormat = document.getElementById("outputFormat").value;
         const outputEl = document.getElementById("outputData");
-
-        outputEl.setAttribute("data-placeholder", outputPlaceholders[outputFormat] || "");
-
-        if (!outputEl.textContent.trim()) {
-            outputEl.classList.add("empty");
-        }
+        outputEl.placeholder = outputPlaceholders[outputFormat] || "";
     }
 
-    /**
-     * 將輸入資料轉換成指定格式並顯示
-     */
     function convert() {
         const input = document.getElementById("inputData").value.trim();
         const inputFormat = document.getElementById("inputFormat").value;
         const outputFormat = document.getElementById("outputFormat").value;
         const outputEl = document.getElementById("outputData");
 
-        // 檢查是否有輸入
         if (!input) {
             alert("請先輸入資料！");
-            outputEl.textContent = "";
-            outputEl.classList.add("empty");
+            outputEl.value = "";
             updatePlaceholder();
             return;
         }
@@ -187,44 +132,35 @@
         const entries = [];
         const errors = [];
 
-        // 處理每一行資料
         lines.forEach((line, idx) => {
             const parts = line.split("\t").map(p => p.trim());
-
-            // 必須兩欄資料
             if (parts.length !== 2) {
                 errors.push(`第 ${idx + 1} 行格式錯誤（需兩欄，以 Tab 分隔）：${line}`);
                 return;
             }
 
             let name, code;
-
-            // 決定欄位含義
             if (inputFormat === "nameCode") {
                 name = parts[0];
                 code = parts[1];
-            } else if (inputFormat === "codeName") {
+            } else {
                 code = parts[0];
                 name = parts[1];
             }
 
-            // 欄位不能空白
             if (!name) errors.push(`第 ${idx + 1} 行名稱欄為空：${line}`);
             if (!code) errors.push(`第 ${idx + 1} 行代碼欄為空：${line}`);
 
             entries.push({ name, code });
         });
 
-        // 有錯誤時顯示錯誤訊息並停止
         if (errors.length > 0) {
-            outputEl.textContent = `// ❌ 發現錯誤：\n${errors.join("\n")}`;
-            outputEl.classList.remove("empty");
+            outputEl.value = `// ❌ 發現錯誤：\n${errors.join("\n")}`;
             return;
         }
 
         let output = "";
 
-        // 根據選擇輸出格式轉換資料
         switch (outputFormat) {
             case "json1":
                 const obj1 = {};
@@ -233,7 +169,6 @@
                 });
                 output = JSON.stringify(obj1, null, 2);
                 break;
-
             case "json2":
                 const obj2 = {};
                 entries.forEach(({ name, code }) => {
@@ -241,47 +176,28 @@
                 });
                 output = JSON.stringify(obj2, null, 2);
                 break;
-
             case "csv1":
                 output = entries.map(({ name, code }) => `${name},${code}`).join("\n");
                 break;
-
             case "csv2":
                 output = entries.map(({ name, code }) => `${code},${name}`).join("\n");
                 break;
-
             default:
                 output = "// 尚未支援此格式";
         }
 
-        // 顯示轉換結果
-        outputEl.textContent = output;
-
-        // 若輸出非空，移除 empty 樣式，否則顯示 placeholder
-        if (output.trim()) {
-            outputEl.classList.remove("empty");
-        } else {
-            outputEl.classList.add("empty");
-            updatePlaceholder();
-        }
+        outputEl.value = output;
     }
 
-    // 當輸出格式改變時，如果輸出區為空，更新 placeholder
     document.getElementById("outputFormat").addEventListener("change", () => {
         const outputEl = document.getElementById("outputData");
-        if (!outputEl.textContent.trim()) {
+        if (!outputEl.value.trim()) {
             updatePlaceholder();
         }
     });
 
-    // 頁面載入時，設定初始 placeholder
     updatePlaceholder();
 
-    // ================================
-    // 主題偵測與同步（子頁）
-    // ================================
-
-    // 監聽來自父頁的主題訊息，並同步設定 data-bs-theme 屬性
     window.addEventListener('message', (event) => {
         const theme = event.data?.theme;
         if (theme) {
@@ -289,7 +205,6 @@
         }
     });
 
-    // 啟動時主動詢問父頁面當前主題
     window.parent?.postMessage({ ask: 'theme' }, '*');
 </script>
 </body>
