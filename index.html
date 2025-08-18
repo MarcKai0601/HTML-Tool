@@ -42,13 +42,17 @@
 
     <ul class="nav nav-tabs" id="toolTabs" role="tablist">
         <li class="nav-item">
-            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1" type="button">JSON ➜ map()</button>
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1" type="button">JSON ➜ map()
+            </button>
         </li>
         <li class="nav-item">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2" type="button">銀行對應工具</button>
         </li>
         <li class="nav-item">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab3" type="button">格式轉換工具</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab4" type="button">JSON_Format</button>
         </li>
     </ul>
 
@@ -61,6 +65,9 @@
         </div>
         <div class="tab-pane fade" id="tab3" role="tabpanel">
             <iframe src="DataFormat.html"></iframe>
+        </div>
+        <div class="tab-pane fade" id="tab4" role="tabpanel">
+            <iframe src="JSON_Format.html"></iframe>
         </div>
     </div>
 </div>
@@ -83,7 +90,7 @@
     // 將主題傳送給所有 iframe
     function sendThemeToIframes(theme) {
         document.querySelectorAll('iframe').forEach(iframe => {
-            iframe.contentWindow?.postMessage({ theme }, '*');
+            iframe.contentWindow?.postMessage({theme}, '*');
         });
     }
 
@@ -100,7 +107,7 @@
     function handleMessageFromIframe(event) {
         if (event.data?.ask === 'theme') {
             const currentTheme = htmlEl.getAttribute('data-bs-theme') || 'light';
-            event.source?.postMessage({ theme: currentTheme }, '*');
+            event.source?.postMessage({theme: currentTheme}, '*');
         }
     }
 

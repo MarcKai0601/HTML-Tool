@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8"/>
+    <title>JSON 資料格式化工具</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/vue@3"></script>
+    <style>
+        /* === 來自「格式轉換工具」的統一樣式（保留） === */
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        [data-bs-theme="dark"] body {
+            background-color: #212529 !important;
+            color: #f8f9fa !important;
+        }
+        textarea, select, input {
+            font-size: 0.9rem !important;
+        }
+        .form-control, .form-select {
+            background-color: #f5f5f5;
+            color: #000;
+        }
+        [data-bs-theme="dark"] .form-control,
+        [data-bs-theme="dark"] .form-select {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+        .form-label { font-weight: bold; }
+        .btn { font-size: 0.85rem; }
+        .row .col { padding: 6px 12px; }
+        textarea {
+            font-family: monospace;
+            white-space: pre;
+            resize: vertical;
+        }
+        /* placeholder 顏色（可選） */
+        .placeholder-italic::placeholder {
+            color: #6c757d;
+            font-style: italic;
+            white-space: pre-wrap;
+        }
+        [data-bs-theme="dark"] .placeholder-italic::placeholder {
+            color: #868e96;
+        }
+
+        /* === JSON 格式化輸出區塊（依據統一風格，跟表單一樣灰底 + 深色模式） === */
+        .pretty-json, .tree {
+            background-color: #f5f5f5;
+            color: inherit;
+            border-radius: .375rem;
+            padding: .75rem;
+            max-height: 420px;
+            overflow: auto;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            font-size: .9rem;
+            margin: 0;
+        }
+        [data-bs-theme="dark"] .pretty-json,
+        [data-bs-theme="dark"] .tree {
+            background-color: #343a40;
+            color: #f8f9fa;
+        }
+
+        /* === 你希望保留的新加入 CSS（完整保留） === */
+        .error { color: #dc3545; font-weight: bold; }
+
+        /* 可展開/收合樹的細部樣式（保留，顏色低調） */
+        .tree-item { line-height: 1.5; }
+        .tree-toggle { cursor: pointer; user-select: none; margin-right: .25rem; }
+        .k { color: #0d6efd; }      /* key 藍色（與 Bootstrap 主色一致） */
+        .v-str { color: #198754; }  /* string */
+        .v-num { color: #b45309; }  /* number */
+        .v-bool { color: #6f42c1; } /* boolean */
+        .v-null { color: #6c757d; } /* null */
+        .badge-type {
+            font-size: .65rem;
+            background: #dee2e6;
+            color: #495057;
+            margin-left: .25rem;
+        }
+    </style>
+</head>
+<body>
+<div id="app" class="container py-4"></div>
+
+<!-- Template：JSON 資料格式化工具（支援展開/收合 + 複製 + 深色） -->
+<template id="original-content">
+    <h4 class="mb-3">JSON 資料格式化工具</h4>
+
+    <!-- 輸入區 -->
+    <div class="mb-3">
+        <label class="form-label">輸入 JSON</label>
+        <div class="d-flex flex-wrap gap-2 mb-2">
+            <button class="btn btn-sm btn-outline-secondary" @click="pasteFromClipboard">貼上剪貼簿</button>
+            <button class="btn btn-sm btn-outline-primary" @click="copyInput">複製輸入</button>
+            <button class="btn btn-sm btn-outline-danger" @click="clearInput">清空</button>
+        </div>
+        <textarea
+                v-model="inputRaw"
+                class="form-control form-control-sm placeholder-italic"
+                rows="8"
+                placeholder='{"amount":"100.000","accountName":"test","mchOrderNo":"W2025081815165876470547","errMsg":"下单失败","sign":"0BB71589AA051AB18A2746B6915CFC68","transferDesc":"","reqTime":"1755501443033","transferId":"T1957340991931461633","createdAt":"1755501432784","errCode":"0","accountNo":"345345436436666","currency":"INR","state":"3","mchNo":"M1741861872"}'>
+      </textarea>
+        <div v-if="errorMessage" class="error mt-2">{{ errorMessage }}</div>
+    </div>
+
+    <!-- 控制列 -->
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <label class="form-label me-2 mb-0">縮排空格：</label>
+        <select v-model.number="indent" class="form-select form-select-sm w-auto">
+            <option :value="2">2</option>
+            <option :value="4">4</option>
+            <option :value="0">壓縮(0)</option>
+        </select>
+
+        <button class="btn btn-sm btn-outline-primary" @click="reformat">重新格式化</button>
+        <button class="btn btn-sm btn-outline-success" @click="expandAll" :disabled="!parsedOk">全展開</button>
+        <button class="btn btn-sm btn-outline-secondary" @click="collapseAll" :disabled="!parsedOk">全收合</button>
+        <button class="btn btn-sm btn-outline-primary" @click="copyOutput" :disabled="!parsedOk">複製輸出</button>
+    </div>
+
+    <div class="row g-3">
+        <!-- 左：樹狀輸出（可展開/收合） -->
+        <div class="col-12 col-lg-6">
+            <label class="form-label">樹狀檢視（可展開/收合）</label>
+            <div class="tree">
+                <tree-node
+                        v-if="parsedOk"
+                        :data="parsed"
+                        node-key="root"
+                        path="root"
+                        :expanded-map="expandedMap"
+                        @toggle="toggleExpand">
+                </tree-node>
+                <div v-else class="text-muted">尚無有效 JSON 可顯示。</div>
+            </div>
+        </div>
+
+        <!-- 右：漂亮縮排 -->
+        <div class="col-12 col-lg-6">
+            <label class="form-label">漂亮縮排（Pretty JSON）</label>
+            <pre class="pretty-json mb-0">{{ pretty }}</pre>
+        </div>
+    </div>
+</template>
+
+<script>
+    const { createApp, defineComponent } = Vue;
+
+    function valueClass(val) {
+        if (val === null) return 'v-null';
+        switch (typeof val) {
+            case 'string': return 'v-str';
+            case 'number': return 'v-num';
+            case 'boolean': return 'v-bool';
+            default: return '';
+        }
+    }
+
+    const TreeNode = defineComponent({
+        name: 'TreeNode',
+        props: {
+            data: { type: [Object, Array, String, Number, Boolean, null], required: true },
+            nodeKey: { type: [String, Number], required: true },
+            path: { type: String, required: true },
+            expandedMap: { type: Object, required: true }
+        },
+        emits: ['toggle'],
+        methods: {
+            isExpandable() { return this.isObj(this.data) || Array.isArray(this.data); },
+            isObj(v) { return v && typeof v === 'object' && !Array.isArray(v); },
+            toggle() { this.$emit('toggle', this.path); },
+            valueClass
+        },
+        computed: {
+            expanded() { return !!this.expandedMap[this.path]; },
+            typeBadge() {
+                if (Array.isArray(this.data)) return 'Array';
+                if (this.isObj(this.data)) return 'Object';
+                return typeof this.data === 'object' && this.data === null ? 'null' : typeof this.data;
+            },
+            entries() {
+                if (Array.isArray(this.data)) {
+                    return this.data.map((v, idx) => ({ k: idx, v, p: `${this.path}.${idx}` }));
+                } else if (this.isObj(this.data)) {
+                    return Object.keys(this.data).map(k => ({ k, v: this.data[k], p: `${this.path}.${k}` }));
+                }
+                return [];
+            }
+        },
+        template: `
+          <div class="tree-item">
+          <span v-if="isExpandable()" class="tree-toggle" @click="toggle">
+            <strong>{{ expanded ? '▼' : '▶' }}</strong>
+          </span>
+            <template v-else>
+              <span style="display:inline-block; width: 1.2rem;"></span>
+            </template>
+
+            <span class="k">"{{ nodeKey }}"</span>
+            <span class="badge badge-type rounded-pill px-2 py-1">{{ typeBadge }}</span>
+
+            <template v-if="!isExpandable()">
+              : <span :class="valueClass(data)">{{ typeof data === 'string' ? '"' + data + '"' : String(data) }}</span>
+            </template>
+
+            <template v-else>
+              : <span>{{ Array.isArray(data) ? '[' : '{' }}</span>
+              <div v-show="expanded" class="ms-4">
+                <tree-node
+                    v-for="child in entries"
+                    :key="child.p"
+                    :data="child.v"
+                    :node-key="child.k"
+                    :path="child.p"
+                    :expanded-map="expandedMap"
+                    @toggle="$emit('toggle', $event)">
+                </tree-node>
+              </div>
+              <span>{{ Array.isArray(data) ? ']' : '}' }}</span>
+            </template>
+          </div>
+        `
+    });
+
+    createApp({
+        components: { TreeNode },
+        data() {
+            return {
+                inputRaw: '',
+                parsed: null,
+                pretty: '',
+                errorMessage: '',
+                indent: 2,
+                expandedMap: {}
+            };
+        },
+        computed: {
+            parsedOk() { return this.parsed !== null; }
+        },
+        watch: {
+            inputRaw: {
+                handler() { this.tryParseAndFormat(); },
+                immediate: true
+            },
+            indent() {
+                if (this.parsedOk) this.pretty = JSON.stringify(this.parsed, null, this.indent);
+            }
+        },
+        methods: {
+            tryParseAndFormat() {
+                this.errorMessage = '';
+                this.parsed = null;
+                this.pretty = '';
+                try {
+                    if (!this.inputRaw || !this.inputRaw.trim()) return;
+                    const obj = JSON.parse(this.inputRaw);
+                    this.parsed = obj;
+                    this.pretty = JSON.stringify(obj, null, this.indent);
+                    this.expandedMap = { root: true }; // 預設展開根節點
+                } catch (e) {
+                    this.errorMessage = `❌ JSON 格式錯誤：${e.message}`;
+                }
+            },
+            reformat() { this.tryParseAndFormat(); },
+            toggleExpand(path) { this.expandedMap[path] = !this.expandedMap[path]; },
+            expandAll() {
+                if (!this.parsedOk) return;
+                const map = {};
+                const walk = (node, path) => {
+                    map[path] = true;
+                    if (node && typeof node === 'object') {
+                        if (Array.isArray(node)) node.forEach((v, i) => walk(v, `${path}.${i}`));
+                        else Object.keys(node).forEach(k => walk(node[k], `${path}.${k}`));
+                    }
+                };
+                walk(this.parsed, 'root');
+                this.expandedMap = map;
+            },
+            collapseAll() { if (this.parsedOk) this.expandedMap = { root: true }; },
+            copyInput() {
+                navigator.clipboard.writeText(this.inputRaw || '')
+                    .then(() => this.toast('已複製輸入內容'))
+                    .catch(() => this.toast('複製失敗'));
+            },
+            copyOutput() {
+                navigator.clipboard.writeText(this.pretty || '')
+                    .then(() => this.toast('已複製輸出內容'))
+                    .catch(() => this.toast('複製失敗'));
+            },
+            clearInput() { this.inputRaw = ''; },
+            pasteFromClipboard() {
+                if (!navigator.clipboard?.readText) return this.toast('瀏覽器不支援貼上');
+                navigator.clipboard.readText().then(text => this.inputRaw = text);
+            },
+            toast(msg) { alert(msg); }
+        },
+        template: '#original-content'
+    }).mount('#app');
+
+    /* 主頁若會用 postMessage 傳遞 theme，可共用 */
+    window.addEventListener('message', (event) => {
+        const theme = event.data?.theme;
+        if (theme) document.documentElement.setAttribute('data-bs-theme', theme);
+    });
+    window.parent?.postMessage({ ask: 'theme' }, '*');
+</script>
+</body>
+</html>
