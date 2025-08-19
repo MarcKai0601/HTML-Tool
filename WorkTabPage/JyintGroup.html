@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-bs-theme="auto">
+<head>
+    <meta charset="UTF-8">
+    <title>JyintGroup Work Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        /* === 保留你的原樣式 === */
+        iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+        }
+
+        .tab-content {
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 0.375rem 0.375rem;
+        }
+
+        [data-bs-theme="light"] .tab-content {
+            background-color: #ffffff;
+            color: #212529;
+        }
+
+        [data-bs-theme="dark"] .tab-content {
+            background-color: #1e1e1e;
+            color: #f8f9fa;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        /* === 新增的極小樣式（不覆蓋全域）=== */
+        .link-preview {
+            font-size: .9rem;
+            margin-top: .5rem;
+        }
+
+        .link-preview a {
+            text-decoration: none;
+        }
+
+        .link-preview .ext {
+            opacity: .7;
+            margin-left: .25rem;
+        }
+
+        .toast-holder {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1080;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+
+        .toast-lite {
+            padding: .5rem .75rem;
+            border-radius: .375rem;
+            color: #fff;
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .15);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            max-width: 360px;
+        }
+
+        .toast-success {
+            background-color: #28a745;
+        }
+
+        .toast-error {
+            background-color: #dc3545;
+        }
+
+        .toast-text {
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4 position-relative">
+
+    <h3 class="mb-3">工作導航</h3>
+    <p class="text-muted">首層顯示快速開啟；點「編輯」後展開輸入框（自動儲存，顯示成功/失敗提示）。在輸入框內可用 Ctrl/Cmd +
+        Enter 直接開啟。</p>
+
+    <!-- 分層結構 -->
+    <div class="accordion" id="mainAccordion">
+
+        <!-- 1. CI/CD -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingCiCd">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseCiCd" aria-expanded="false" aria-controls="collapseCiCd">
+                    1. CI/CD
+                </button>
+            </h2>
+            <div id="collapseCiCd" class="accordion-collapse collapse" data-bs-parent="#mainAccordion"
+                 aria-labelledby="headingCiCd">
+                <div class="accordion-body">
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="#" class="text-primary fw-semibold" data-open-key="ci.teamcity">TeamCity</a>
+                            <button class="btn btn-sm btn-outline-secondary" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#edit-ci-teamcity" aria-expanded="false"
+                                    aria-controls="edit-ci-teamcity">
+                                編輯
+                            </button>
+                        </li>
+                    </ul>
+                    <!-- 編輯區（預設收合） -->
+                    <div class="collapse" id="edit-ci-teamcity">
+                        <div class="card card-body">
+                            <input type="url" class="form-control"
+                                   placeholder="貼上 TeamCity 連結，例如：https://teamcity.example.com"
+                                   data-key="ci.teamcity">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Config -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingConfig">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseConfig" aria-expanded="false" aria-controls="collapseConfig">
+                    2. Config
+                </button>
+            </h2>
+            <div id="collapseConfig" class="accordion-collapse collapse" data-bs-parent="#mainAccordion"
+                 aria-labelledby="headingConfig">
+                <div class="accordion-body">
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="#" class="text-primary fw-semibold" data-open-key="cfg.nacos">Nacos</a>
+                            <button class="btn btn-sm btn-outline-secondary" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#edit-cfg-nacos" aria-expanded="false"
+                                    aria-controls="edit-cfg-nacos">
+                                編輯
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="collapse" id="edit-cfg-nacos">
+                        <div class="card card-body">
+                            <input type="url" class="form-control" placeholder="貼上 Nacos 連結" data-key="cfg.nacos">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 四方金流 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingPayment">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapsePayment" aria-expanded="false" aria-controls="collapsePayment">
+                    3. 四方金流
+                </button>
+            </h2>
+            <div id="collapsePayment" class="accordion-collapse collapse" data-bs-parent="#mainAccordion"
+                 aria-labelledby="headingPayment">
+                <div class="accordion-body">
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="#" class="text-primary fw-semibold" data-open-key="pay.intl.uat">國際版 UAT</a>
+                            <button class="btn btn-sm btn-outline-secondary" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-intl-uat" aria-expanded="false"
+                                    aria-controls="edit-pay-intl-uat">
+                                編輯
+                            </button>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="#" class="text-primary fw-semibold" data-open-key="pay.intl.prod">國際版 PROD</a>
+                            <button class="btn btn-sm btn-outline-secondary" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-intl-prod" aria-expanded="false"
+                                    aria-controls="edit-pay-intl-prod">
+                                編輯
+                            </button>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="#" class="text-primary fw-semibold" data-open-key="pay.dom.uat">國內版 UAT</a>
+                            <button class="btn btn-sm btn-outline-secondary" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-dom-uat" aria-expanded="false"
+                                    aria-controls="edit-pay-dom-uat">
+                                編輯
+                            </button>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="#" class="text-primary fw-semibold" data-open-key="pay.dom.prod">國內版 PROD</a>
+                            <button class="btn btn-sm btn-outline-secondary" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-dom-prod" aria-expanded="false"
+                                    aria-controls="edit-pay-dom-prod">
+                                編輯
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- 編輯區（預設收合） -->
+                    <div class="collapse" id="edit-pay-intl-uat">
+                        <div class="card card-body">
+                            <input type="url" class="form-control" placeholder="貼上 國際版 UAT 連結"
+                                   data-key="pay.intl.uat">
+                        </div>
+                    </div>
+                    <div class="collapse" id="edit-pay-intl-prod">
+                        <div class="card card-body">
+                            <input type="url" class="form-control" placeholder="貼上 國際版 PROD 連結"
+                                   data-key="pay.intl.prod">
+                        </div>
+                    </div>
+                    <div class="collapse" id="edit-pay-dom-uat">
+                        <div class="card card-body">
+                            <input type="url" class="form-control" placeholder="貼上 國內版 UAT 連結"
+                                   data-key="pay.dom.uat">
+                        </div>
+                    </div>
+                    <div class="collapse" id="edit-pay-dom-prod">
+                        <div class="card card-body">
+                            <input type="url" class="form-control" placeholder="貼上 國內版 PROD 連結"
+                                   data-key="pay.dom.prod">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 天貓四方 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTmall">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTmall" aria-expanded="false" aria-controls="collapseTmall">
+                    4. 天貓四方
+                </button>
+            </h2>
+            <div id="collapseTmall" class="accordion-collapse collapse" data-bs-parent="#mainAccordion"
+                 aria-labelledby="headingTmall">
+                <div class="accordion-body">
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="#" class="text-primary fw-semibold" data-open-key="tmall.intl">國際版</a>
+                            <button class="btn btn-sm btn-outline-secondary" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#edit-tmall-intl" aria-expanded="false"
+                                    aria-controls="edit-tmall-intl">
+                                編輯
+                            </button>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="#" class="text-primary fw-semibold" data-open-key="tmall.dom">國內版</a>
+                            <button class="btn btn-sm btn-outline-secondary" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#edit-tmall-dom" aria-expanded="false"
+                                    aria-controls="edit-tmall-dom">
+                                編輯
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- 編輯區（預設收合） -->
+                    <div class="collapse" id="edit-tmall-intl">
+                        <div class="card card-body">
+                            <input type="url" class="form-control" placeholder="貼上 天貓四方 國際版 連結"
+                                   data-key="tmall.intl">
+                        </div>
+                    </div>
+                    <div class="collapse" id="edit-tmall-dom">
+                        <div class="card card-body">
+                            <input type="url" class="form-control" placeholder="貼上 天貓四方 國內版 連結"
+                                   data-key="tmall.dom">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /mainAccordion -->
+</div>
+
+<!-- Toast 區 -->
+<div class="toast-holder" id="toastHolder"></div>
+
+<script>
+    // ===== 主題同步：父頁為權威 =====
+    (function bootstrapTheme() {
+        const saved = localStorage.getItem('theme');
+        if (saved) {
+            document.documentElement.setAttribute('data-bs-theme', saved);
+        } else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
+        }
+    })();
+
+    window.addEventListener('message', (event) => {
+        const theme = event.data?.theme;
+        if (!theme) return;
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        try {
+            localStorage.setItem('theme', theme);
+        } catch {
+        }
+    });
+
+    window.parent?.postMessage({ask: 'theme'}, '*');
+
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'theme' && e.newValue) {
+            document.documentElement.setAttribute('data-bs-theme', e.newValue);
+        }
+    });
+
+    /* ===== 名稱映射 ===== */
+    const NAME_MAP = {
+        'ci.teamcity': 'TeamCity',
+        'cfg.nacos': 'Nacos',
+        'pay.intl.uat': '國際版 UAT',
+        'pay.intl.prod': '國際版 PROD',
+        'pay.dom.uat': '國內版 UAT',
+        'pay.dom.prod': '國內版 PROD',
+        'tmall.intl': '天貓四方 國際版',
+        'tmall.dom': '天貓四方 國內版',
+    };
+
+    /* ===== Toast ===== */
+    const toastHolder = document.getElementById('toastHolder');
+
+    function showToast(msg, type = 'success') {
+        const div = document.createElement('div');
+        div.className = `toast-lite ${type === 'success' ? 'toast-success' : 'toast-error'}`;
+        const icon = type === 'success' ? '✅' : '❌';
+        div.innerHTML = `<span>${icon}</span><span class="toast-text">${msg}</span>`;
+        toastHolder.appendChild(div);
+        setTimeout(() => {
+            div.style.opacity = '0';
+            div.style.transition = 'opacity .25s';
+            setTimeout(() => div.remove(), 250);
+        }, 2200);
+    }
+
+    /* ===== URL 儲存/載入 ===== */
+    const STORAGE_PREFIX = 'worknav.url.';
+    const storageKey = (k) => STORAGE_PREFIX + k;
+    const isValidUrl = (u) => {
+        try {
+            new URL(u);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+
+    function hydrateInputs() {
+        document.querySelectorAll('input[data-key]').forEach(inp => {
+            const key = inp.dataset.key;
+            const saved = localStorage.getItem(storageKey(key));
+            if (saved) inp.value = saved;
+        });
+    }
+
+    /* ===== 自動儲存 & 快速開啟 ===== */
+    function bindAutoSave() {
+        const debouncers = new Map();
+
+        function saveNow(inp) {
+            const key = inp.dataset.key;
+            const url = (inp.value || '').trim();
+            if (!url) {
+                localStorage.removeItem(storageKey(key));
+                return;
+            }
+            if (!isValidUrl(url)) {
+                showToast(`儲存失敗：URL 無效\n${url}`, 'error');
+                return;
+            }
+            try {
+                localStorage.setItem(storageKey(key), url);
+                showToast(`已儲存：${NAME_MAP[key] || key} ✅`);
+            } catch (e) {
+                showToast(`儲存失敗：${e?.message || '未知錯誤'}`, 'error');
+            }
+        }
+
+        document.querySelectorAll('input[data-key]').forEach(inp => {
+            inp.addEventListener('paste', () => setTimeout(() => saveNow(inp), 0));
+            inp.addEventListener('input', () => {
+                const t = debouncers.get(inp) || 0;
+                clearTimeout(t);
+                debouncers.set(inp, setTimeout(() => saveNow(inp), 500));
+            });
+            inp.addEventListener('keydown', (ev) => {
+                if ((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter') {
+                    const url = (inp.value || '').trim();
+                    if (!isValidUrl(url)) return showToast('開啟失敗：URL 無效', 'error');
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                }
+            });
+        });
+    }
+
+    /* ===== 首層快速開啟 ===== */
+    function bindQuickOpen() {
+        document.querySelectorAll('[data-open-key]').forEach(a => {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                const key = a.dataset.openKey;
+                const url = (localStorage.getItem(storageKey(key)) || '').trim();
+                if (!isValidUrl(url)) return showToast(`尚未設定有效連結：${NAME_MAP[key] || key}`, 'error');
+                window.open(url, '_blank', 'noopener,noreferrer');
+            });
+        });
+    }
+
+    /* ===== 父層收起時，子層也收起 ===== */
+    function bindAutoCloseEdits() {
+        document.querySelectorAll('#mainAccordion > .accordion-item > .accordion-collapse').forEach(section => {
+            section.addEventListener('hide.bs.collapse', () => {
+                section.querySelectorAll('.collapse.show').forEach(edit => {
+                    const inst = bootstrap.Collapse.getOrCreateInstance(edit);
+                    inst.hide();
+                });
+            });
+        });
+    }
+
+    /* ===== 初始化 ===== */
+    function setup() {
+        hydrateInputs();
+        bindAutoSave();
+        bindQuickOpen();
+        bindAutoCloseEdits();
+    }
+
+    setup();
+</script>
+</body>
+</html>
