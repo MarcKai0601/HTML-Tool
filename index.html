@@ -11,35 +11,22 @@
             height: 800px;
             border: none;
         }
-
         .tab-content {
             padding: 1rem;
             border: 1px solid #dee2e6;
             border-top: none;
             border-radius: 0 0 0.375rem 0.375rem;
         }
-
-        [data-bs-theme="light"] .tab-content {
-            background-color: #ffffff;
-            color: #212529;
-        }
-
-        [data-bs-theme="dark"] .tab-content {
-            background-color: #1e1e1e;
-            color: #f8f9fa;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-        }
+        [data-bs-theme="light"] .tab-content { background-color: #ffffff; color: #212529; }
+        [data-bs-theme="dark"]  .tab-content { background-color: #1e1e1e; color: #f8f9fa; }
+        .theme-toggle { position: absolute; top: 1rem; right: 1rem; }
     </style>
 </head>
 <body>
 <div class="container py-4 position-relative">
 
-    <button class="btn btn-secondary theme-toggle" id="toggleThemeBtn">切換主題</button>
+    <!-- 主題切換按鈕：文字與外觀會依主題改變 -->
+    <button class="btn theme-toggle" id="toggleThemeBtn">切換主題</button>
 
     <ul class="nav nav-tabs" id="toolTabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -49,8 +36,7 @@
                     data-bs-target="#tab1"
                     type="button" role="tab"
                     aria-controls="tab1"
-                    aria-selected="true">WorkTab
-            </button>
+                    aria-selected="true">WorkTab</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link"
@@ -59,8 +45,7 @@
                     data-bs-target="#tab2"
                     type="button" role="tab"
                     aria-controls="tab2"
-                    aria-selected="false">JSON ➜ map()
-            </button>
+                    aria-selected="false">JSON ➜ map()</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link"
@@ -69,8 +54,7 @@
                     data-bs-target="#tab3"
                     type="button" role="tab"
                     aria-controls="tab3"
-                    aria-selected="false">銀行對應工具
-            </button>
+                    aria-selected="false">銀行對應工具</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link"
@@ -79,8 +63,7 @@
                     data-bs-target="#tab4"
                     type="button" role="tab"
                     aria-controls="tab4"
-                    aria-selected="false">格式轉換工具
-            </button>
+                    aria-selected="false">格式轉換工具</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link"
@@ -89,8 +72,7 @@
                     data-bs-target="#tab5"
                     type="button" role="tab"
                     aria-controls="tab5"
-                    aria-selected="false">JSON 資料格式化工具
-            </button>
+                    aria-selected="false">JSON 資料格式化工具</button>
         </li>
     </ul>
 
@@ -115,54 +97,83 @@
 </div>
 
 <script>
-    // 主題設定與切換邏輯
+    // ===== 主題切換與同步 =====
     const htmlEl = document.documentElement;
+    const toggleBtn = document.getElementById('toggleThemeBtn');
 
-    // 初始化主題：從 localStorage 或系統偏好載入
+    function getCurrentTheme() {
+        return htmlEl.getAttribute('data-bs-theme') || 'light';
+    }
+
+    // 依主題更新按鈕外觀與文字
+    function updateToggleButton(theme) {
+        if (theme === 'dark') {
+            toggleBtn.textContent = '深色模式';
+            toggleBtn.className = 'btn btn-light theme-toggle';
+            toggleBtn.style.color = '#000';
+        } else {
+            toggleBtn.textContent = '淺色模式';
+            toggleBtn.className = 'btn btn-dark theme-toggle';
+            toggleBtn.style.color = '#fff';
+        }
+    }
+
+    // 初始化主題：localStorage 或系統偏好
     function initializeTheme() {
         const savedTheme = localStorage.getItem('theme');
+        let theme;
         if (savedTheme) {
-            htmlEl.setAttribute('data-bs-theme', savedTheme);
+            theme = savedTheme;
         } else {
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            htmlEl.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
+            theme = prefersDark ? 'dark' : 'light';
         }
+        htmlEl.setAttribute('data-bs-theme', theme);
+        updateToggleButton(theme);
     }
 
     // 將主題傳送給所有 iframe
     function sendThemeToIframes(theme) {
         document.querySelectorAll('iframe').forEach(iframe => {
-            iframe.contentWindow?.postMessage({theme}, '*');
+            iframe.contentWindow?.postMessage({ theme }, '*');
         });
     }
 
-    // 切換主題的事件處理
+    // 切換主題
     function toggleTheme() {
-        const current = htmlEl.getAttribute('data-bs-theme');
+        const current = getCurrentTheme();
         const next = current === 'dark' ? 'light' : 'dark';
         htmlEl.setAttribute('data-bs-theme', next);
         localStorage.setItem('theme', next);
+        updateToggleButton(next);
         sendThemeToIframes(next);
     }
 
-    // 當 iframe 要求主題時，回傳當前主題
+    // iframe 要主題 → 回傳
     function handleMessageFromIframe(event) {
         if (event.data?.ask === 'theme') {
-            const currentTheme = htmlEl.getAttribute('data-bs-theme') || 'light';
-            event.source?.postMessage({theme: currentTheme}, '*');
+            const currentTheme = getCurrentTheme();
+            event.source?.postMessage({ theme: currentTheme }, '*');
         }
     }
 
-    // 初始化邏輯綁定
+    // 初始化
     function setup() {
         initializeTheme();
-        sendThemeToIframes(htmlEl.getAttribute('data-bs-theme'));
-
-        document.getElementById('toggleThemeBtn')?.addEventListener('click', toggleTheme);
+        sendThemeToIframes(getCurrentTheme());
+        toggleBtn?.addEventListener('click', toggleTheme);
         window.addEventListener('message', handleMessageFromIframe);
+
+        // 若使用者在其他分頁改了主題（localStorage），這裡也同步
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'theme' && e.newValue) {
+                htmlEl.setAttribute('data-bs-theme', e.newValue);
+                updateToggleButton(e.newValue);
+                sendThemeToIframes(e.newValue);
+            }
+        });
     }
 
-    // 啟動初始化
     setup();
 </script>
 </body>

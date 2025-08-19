@@ -36,7 +36,6 @@
             right: 1rem;
         }
 
-        /* === 新增的極小樣式（不覆蓋全域）=== */
         .link-preview {
             font-size: .9rem;
             margin-top: .5rem;
@@ -89,8 +88,7 @@
 <div class="container py-4 position-relative">
 
     <h3 class="mb-3">工作導航</h3>
-    <p class="text-muted">首層顯示快速開啟；點「編輯」後展開輸入框（自動儲存，顯示成功/失敗提示）。在輸入框內可用 Ctrl/Cmd +
-        Enter 直接開啟。</p>
+    <p class="text-muted">首層顯示快速開啟；點「編輯」後展開輸入框（自動儲存，顯示成功/失敗提示）。在輸入框內可用 Ctrl/Cmd + Enter 直接開啟。</p>
 
     <!-- 分層結構 -->
     <div class="accordion" id="mainAccordion">
@@ -116,7 +114,6 @@
                             </button>
                         </li>
                     </ul>
-                    <!-- 編輯區（預設收合） -->
                     <div class="collapse" id="edit-ci-teamcity">
                         <div class="card card-body">
                             <input type="url" class="form-control"
@@ -173,62 +170,34 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <a href="#" class="text-primary fw-semibold" data-open-key="pay.intl.uat">國際版 UAT</a>
                             <button class="btn btn-sm btn-outline-secondary" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-intl-uat" aria-expanded="false"
-                                    aria-controls="edit-pay-intl-uat">
-                                編輯
-                            </button>
+                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-intl-uat">編輯</button>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <a href="#" class="text-primary fw-semibold" data-open-key="pay.intl.prod">國際版 PROD</a>
                             <button class="btn btn-sm btn-outline-secondary" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-intl-prod" aria-expanded="false"
-                                    aria-controls="edit-pay-intl-prod">
-                                編輯
-                            </button>
+                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-intl-prod">編輯</button>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <a href="#" class="text-primary fw-semibold" data-open-key="pay.dom.uat">國內版 UAT</a>
                             <button class="btn btn-sm btn-outline-secondary" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-dom-uat" aria-expanded="false"
-                                    aria-controls="edit-pay-dom-uat">
-                                編輯
-                            </button>
+                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-dom-uat">編輯</button>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <a href="#" class="text-primary fw-semibold" data-open-key="pay.dom.prod">國內版 PROD</a>
                             <button class="btn btn-sm btn-outline-secondary" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-dom-prod" aria-expanded="false"
-                                    aria-controls="edit-pay-dom-prod">
-                                編輯
-                            </button>
+                                    data-bs-toggle="collapse" data-bs-target="#edit-pay-dom-prod">編輯</button>
                         </li>
                     </ul>
 
-                    <!-- 編輯區（預設收合） -->
-                    <div class="collapse" id="edit-pay-intl-uat">
-                        <div class="card card-body">
-                            <input type="url" class="form-control" placeholder="貼上 國際版 UAT 連結"
-                                   data-key="pay.intl.uat">
-                        </div>
-                    </div>
-                    <div class="collapse" id="edit-pay-intl-prod">
-                        <div class="card card-body">
-                            <input type="url" class="form-control" placeholder="貼上 國際版 PROD 連結"
-                                   data-key="pay.intl.prod">
-                        </div>
-                    </div>
-                    <div class="collapse" id="edit-pay-dom-uat">
-                        <div class="card card-body">
-                            <input type="url" class="form-control" placeholder="貼上 國內版 UAT 連結"
-                                   data-key="pay.dom.uat">
-                        </div>
-                    </div>
-                    <div class="collapse" id="edit-pay-dom-prod">
-                        <div class="card card-body">
-                            <input type="url" class="form-control" placeholder="貼上 國內版 PROD 連結"
-                                   data-key="pay.dom.prod">
-                        </div>
-                    </div>
+                    <!-- 編輯區 -->
+                    <div class="collapse" id="edit-pay-intl-uat"><div class="card card-body">
+                        <input type="url" class="form-control" placeholder="貼上 國際版 UAT 連結" data-key="pay.intl.uat"></div></div>
+                    <div class="collapse" id="edit-pay-intl-prod"><div class="card card-body">
+                        <input type="url" class="form-control" placeholder="貼上 國際版 PROD 連結" data-key="pay.intl.prod"></div></div>
+                    <div class="collapse" id="edit-pay-dom-uat"><div class="card card-body">
+                        <input type="url" class="form-control" placeholder="貼上 國內版 UAT 連結" data-key="pay.dom.uat"></div></div>
+                    <div class="collapse" id="edit-pay-dom-prod"><div class="card card-body">
+                        <input type="url" class="form-control" placeholder="貼上 國內版 PROD 連結" data-key="pay.dom.prod"></div></div>
                 </div>
             </div>
         </div>
@@ -248,34 +217,19 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <a href="#" class="text-primary fw-semibold" data-open-key="tmall.intl">國際版</a>
                             <button class="btn btn-sm btn-outline-secondary" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#edit-tmall-intl" aria-expanded="false"
-                                    aria-controls="edit-tmall-intl">
-                                編輯
-                            </button>
+                                    data-bs-toggle="collapse" data-bs-target="#edit-tmall-intl">編輯</button>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <a href="#" class="text-primary fw-semibold" data-open-key="tmall.dom">國內版</a>
                             <button class="btn btn-sm btn-outline-secondary" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#edit-tmall-dom" aria-expanded="false"
-                                    aria-controls="edit-tmall-dom">
-                                編輯
-                            </button>
+                                    data-bs-toggle="collapse" data-bs-target="#edit-tmall-dom">編輯</button>
                         </li>
                     </ul>
 
-                    <!-- 編輯區（預設收合） -->
-                    <div class="collapse" id="edit-tmall-intl">
-                        <div class="card card-body">
-                            <input type="url" class="form-control" placeholder="貼上 天貓四方 國際版 連結"
-                                   data-key="tmall.intl">
-                        </div>
-                    </div>
-                    <div class="collapse" id="edit-tmall-dom">
-                        <div class="card card-body">
-                            <input type="url" class="form-control" placeholder="貼上 天貓四方 國內版 連結"
-                                   data-key="tmall.dom">
-                        </div>
-                    </div>
+                    <div class="collapse" id="edit-tmall-intl"><div class="card card-body">
+                        <input type="url" class="form-control" placeholder="貼上 天貓四方 國際版 連結" data-key="tmall.intl"></div></div>
+                    <div class="collapse" id="edit-tmall-dom"><div class="card card-body">
+                        <input type="url" class="form-control" placeholder="貼上 天貓四方 國內版 連結" data-key="tmall.dom"></div></div>
                 </div>
             </div>
         </div>
@@ -287,7 +241,9 @@
 <div class="toast-holder" id="toastHolder"></div>
 
 <script>
-    // ===== 主題同步：父頁為權威 =====
+    /* ===== 子頁主題同步：父頁為權威 ===== */
+
+    // 1) 子頁自行啟動時（沒有父頁）也有主題
     (function bootstrapTheme() {
         const saved = localStorage.getItem('theme');
         if (saved) {
@@ -298,18 +254,18 @@
         }
     })();
 
+    // 2) 接收父頁主題：套用 + 寫回 localStorage（避免下次不同步）
     window.addEventListener('message', (event) => {
         const theme = event.data?.theme;
         if (!theme) return;
         document.documentElement.setAttribute('data-bs-theme', theme);
-        try {
-            localStorage.setItem('theme', theme);
-        } catch {
-        }
+        try { localStorage.setItem('theme', theme); } catch {}
     });
 
-    window.parent?.postMessage({ask: 'theme'}, '*');
+    // 3) 通知父頁「我要主題」
+    window.parent?.postMessage({ ask: 'theme' }, '*');
 
+    // 4) 其他分頁改了 localStorage 的 theme → 同步
     window.addEventListener('storage', (e) => {
         if (e.key === 'theme' && e.newValue) {
             document.documentElement.setAttribute('data-bs-theme', e.newValue);
@@ -330,31 +286,19 @@
 
     /* ===== Toast ===== */
     const toastHolder = document.getElementById('toastHolder');
-
-    function showToast(msg, type = 'success') {
+    function showToast(msg, type='success') {
         const div = document.createElement('div');
         div.className = `toast-lite ${type === 'success' ? 'toast-success' : 'toast-error'}`;
         const icon = type === 'success' ? '✅' : '❌';
         div.innerHTML = `<span>${icon}</span><span class="toast-text">${msg}</span>`;
         toastHolder.appendChild(div);
-        setTimeout(() => {
-            div.style.opacity = '0';
-            div.style.transition = 'opacity .25s';
-            setTimeout(() => div.remove(), 250);
-        }, 2200);
+        setTimeout(() => { div.style.opacity = '0'; div.style.transition = 'opacity .25s'; setTimeout(() => div.remove(), 250); }, 2200);
     }
 
     /* ===== URL 儲存/載入 ===== */
     const STORAGE_PREFIX = 'worknav.url.';
     const storageKey = (k) => STORAGE_PREFIX + k;
-    const isValidUrl = (u) => {
-        try {
-            new URL(u);
-            return true;
-        } catch {
-            return false;
-        }
-    };
+    const isValidUrl = (u) => { try { new URL(u); return true; } catch { return false; } };
 
     function hydrateInputs() {
         document.querySelectorAll('input[data-key]').forEach(inp => {
@@ -417,27 +361,57 @@
         });
     }
 
-    /* ===== 父層收起時，子層也收起 ===== */
+    /* ===== 父層收起時，子編輯也收起 ===== */
     function bindAutoCloseEdits() {
         document.querySelectorAll('#mainAccordion > .accordion-item > .accordion-collapse').forEach(section => {
             section.addEventListener('hide.bs.collapse', () => {
                 section.querySelectorAll('.collapse.show').forEach(edit => {
-                    const inst = bootstrap.Collapse.getOrCreateInstance(edit);
-                    inst.hide();
+                    bootstrap.Collapse.getOrCreateInstance(edit).hide();
                 });
             });
         });
     }
 
+    /* ===== 僅允許單一編輯展開 + 按鈕狀態 ===== */
+    function bindSingleEdit() {
+        const edits = document.querySelectorAll('.collapse[id^="edit-"]');
+
+        edits.forEach(panel => {
+            panel.addEventListener('show.bs.collapse', () => {
+                // 關掉其它正在展開的編輯
+                document.querySelectorAll('.collapse[id^="edit-"].show').forEach(other => {
+                    if (other !== panel) bootstrap.Collapse.getOrCreateInstance(other).hide();
+                });
+                // 目前按鈕顯示「編輯中」
+                const btn = document.querySelector(`[data-bs-target="#${panel.id}"]`);
+                if (btn) {
+                    btn.classList.remove('btn-outline-secondary');
+                    btn.classList.add('btn-secondary');
+                    btn.textContent = '編輯中';
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            });
+
+            panel.addEventListener('hide.bs.collapse', () => {
+                const btn = document.querySelector(`[data-bs-target="#${panel.id}"]`);
+                if (btn) {
+                    btn.classList.remove('btn-secondary');
+                    btn.classList.add('btn-outline-secondary');
+                    btn.textContent = '編輯';
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+    }
+
     /* ===== 初始化 ===== */
-    function setup() {
+    (function setup() {
         hydrateInputs();
         bindAutoSave();
         bindQuickOpen();
         bindAutoCloseEdits();
-    }
-
-    setup();
+        bindSingleEdit();
+    })();
 </script>
 </body>
 </html>
