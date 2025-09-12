@@ -1,0 +1,454 @@
+[
+  {
+    "object": "page",
+    "id": "222bf8e7-6287-808a-b70e-fcfd76b57efb",
+    "created_time": "2025-06-30T08:16:00.000Z",
+    "last_edited_time": "2025-09-04T09:51:00.000Z",
+    "created_by": {
+      "object": "user",
+      "id": "0a3759a6-d0ea-47ff-acf3-51450d392491"
+    },
+    "last_edited_by": {
+      "object": "user",
+      "id": "700f7c95-b81d-4a34-9587-a7253069bc81"
+    },
+    "cover": null,
+    "icon": {
+      "type": "external",
+      "external": {
+        "url": "https://www.notion.so/icons/cafe_brown.svg"
+      }
+    },
+    "parent": {
+      "type": "database_id",
+      "database_id": "1d1bf8e7-6287-8074-9dee-dbe18e26427d"
+    },
+    "archived": false,
+    "in_trash": false,
+    "properties": {
+      "學習點": {
+        "id": "%3AMWA",
+        "type": "rich_text",
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "🎯 學習主題總覽",
+              "link": null
+            },
+            "annotations": {
+              "bold": true,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "🎯 學習主題總覽",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "\n• 過濾器（Filter）\n• 攔截器（Interceptor）\n• 監聽器（Listener）\n• Redis 快取\n• MySQL 資料存取\n• Spring Boot + Spring Cloud 架構\n• JDBC / MyBatis / Hibernate / Spring Data JPA\n• 架構模組拆分（Gateway, Auth, User Service）",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "\n• 過濾器（Filter）\n• 攔截器（Interceptor）\n• 監聽器（Listener）\n• Redis 快取\n• MySQL 資料存取\n• Spring Boot + Spring Cloud 架構\n• JDBC / MyBatis / Hibernate / Spring Data JPA\n• 架構模組拆分（Gateway, Auth, User Service）",
+            "href": null
+          }
+        ]
+      },
+      "復盤提煉完成": {
+        "id": "%3BDgK",
+        "type": "checkbox",
+        "checkbox": false
+      },
+      "Last edited time": {
+        "id": "OBqd",
+        "type": "last_edited_time",
+        "last_edited_time": "2025-09-04T09:51:00.000Z"
+      },
+      "工作時間（分鐘）": {
+        "id": "YQMR",
+        "type": "number",
+        "number": null
+      },
+      "閃卡選項": {
+        "id": "hH%40%7D",
+        "type": "select",
+        "select": null
+      },
+      "翻開答案": {
+        "id": "jjw~",
+        "type": "button",
+        "button": {}
+      },
+      "閃卡公式": {
+        "id": "rijt",
+        "type": "formula",
+        "formula": {
+          "type": "string",
+          "string": "🎯 學習主題總覽\n• 過濾器（Filter）\n• 攔截器（Interceptor）\n• 監聽器（Listener）\n• Redis 快取\n• MySQL 資料存取\n• Spring Boot + Spring Cloud 架構\n• JDBC / MyBatis / Hibernate / Spring Data JPA\n• 架構模組拆分（Gateway, Auth, User Service）"
+        }
+      },
+      "蓋住答案": {
+        "id": "%7B%5Dwh",
+        "type": "button",
+        "button": {}
+      },
+      "專案項目": {
+        "id": "%7Chrh",
+        "type": "relation",
+        "relation": [
+          {
+            "id": "1d1bf8e7-6287-81f9-968b-d1f536569bf4"
+          }
+        ],
+        "has_more": false
+      },
+      "行動任務卡片": {
+        "id": "title",
+        "type": "title",
+        "title": [
+          {
+            "type": "text",
+            "text": {
+              "content": "一個月登入系統主題學習計畫總覽",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "一個月登入系統主題學習計畫總覽",
+            "href": null
+          }
+        ]
+      },
+      "相關人員": {
+        "id": "notion%3A%2F%2Ftasks%2Fassign_property",
+        "type": "people",
+        "people": [
+          {
+            "object": "user",
+            "id": "0a3759a6-d0ea-47ff-acf3-51450d392491",
+            "name": "J. s Kai",
+            "avatar_url": "https://lh3.googleusercontent.com/a-/AOh14GjAgi24ZUoDh9akKHG_3avskGzZhacVLZJGkn5Rsw=s100",
+            "type": "person",
+            "person": {
+              "email": "sax0601@gmail.com"
+            }
+          }
+        ]
+      },
+      "行動狀態": {
+        "id": "notion%3A%2F%2Ftasks%2Fstatus_property",
+        "type": "status",
+        "status": {
+          "id": "in-progress",
+          "name": "執行中",
+          "color": "blue"
+        }
+      },
+      "截止日": {
+        "id": "notion%3A%2F%2Ftasks%2Fdue_date_property",
+        "type": "date",
+        "date": {
+          "start": "2025-06-30",
+          "end": "2025-07-31",
+          "time_zone": null
+        }
+      },
+      "Sub-tasks": {
+        "id": "notion%3A%2F%2Ftasks%2Fsub_task_relation",
+        "type": "relation",
+        "relation": [
+          {
+            "id": "1d1bf8e7-6287-818a-bfb7-e9c004be8672"
+          },
+          {
+            "id": "1d1bf8e7-6287-81d9-93bc-e82aa0defd3c"
+          },
+          {
+            "id": "222bf8e7-6287-8060-b9d2-f96f3417a349"
+          },
+          {
+            "id": "222bf8e7-6287-809c-a4b3-c8dbafc5a6ad"
+          },
+          {
+            "id": "222bf8e7-6287-8040-909e-cbe14dc450e6"
+          },
+          {
+            "id": "222bf8e7-6287-80a1-8301-e333bc96b210"
+          }
+        ],
+        "has_more": false
+      },
+      "問題／目標": {
+        "id": "notion%3A%2F%2Ftasks%2Fai_summary_property",
+        "type": "rich_text",
+        "rich_text": [
+          {
+            "type": "text",
+            "text": {
+              "content": "🎯 核心學習目標",
+              "link": null
+            },
+            "annotations": {
+              "bold": true,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "🎯 核心學習目標",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "\n• 理解並實作 Java 中的 ",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "\n• 理解並實作 Java 中的 ",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "過濾器（Filter）",
+              "link": null
+            },
+            "annotations": {
+              "bold": true,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "過濾器（Filter）",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "、",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "、",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "攔截器（Interceptor）",
+              "link": null
+            },
+            "annotations": {
+              "bold": true,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "攔截器（Interceptor）",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "、",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "、",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "監聽器（Listener）",
+              "link": null
+            },
+            "annotations": {
+              "bold": true,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "監聽器（Listener）",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "\n• 學會用 ",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "\n• 學會用 ",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "Redis 快取登入狀態 / Session",
+              "link": null
+            },
+            "annotations": {
+              "bold": true,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "Redis 快取登入狀態 / Session",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "\n• 用 ",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "\n• 用 ",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "MySQL",
+              "link": null
+            },
+            "annotations": {
+              "bold": true,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "MySQL",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": " 做帳號資料儲存\n• 建立獨立的 ",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": " 做帳號資料儲存\n• 建立獨立的 ",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "DAL（Data Access Layer）微服務",
+              "link": null
+            },
+            "annotations": {
+              "bold": true,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "DAL（Data Access Layer）微服務",
+            "href": null
+          },
+          {
+            "type": "text",
+            "text": {
+              "content": "，並學會 4 種資料存取技術（JDBC、MyBatis、Hibernate、Spring Data JPA）\n• 理解 Spring Boot + Spring Cloud 微服務架構下的登入流程",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "，並學會 4 種資料存取技術（JDBC、MyBatis、Hibernate、Spring Data JPA）\n• 理解 Spring Boot + Spring Cloud 微服務架構下的登入流程",
+            "href": null
+          }
+        ]
+      },
+      "母任務": {
+        "id": "notion%3A%2F%2Ftasks%2Fparent_task_relation",
+        "type": "relation",
+        "relation": [],
+        "has_more": false
+      }
+    },
+    "url": "https://www.notion.so/222bf8e76287808ab70efcfd76b57efb",
+    "public_url": null,
+    "request_id": "2e7224c3-a14f-4fc8-a391-05a194c7f6bb"
+  }
+]
