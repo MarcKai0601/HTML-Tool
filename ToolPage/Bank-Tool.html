@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>銀行對應工具</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <title>quicklyBankCode</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue@3"></script>
     <style>
         /* 預設主題（light mode）下的背景與文字顏色 */
@@ -52,234 +52,308 @@
             padding: 6px 12px;
         }
     </style>
-
-
 </head>
 <body>
-<div id="app" class="container py-4">
+<div id="app" class="container">
     <!-- Vue 应用的内容将会在这里渲染 -->
 </div>
 
 <template id="original-content">
+    <div>
+        共5個步驟
+
+    </div>
     <div class="mb-3">
-        <label class="form-label">幣種</label>
-        <select v-model="currencySelect" @change="changeCurrency" class="form-select form-select-sm">
-            <option value="thb">THB</option>
-            <option value="vnd">VND</option>
-            <option value="idr">IDR</option>
-            <option value="php">PHP</option>
-            <option value="cny">CNY</option>
-            <option value="inr">INR</option>
-            <option value="pkr">PKR</option>
-            <option value="myr">MYR</option>
+        <label  class="form-label h1">1. 選擇币种</label>
+        <select v-model="currencySelect" @change="changeCurrency" class="form-select" aria-label="Default select example">
+            <option v-for="currencyT in currencyArr" :value="currencyT">{{currencyT}}</option>
         </select>
     </div>
     <div class="mb-3">
-        <label class="form-label">
-            金流商銀行代碼
-            <select v-model="thirdPartyBankCodeTypeSelect" @change="onChangeThirdPartyBankDataType"
-                    class="form-select form-select-sm d-inline w-auto mx-2">
+        <label class="form-label">1-1. 取代字串</label>
+        <textarea class="form-control" v-model="finalReplaceStrList" rows="3"></textarea>
+    </div>
+    <div class="mb-3 form-check form-switch">
+        <label class="form-check-label" for="removeBracketsIn"><input id="removeBracketsIn" role="switch" class="form-check-input" type="checkbox" v-model="removeBracketsIn">&nbsp;移除括號內的內容</label> <br>
+        <label class="form-check-label" for="removeBracketsOut"><input id="removeBracketsOut" role="switch" class="form-check-input" type="checkbox" v-model="removeBracketsOut">&nbsp;移除括號外的內容</label>
+    </div>
+    <hr>
+    <div class="mb-3">
+        <label class="form-label h1">2. 金流商银行代码(貼上指定格式)
+            <select v-model="thirdPartyBankCodeTypeSelect" @change="onChangeThirdPartyBankDataType">
                 <option v-for="item in thirdPartyBankCodeType">{{item.type}}</option>
             </select>
-            <button type="button" class="btn btn-sm btn-primary" @click="generateQuerySql">產生</button>
         </label>
-        <textarea class="form-control form-control-sm" v-model="thirdPartyBankCodeData" rows="3"
-                  :placeholder="thirdPartyBankCodeSample"></textarea>
+        <textarea class="form-control" v-model="thirdPartyBankCodeData" rows="3"  :placeholder="thirdPartyBankCodeSample"></textarea>
+        <button type="button" class="btn btn-primary" @click="generateQuerySql">👆产生DB查询SQL</button>
     </div>
+    <hr>
+
     <div class="mb-3">
-        <label class="form-label">DB 查詢 SQL</label>
-        <textarea class="form-control form-control-sm" v-model="generateQuerySqlResult" rows="3" disabled></textarea>
+        <label class="form-label h1">3. 前往DB，執行下方的查询SQL</label>
+        <textarea class="form-control" v-model="generateQuerySqlResult" rows="3" disabled></textarea>
     </div>
+    <hr>
     <div class="mb-3">
-        <label class="form-label">
-            結果 (JSON)
-            <button type="button" class="btn btn-sm btn-primary" @click="execJson">計算</button>
-        </label>
-        <textarea class="form-control form-control-sm" v-model="dbDataJsonStr" rows="3"></textarea>
+        <label class="form-label h1">4. 貼上上列SQL的DB執行結果(格式：json) </label>
+        <textarea class="form-control" v-model="dbDataJsonStr" rows="3"></textarea>
+
+        <button type="button" class="btn btn-primary" @click="execJson">👆产生BANKCODE下拉選單mapping表格</button>
     </div>
 
-    <div class="text-center mb-3">
-        <div class="row g-2" v-for="item in dataList" :key="item.id">
-            <div class="col-3">
-                <input type="text" class="form-control form-control-sm" v-model="item.inputName" disabled>
+    <div class="container text-center">
+        <div class="row">
+            <div class="col col-1">
+                option
             </div>
-            <div class="col-4">
-                <select class="form-select form-select-sm" v-model="item.bankName">
+            <div class="col col-3">
+                銀行代碼關鍵字
+            </div>
+            <div class="col col-4">
+                下拉選單，因為DB有髒資料，故可能有多筆資料
+            </div>
+            <div class="col col-4">
+                空白即代表DB查無資料，需自行手動增加銀行代碼
+            </div>
+        </div>
+        <div class="row" v-for="item in dataList">
+            <div class="col col-1">
+                <input type="checkbox" v-model="item.support">
+            </div>
+            <div class="col col-3">
+                {{ item.inputName }}
+            </div>
+            <div class="col col-4">
+                <select class="form-select" aria-label="Default select example" v-model="item.bankName">
                     <option v-for="bankName in item.bankNames">
                         {{ bankName }}
                     </option>
                 </select>
             </div>
-            <div class="col-5">
-                <input type="text" class="form-control form-control-sm" v-model="item.bankName">
+            <div class="col col-4">
+                <input v-model="item.bankName">
             </div>
         </div>
+        <br>
     </div>
-
+    <hr>
     <div class="mb-3">
-        <label class="form-label">
-            最終結果
-            <button type="button" class="btn btn-sm btn-primary" @click="generateFinalResult">產生</button>
-        </label>
-        <textarea class="form-control form-control-sm" v-model="finalResult" rows="3" disabled></textarea>
+        <label class="form-label h1">5. 將表格轉換成最终结果
+            <button type="button" class="btn btn-primary" @click="generateFinalResult">👆产生(java格式)</button></label>
+        <textarea class="form-control" v-model="finalResult" rows="3" disabled></textarea>
     </div>
 </template>
 
 <script>
     const { createApp, ref } = Vue;
-
-    // ================================
-    // Vue 應用邏輯區
-    // ================================
-    const app = createApp({
+    let app = createApp({
         data() {
             return {
+                currencyArr: [
+                    "vnd",
+                    "inr",
+                    "brl",
+                    "thb",
+                    "pkr",
+                    "myr",
+                    "idr",
+                    "php",
+                    "usd",
+                    "ngn",
+                    "mxn",
+                    "zar",
+                    "try",
+                    "kes",
+                    "cop",
+                    "bdt",
+                    "egp",
+                    "pen",
+                    "eur",
+                    "rmb",
+                    "jpy",
+                    "krw",
+                    "twd",
+                    "clp",
+                    "rub",
+                    "sgd"
+                ],
+                message: 'test',
+                removeBracketsIn: false,
+                removeBracketsOut: false,
                 currencySelect: null,
+                finalReplaceStrList: "",
                 thirdPartyBankCodeTypeSelect: 'json1',
                 thirdPartyBankCodeData: null,
                 generateQuerySqlResult: null,
-                dbDataJsonStr: null,
+                dbDataJsonStr:null,
                 dataList: null,
                 finalResult: null,
+                defaultReplaceTarget: ['bank', '\\', '/', ' - '],
+                currencyReplaceTarget: {
+                    "thb": ['plc.', 'ltd', 'limited', 'na'],
+                    "idr": ['pt.', 'tbk', '(persero)', 'na'],
+                    "vnd": ['nh', 'ngan hang', 'tmcp']
+                },
                 thirdPartyBankCodeType: [
-                    { type: 'json1', sample: '{"thirdBankName":"thirdBankCode","建設銀行":"001"}' },
-                    { type: 'json2', sample: '{"thirdBankCode":"thirdBankName","001":"建設銀行"}' },
-                    { type: 'csv1', sample: 'thirdBankName,thirdBankCode\n建設銀行,001' },
-                    { type: 'csv2', sample: 'thirdBankCode,thirdBankName\n001,建設銀行' },
+                    {
+                        type: 'json1',
+                        sample: '{"thirdBankName":"thirdBankCode","建设银行":"001"}'
+                    },
+                    {
+                        type: 'json2',
+                        sample: '{"thirdBankCode":"thirdBankName","001":"建设银行"}'
+                    },
+                    {
+                        type: 'csv1',
+                        sample: 'thirdBankName,thirdBankCode\n建设银行,001'
+                    },
+                    {
+                        type: 'csv2',
+                        sample: 'thirdBankCode,thirdBankName\n001,建设银行'
+                    },
                 ],
-                thirdPartyBankCodeSample: '{"thirdBankName":"thirdBankCode","建設銀行":"001"}',
-            };
+                thirdPartyBankCodeSample: '{"thirdBankName":"thirdBankCode","建设银行":"001"}',
+            }
         },
         methods: {
             onChangeThirdPartyBankDataType() {
-                const type = this.thirdPartyBankCodeType.find(t => t.type === this.thirdPartyBankCodeTypeSelect);
-                this.thirdPartyBankCodeSample = type ? type.sample : '';
+                this.thirdPartyBankCodeSample = '';
+                this.thirdPartyBankCodeType.forEach(type => {
+                    if (type.type === this.thirdPartyBankCodeTypeSelect) {
+                        this.thirdPartyBankCodeSample = type.sample;
+                    }
+                })
             },
-
             generateQuerySql() {
-                if (!this.currencySelect) return alert('請先選擇幣種');
-                if (!this.thirdPartyBankCodeData) return alert('請先輸入金流商銀行資訊');
-
+                if (this.currencySelect === null || this.currencySelect.length === 0) {
+                    alert('请先选择币种');
+                    return;
+                }
+                if (this.thirdPartyBankCodeData === null || this.thirdPartyBankCodeData.length === 0) {
+                    alert('请先输入金流商银行资讯');
+                    return;
+                }
+                let sqlArr = []
                 let bankObj = {};
-
-                try {
-                    switch (this.thirdPartyBankCodeTypeSelect) {
-                        case 'json1':
-                            bankObj = JSON.parse(this.thirdPartyBankCodeData);
-                            break;
-                        case 'json2':
-                            const temp = JSON.parse(this.thirdPartyBankCodeData);
-                            Object.keys(temp).forEach(key => bankObj[temp[key]] = key);
-                            break;
-                        case 'csv1':
-                            this.thirdPartyBankCodeData.split('\n').forEach(line => {
-                                const [name, code] = line.split(',');
-                                bankObj[name] = code;
-                            });
-                            break;
-                        case 'csv2':
-                            this.thirdPartyBankCodeData.split('\n').forEach(line => {
-                                const [code, name] = line.split(',');
-                                bankObj[name] = code;
-                            });
-                            break;
-                        default:
-                            return alert('不支援的格式');
+                switch (this.thirdPartyBankCodeTypeSelect) {
+                    case 'json1':
+                        bankObj = JSON.parse(this.thirdPartyBankCodeData);
+                        break;
+                    case 'json2':
+                        let temp = JSON.parse(this.thirdPartyBankCodeData);
+                        Object.keys(temp).forEach(key => bankObj[temp[key]] = key);
+                        break;
+                    case 'csv1':
+                        let dataArr = this.thirdPartyBankCodeData.split('\n');
+                        dataArr.forEach(dataStr => {
+                            let bankData = dataStr.split(',');
+                            bankObj[bankData[0]] = bankData[1];
+                        })
+                        break;
+                    case 'csv2':
+                        let dataArr2 = this.thirdPartyBankCodeData.split('\n');
+                        dataArr2.forEach(dataStr => {
+                            let bankData = dataStr.split(',');
+                            bankObj[bankData[1]] = bankData[0];
+                        })
+                        break;
+                    default:
+                        alert('不支援的资料格式');
+                        return;
+                }
+                let checkCodeSet = new Set();
+                Object.keys(bankObj).forEach((key) => {
+                    if (checkCodeSet.has(bankObj[key])) {
+                        alert('金流商银行对应代码出现重复:' + bankObj[key])
+                        return;
                     }
-                } catch (e) {
-                    return alert('格式解析錯誤，請確認資料格式');
-                }
-
-                const sqlArr = [];
-                const codeSet = new Set();
-
-                for (const key in bankObj) {
-                    const code = bankObj[key];
-                    if (codeSet.has(code)) return alert('重複的銀行代碼：' + code);
-                    codeSet.add(code);
-
-                    const likeKey = this.preprocessingKey(key);
-                    const sql = `
-                    SELECT group_concat(BankName) as bankNames, '${code}' AS code, '${key}' AS inputName
-                    FROM t_withdraw_channel_bank_code
-                    WHERE BankName LIKE '%${likeKey}%'
-                      AND Currency = '${this.currencySelect}'
-                    UNION ALL
-                    SELECT NULL AS bankNames, '${code}' AS code, '${key}' AS inputName
-                    FROM DUAL
-                    WHERE NOT EXISTS (
-                        SELECT 1
-                        FROM t_withdraw_channel_bank_code
-                        WHERE BankName LIKE '%${likeKey}%'
-                          AND Currency = '${this.currencySelect}'
-                    )
-                    GROUP BY code, inputName
-                `;
-                    sqlArr.push(sql.trim());
-                }
-
-                this.generateQuerySqlResult = `
-                SELECT JSON_ARRAYAGG(
-                    JSON_OBJECT('bankNames', bankNames, 'code', code, 'inputName', inputName)
-                ) AS jsonArray
-                FROM (${sqlArr.join('\nUNION\n')}) AS subquery;
-            `.trim();
-            },
-
-            execJson() {
-                try {
-                    const dataArr = JSON.parse(this.dbDataJsonStr || '[]');
-                    dataArr.forEach((data, index) => {
-                        data.id = index + 1;
-                        data.bankNames = data.bankNames ? data.bankNames.split(',') : [];
-                        data.bankName = data.bankNames[0] || '';
-                    });
-                    this.dataList = dataArr;
-                } catch (e) {
-                    alert('JSON 格式錯誤');
-                }
-            },
-
-            generateFinalResult() {
-                const set = new Set();
-                const result = this.dataList.map(data => {
-                    if (set.has(data.bankName)) {
-                        alert('重複的銀行名稱: ' + data.bankName);
-                        return null;
-                    }
-                    set.add(data.bankName);
-                    return `bankCode.put("${data.bankName}", "${data.code}");`;
+                    checkCodeSet.add(bankObj[key])
+                    let likeKey = this.preprocessingKey(key);
+                    let templateSql = `SELECT group_concat(BankName SEPARATOR '@SEP@') as bankNames, '${bankObj[key]}' AS code, '${key}' AS inputName
+                                        FROM t_withdraw_channel_bank_code
+                                        WHERE BankName LIKE '%${likeKey}%' AND Currency = '${this.currencySelect}'
+                                        UNION
+                                        SELECT NULL AS bankNames, '${bankObj[key]}' AS code, '${key}' AS inputName
+                                        FROM DUAL
+                                        WHERE NOT EXISTS (
+                                            SELECT 1
+                                            FROM t_withdraw_channel_bank_code
+                                            WHERE BankName LIKE '%${likeKey}%' AND Currency = '${this.currencySelect}'
+                                        ) group by Code, InputName `;
+                    sqlArr.push(templateSql);
                 });
-                this.finalResult = result.filter(Boolean).join('\n');
+                this.generateQuerySqlResult = "SELECT JSON_ARRAYAGG( " +
+                    "           JSON_OBJECT( " +
+                    "               'bankNames', bankNames, " +
+                    "               'code', code, " +
+                    "               'inputName', inputName " +
+                    "           ) " +
+                    "       ) AS jsonArray " +
+                    "FROM ( " + sqlArr.join("\nUNION\n") + " ) AS subquery;";
             },
-
+            changeCurrency() {
+                let currencyReplaceTargetElement = this.currencyReplaceTarget[this.currencySelect];
+                this.finalReplaceStrList = this.defaultReplaceTarget.join('\n') + (typeof currencyReplaceTargetElement === 'undefined' ? '' : ('\n' + currencyReplaceTargetElement.join('\n')));
+            },
+            execJson() {
+                // [
+                //     {
+                //         "bankNames": "LienvietpostBank,LIENVIETPOSTBANK(LPB)",
+                //         "code": "test",
+                //         "inputName": "LienvietpostBank"
+                //     }
+                // ]
+                let dataArr = JSON.parse(this.dbDataJsonStr);
+                let id = 1;
+                dataArr.forEach(data => {
+                    data['support'] = true
+                    data['id'] = id++;
+                    data['bankNames'] = (data['bankNames'] === null || data['bankNames'].length === 0) ? [] : data['bankNames'].split('@SEP@');
+                    data['bankName'] = data['bankNames'].length === 0 ? '' : data['bankNames'][0];
+                })
+                console.log(dataArr);
+                this.dataList = dataArr;
+            },
+            generateFinalResult() {
+                //检查银行名称是否有重复
+                let checkNameSet = new Set();
+                let checkCodeSet = new Set();
+                let tempArr = [];
+                this.dataList.forEach(data => {
+                    if (!data.support) {
+                        return;
+                    }
+                    if (checkNameSet.has(data.bankName)) {
+                        alert('有重复的银行名称:' + data.bankName);
+                        return
+                    }
+                    tempArr.push("bankCode.put(\"" + data.bankName + "\",\"" + data.code + "\"); //" + data.inputName );
+                })
+                this.finalResult = tempArr.join("\n");
+            },
             preprocessingKey(keyName) {
-                if (!keyName) return '';
-                let key = keyName.toLowerCase()
-                    .replace(/bank/g, '')
-                    .replace(/[.,\\/]/g, '')
-                    .replace(/ - /g, ' ')
-                    .trim();
-
-                switch (this.currencySelect) {
-                    case 'thb':
-                        key = key.replace(/plc\.?| ltd| limited| na/g, '');
-                        break;
-                    case 'idr':
-                        key = key.replace(/pt\.?|tbk|\(persero\)| na/gi, '');
-                        break;
-                    case 'vnd':
-                        key = key.replace(/nh /gi, '');
-                        break;
+                if (keyName === null || keyName.length === 0) {
+                    return '';
                 }
 
-                return key.trim();
+                if (this.removeBracketsIn) {
+                    keyName = keyName.replaceAll(/\(.*?\)/g, '')
+                }
+                if (this.removeBracketsOut) {
+                    keyName = keyName.replaceAll(/.*?\((.*?)\).*/g, '$1')
+                }
+                this.finalReplaceStrList.split('\n').forEach(v => {
+                    keyName = keyName.replace(v, '');
+                })
+                return keyName.trim();
             }
+        },
+        mounted() {
+            // 在这里可以添加一些组件初始化的逻辑
         },
         template: '#original-content'
     });
     app.mount('#app');
-
 
     // ================================
     // 主題偵測與同步（子頁）
