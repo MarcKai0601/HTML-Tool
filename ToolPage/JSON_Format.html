@@ -46,14 +46,15 @@
             color: #868e96;
         }
 
-        /* === JSON 格式化輸出區塊（依據統一風格，跟表單一樣灰底 + 深色模式） === */
+        /* === JSON 格式化輸出區塊：去除捲軸、隨內容自動長高 === */
         .pretty-json, .tree {
             background-color: #f5f5f5;
             color: inherit;
             border-radius: .375rem;
             padding: .75rem;
-            max-height: 420px;
-            overflow: auto;
+            /* max-height: 420px;  <-- 移除固定高度 */
+            /* overflow: auto;     <-- 改成 visible 讓內容撐高 */
+            overflow: visible;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
             font-size: .9rem;
             margin: 0;
