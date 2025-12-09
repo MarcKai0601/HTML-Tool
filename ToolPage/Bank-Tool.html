@@ -244,11 +244,11 @@
                 }
                 let checkCodeSet = new Set();
                 Object.keys(bankObj).forEach((key) => {
-                    if (checkCodeSet.has(bankObj[key])) {
-                        alert('金流商银行对应代码出现重复:' + bankObj[key])
-                        return;
-                    }
-                    checkCodeSet.add(bankObj[key])
+                    // if (checkCodeSet.has(bankObj[key])) {
+                    //     alert('金流商银行对应代码出现重复:' + bankObj[key])
+                    //     return;
+                    // }
+                    // checkCodeSet.add(bankObj[key])
                     let likeKey = this.preprocessingKey(key);
                     let templateSql = `SELECT group_concat(BankName SEPARATOR '@SEP@') as bankNames, '${bankObj[key]}' AS code, '${key}' AS inputName
                                         FROM t_withdraw_channel_bank_code
