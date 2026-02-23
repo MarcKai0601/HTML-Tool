@@ -3,65 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>銀行對應工具</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/vue@3"></script>
     <style>
-        /* 預設主題（light mode）下的背景與文字顏色 */
-        body {
-            background-color: #f8f9fa; /* 淺灰色背景 */
-            color: #212529; /* 深灰文字（Bootstrap 預設文字色） */
-        }
-
-        /* 當 HTML 元素具有 data-bs-theme="dark" 時，套用深色背景與亮色文字 */
-        [data-bs-theme="dark"] body {
-            background-color: #212529 !important; /* 深灰背景 */
-            color: #f8f9fa !important; /* 白色文字 */
-        }
-
-        /* 統一設定表單欄位（輸入框、下拉選單、文字區）文字大小 */
-        textarea, select, input {
-            font-size: 0.9rem !important;
-        }
-
-        /* 表單欄位在 light mode 的背景與文字顏色 */
-        .form-control, .form-select {
-            background-color: #f5f5f5; /* 淺灰底色 */
-            color: #000; /* 黑色文字 */
-        }
-
-        /* 表單欄位在 dark mode 的背景與文字顏色 */
-        [data-bs-theme="dark"] .form-control,
-        [data-bs-theme="dark"] .form-select {
-            background-color: #343a40; /* 深灰底色 */
-            color: #f8f9fa; /* 白色文字 */
-        }
-
-        /* 表單 label 加粗以突顯欄位名稱 */
-        .form-label {
-            font-weight: bold;
-        }
-
-        /* 調整按鈕字體大小 */
-        .btn {
-            font-size: 0.85rem;
-        }
-
-        /* 為每欄位設定內邊距，讓畫面看起來更整齊 */
-        .row .col {
-            padding: 6px 12px;
-        }
+        body { background-color: #f8f9fa; color: #212529; }
+        [data-bs-theme="dark"] body { background-color: #212529 !important; color: #f8f9fa !important; }
+        textarea, select, input { font-size: 0.9rem !important; }
+        .form-control, .form-select { background-color: #f5f5f5; color: #000; }
+        [data-bs-theme="dark"] .form-control, [data-bs-theme="dark"] .form-select { background-color: #343a40; color: #f8f9fa; }
+        .form-label { font-weight: bold; }
+        .btn { font-size: 0.85rem; }
+        .row .col { padding: 6px 12px; }
     </style>
 </head>
 <body>
-<div id="app" class="container">
-    <!-- Vue 应用的内容将会在这里渲染 -->
-</div>
+<div id="app" class="container"></div>
 
 <template id="original-content">
     <div class="mb-3">
         <label  class="form-label">1. 選擇币种</label>
-        <select v-model="currencySelect" @change="changeCurrency" class="form-select" aria-label="Default select example">
+        <select v-model="currencySelect" @change="changeCurrency" class="form-select">
             <option v-for="currencyT in currencyArr" :value="currencyT">{{currencyT}}</option>
         </select>
     </div>
@@ -70,103 +32,72 @@
         <textarea class="form-control" v-model="finalReplaceStrList" rows="3"></textarea>
     </div>
     <div class="mb-3 form-check form-switch">
-        <label class="form-check-label" for="removeBracketsIn"><input id="removeBracketsIn" role="switch" class="form-check-input" type="checkbox" v-model="removeBracketsIn">&nbsp;移除括號內的內容</label> <br>
-        <label class="form-check-label" for="removeBracketsOut"><input id="removeBracketsOut" role="switch" class="form-check-input" type="checkbox" v-model="removeBracketsOut">&nbsp;移除括號外的內容</label>
+        <label class="form-check-label"><input role="switch" class="form-check-input" type="checkbox" v-model="removeBracketsIn">&nbsp;移除括號內的內容</label> <br>
+        <label class="form-check-label"><input role="switch" class="form-check-input" type="checkbox" v-model="removeBracketsOut">&nbsp;移除括號外的內容</label>
     </div>
     <hr>
     <div class="mb-3">
-        <label class="form-label">2. 金流商银行代码(貼上指定格式)
+        <label class="form-label">2. 金流商銀行代碼
             <select v-model="thirdPartyBankCodeTypeSelect" @change="onChangeThirdPartyBankDataType">
                 <option v-for="item in thirdPartyBankCodeType">{{item.type}}</option>
             </select>
         </label>
-        <textarea class="form-control" v-model="thirdPartyBankCodeData" rows="3"  :placeholder="thirdPartyBankCodeSample"></textarea>
-        <button type="button" class="btn btn-primary" @click="generateQuerySql">👆产生DB查询SQL</button>
+        <textarea class="form-control" v-model="thirdPartyBankCodeData" rows="3" :placeholder="thirdPartyBankCodeSample"></textarea>
+        <button type="button" class="btn btn-primary mt-2" @click="generateQuerySql">👆产生DB查询SQL</button>
     </div>
     <hr>
-
     <div class="mb-3">
-        <label class="form-label">3. 前往DB，執行下方的查询SQL</label>
+        <label class="form-label">3. 前往DB執行查詢SQL</label>
         <textarea class="form-control" v-model="generateQuerySqlResult" rows="3" disabled></textarea>
     </div>
     <hr>
     <div class="mb-3">
-        <label class="form-label">4. 貼上上列SQL的DB執行結果(格式：json) </label>
+        <label class="form-label">4. 貼上執行結果 (JSON) </label>
         <textarea class="form-control" v-model="dbDataJsonStr" rows="3"></textarea>
-
-        <button type="button" class="btn btn-primary" @click="execJson">👆产生BANKCODE下拉選單mapping表格</button>
+        <button type="button" class="btn btn-primary mt-2" @click="execJson">👆产生BANKCODE下拉選單mapping表格</button>
     </div>
 
     <div class="container text-center">
-        <div class="row" v-for="item in dataList">
-            <div class="col col-1">
-                <input type="checkbox" v-model="item.support">
-            </div>
-            <div class="col col-3">
-                {{ item.inputName }}
-            </div>
+        <div class="row border-bottom bg-secondary text-white py-2" v-if="dataList">
+            <div class="col col-1">選用</div>
+            <div class="col col-3">輸入名稱</div>
+            <div class="col col-4">資料庫匹配結果</div>
+            <div class="col col-4">手動調整/最終名稱</div>
+        </div>
+        <div class="row align-items-center border-bottom" v-for="item in dataList" :key="item.id">
+            <div class="col col-1"><input type="checkbox" v-model="item.support"></div>
+            <div class="col col-3 text-start">{{ item.inputName }}</div>
             <div class="col col-4">
-                <select class="form-select" aria-label="Default select example" v-model="item.bankName">
-                    <option v-for="bankName in item.bankNames">
-                        {{ bankName }}
-                    </option>
+                <select class="form-select" v-model="item.bankName">
+                    <option v-for="bn in item.bankNames" :value="bn">{{ bn }}</option>
                 </select>
             </div>
-            <div class="col col-4">
-                <input v-model="item.bankName">
-            </div>
+            <div class="col col-4"><input class="form-control" v-model="item.bankName"></div>
         </div>
     </div>
     <hr>
     <div class="mb-3">
-        <label class="form-label">5. 將表格轉換成最终结果
-            <button type="button" class="btn btn-primary" @click="generateFinalResult">👆产生(java格式)</button></label>
+        <label class="form-label">5. 最終結果 (Java 格式)
+            <button type="button" class="btn btn-primary" @click="generateFinalResult">👆产生</button>
+        </label>
         <textarea class="form-control" v-model="finalResult" rows="3" disabled></textarea>
     </div>
 </template>
 
 <script>
-    const { createApp, ref } = Vue;
-    let app = createApp({
+    const { createApp } = Vue;
+    createApp({
         data() {
             return {
-                currencyArr: [
-                    "vnd",
-                    "inr",
-                    "brl",
-                    "thb",
-                    "pkr",
-                    "myr",
-                    "idr",
-                    "php",
-                    "usd",
-                    "ngn",
-                    "mxn",
-                    "zar",
-                    "try",
-                    "kes",
-                    "cop",
-                    "bdt",
-                    "egp",
-                    "pen",
-                    "eur",
-                    "rmb",
-                    "jpy",
-                    "krw",
-                    "twd",
-                    "clp",
-                    "rub",
-                    "sgd"
-                ],
-                message: 'test',
+                currencyArr: ["vnd","inr","brl","thb","pkr","myr","idr","php","usd","ngn","mxn","zar","try","kes","cop","bdt","egp","pen","eur","rmb","jpy","krw","twd","clp","rub","sgd"],
                 removeBracketsIn: false,
                 removeBracketsOut: false,
-                currencySelect: null,
+                currencySelect: 'vnd',
                 finalReplaceStrList: "",
                 thirdPartyBankCodeTypeSelect: 'json1',
                 thirdPartyBankCodeData: null,
                 generateQuerySqlResult: null,
-                dbDataJsonStr:null,
+                dbDataJsonStr: null,
                 dataList: null,
                 finalResult: null,
                 defaultReplaceTarget: ['bank', '\\', '/', ' - '],
@@ -176,179 +107,102 @@
                     "vnd": ['nh', 'ngan hang', 'tmcp']
                 },
                 thirdPartyBankCodeType: [
-                    {
-                        type: 'json1',
-                        sample: '{"thirdBankName":"thirdBankCode","建设银行":"001"}'
-                    },
-                    {
-                        type: 'json2',
-                        sample: '{"thirdBankCode":"thirdBankName","001":"建设银行"}'
-                    },
-                    {
-                        type: 'csv1',
-                        sample: 'thirdBankName,thirdBankCode\n建设银行,001'
-                    },
-                    {
-                        type: 'csv2',
-                        sample: 'thirdBankCode,thirdBankName\n001,建设银行'
-                    },
+                    { type: 'json1', sample: '{"建设银行":"001"}' },
+                    { type: 'json2', sample: '{"001":"建设银行"}' },
+                    { type: 'csv1', sample: '建设银行,001' },
+                    { type: 'csv2', sample: '001,建设银行' }
                 ],
-                thirdPartyBankCodeSample: '{"thirdBankName":"thirdBankCode","建设银行":"001"}',
+                thirdPartyBankCodeSample: '{"建设银行":"001"}',
             }
         },
         methods: {
             onChangeThirdPartyBankDataType() {
-                this.thirdPartyBankCodeSample = '';
-                this.thirdPartyBankCodeType.forEach(type => {
-                    if (type.type === this.thirdPartyBankCodeTypeSelect) {
-                        this.thirdPartyBankCodeSample = type.sample;
-                    }
-                })
+                const target = this.thirdPartyBankCodeType.find(t => t.type === this.thirdPartyBankCodeTypeSelect);
+                this.thirdPartyBankCodeSample = target ? target.sample : '';
             },
             generateQuerySql() {
-                if (this.currencySelect === null || this.currencySelect.length === 0) {
-                    alert('请先选择币种');
-                    return;
-                }
-                if (this.thirdPartyBankCodeData === null || this.thirdPartyBankCodeData.length === 0) {
-                    alert('请先输入金流商银行资讯');
-                    return;
-                }
-                let sqlArr = []
+                if (!this.currencySelect) return alert('请先选择币种');
+                if (!this.thirdPartyBankCodeData) return alert('请先输入金流商银行资讯');
+
+                let sqlArr = [];
                 let bankObj = {};
-                switch (this.thirdPartyBankCodeTypeSelect) {
-                    case 'json1':
-                        bankObj = JSON.parse(this.thirdPartyBankCodeData);
-                        break;
-                    case 'json2':
+                try {
+                    if (this.thirdPartyBankCodeTypeSelect.includes('json')) {
                         let temp = JSON.parse(this.thirdPartyBankCodeData);
-                        Object.keys(temp).forEach(key => bankObj[temp[key]] = key);
-                        break;
-                    case 'csv1':
-                        let dataArr = this.thirdPartyBankCodeData.split('\n');
-                        dataArr.forEach(dataStr => {
-                            let bankData = dataStr.split(',');
-                            bankObj[bankData[0]] = bankData[1];
-                        })
-                        break;
-                    case 'csv2':
-                        let dataArr2 = this.thirdPartyBankCodeData.split('\n');
-                        dataArr2.forEach(dataStr => {
-                            let bankData = dataStr.split(',');
-                            bankObj[bankData[1]] = bankData[0];
-                        })
-                        break;
-                    default:
-                        alert('不支援的资料格式');
-                        return;
-                }
-                let checkCodeSet = new Set();
-                Object.keys(bankObj).forEach((key) => {
-                    // if (checkCodeSet.has(bankObj[key])) {
-                    //     alert('金流商银行对应代码出现重复:' + bankObj[key])
-                    //     return;
-                    // }
-                    // checkCodeSet.add(bankObj[key])
+                        if (this.thirdPartyBankCodeTypeSelect === 'json1') bankObj = temp;
+                        else Object.keys(temp).forEach(k => bankObj[temp[k]] = k);
+                    } else {
+                        let lines = this.thirdPartyBankCodeData.split('\n');
+                        lines.forEach(l => {
+                            let parts = l.split(',');
+                            if (parts.length >= 2) {
+                                if (this.thirdPartyBankCodeTypeSelect === 'csv1') bankObj[parts[0].trim()] = parts[1].trim();
+                                else bankObj[parts[1].trim()] = parts[2].trim();
+                            }
+                        });
+                    }
+                } catch (e) { return alert('解析格式失敗'); }
+
+                Object.keys(bankObj).forEach(key => {
+                    let bankCode = bankObj[key];
                     let likeKey = this.preprocessingKey(key);
-                    let templateSql = `SELECT group_concat(BankName SEPARATOR '@SEP@') as bankNames, '${bankObj[key]}' AS code, '${key}' AS inputName
-                                        FROM t_withdraw_channel_bank_code
-                                        WHERE BankName LIKE '%${likeKey}%' AND Currency = '${this.currencySelect}'
-                                        UNION
-                                        SELECT NULL AS bankNames, '${bankObj[key]}' AS code, '${key}' AS inputName
-                                        FROM DUAL
-                                        WHERE NOT EXISTS (
-                                            SELECT 1
-                                            FROM t_withdraw_channel_bank_code
-                                            WHERE BankName LIKE '%${likeKey}%' AND Currency = '${this.currencySelect}'
-                                        ) group by Code, InputName `;
-                    sqlArr.push(templateSql);
+                    let conditions = [`BankName LIKE '%${likeKey}%'`, `BankName LIKE '%${bankCode}%'`];
+                    let bracketMatch = key.match(/\((.*?)\)/);
+                    if (bracketMatch && bracketMatch[1]) conditions.push(`BankName LIKE '%${bracketMatch[1].trim()}%'`);
+
+                    let whereClause = `(${conditions.join(' OR ')}) AND Currency = '${this.currencySelect}'`;
+                    sqlArr.push(`SELECT group_concat(BankName SEPARATOR '@SEP@') as bankNames, '${bankCode}' AS code, '${key}' AS inputName FROM t_withdraw_channel_bank_code WHERE ${whereClause} UNION SELECT NULL AS bankNames, '${bankCode}' AS code, '${key}' AS inputName FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM t_withdraw_channel_bank_code WHERE ${whereClause}) group by Code, InputName`);
                 });
-                this.generateQuerySqlResult = "SELECT JSON_ARRAYAGG( " +
-                    "           JSON_OBJECT( " +
-                    "               'bankNames', bankNames, " +
-                    "               'code', code, " +
-                    "               'inputName', inputName " +
-                    "           ) " +
-                    "       ) AS jsonArray " +
-                    "FROM ( " + sqlArr.join("\nUNION\n") + " ) AS subquery;";
+
+                this.generateQuerySqlResult = `SELECT JSON_ARRAYAGG(JSON_OBJECT('bankNames', bankNames, 'code', code, 'inputName', inputName)) AS jsonArray FROM ( ${sqlArr.join("\nUNION\n")} ) AS subquery;`;
             },
             changeCurrency() {
-                let currencyReplaceTargetElement = this.currencyReplaceTarget[this.currencySelect];
-                this.finalReplaceStrList = this.defaultReplaceTarget.join('\n') + (typeof currencyReplaceTargetElement === 'undefined' ? '' : ('\n' + currencyReplaceTargetElement.join('\n')));
+                let targets = this.currencyReplaceTarget[this.currencySelect] || [];
+                this.finalReplaceStrList = [...this.defaultReplaceTarget, ...targets].join('\n');
             },
             execJson() {
-                // [
-                //     {
-                //         "bankNames": "LienvietpostBank,LIENVIETPOSTBANK(LPB)",
-                //         "code": "test",
-                //         "inputName": "LienvietpostBank"
-                //     }
-                // ]
-                let dataArr = JSON.parse(this.dbDataJsonStr);
-                let id = 1;
-                dataArr.forEach(data => {
-                    data['support'] = true
-                    data['id'] = id++;
-                    data['bankNames'] = (data['bankNames'] === null || data['bankNames'].length === 0) ? [] : data['bankNames'].split('@SEP@');
-                    data['bankName'] = data['bankNames'].length === 0 ? '' : data['bankNames'][0];
-                })
-                console.log(dataArr);
-                this.dataList = dataArr;
+                try {
+                    let raw = JSON.parse(this.dbDataJsonStr);
+                    // 處理 DB 可能回傳單一物件或陣列的情況
+                    let dataArr = Array.isArray(raw) ? raw : (raw.jsonArray ? JSON.parse(raw.jsonArray) : []);
+                    this.dataList = dataArr.map((d, index) => ({
+                        ...d,
+                        id: index,
+                        support: true,
+                        bankNames: d.bankNames ? d.bankNames.split('@SEP@') : [],
+                        bankName: d.bankNames ? d.bankNames.split('@SEP@')[0] : ''
+                    }));
+                } catch (e) { alert('JSON 解析錯誤'); }
             },
             generateFinalResult() {
-                //检查银行名称是否有重复
                 let checkNameSet = new Set();
-                let checkCodeSet = new Set();
-                let tempArr = [];
+                let results = [];
                 this.dataList.forEach(data => {
-                    if (!data.support) {
-                        return;
-                    }
-                    if (checkNameSet.has(data.bankName)) {
-                        alert('有重复的银行名称:' + data.bankName);
-                        return
-                    }
-                    tempArr.push("bankCode.put(\"" + data.bankName + "\",\"" + data.code + "\"); //" + data.inputName );
-                })
-                this.finalResult = tempArr.join("\n");
+                    if (!data.support || !data.bankName) return;
+                    if (checkNameSet.has(data.bankName)) return alert('重複的銀行名稱: ' + data.bankName);
+                    checkNameSet.add(data.bankName);
+                    results.push(`bankCode.put("${data.bankName}", "${data.code}"); // ${data.inputName}`);
+                });
+                this.finalResult = results.join("\n");
             },
             preprocessingKey(keyName) {
-                if (keyName === null || keyName.length === 0) {
-                    return '';
-                }
-
-                if (this.removeBracketsIn) {
-                    keyName = keyName.replaceAll(/\(.*?\)/g, '')
-                }
-                if (this.removeBracketsOut) {
-                    keyName = keyName.replaceAll(/.*?\((.*?)\).*/g, '$1')
-                }
-                this.finalReplaceStrList.split('\n').forEach(v => {
-                    keyName = keyName.replace(v, '');
-                })
-                return keyName.trim();
+                if (!keyName) return '';
+                let res = keyName;
+                if (this.removeBracketsIn) res = res.replace(/\(.*?\)/g, '');
+                if (this.removeBracketsOut) res = res.replace(/.*?\((.*?)\).*/g, '$1');
+                this.finalReplaceStrList.split('\n').filter(v => v.trim()).forEach(v => {
+                    res = res.replaceAll(v.trim(), '');
+                });
+                return res.trim();
             }
         },
-        mounted() {
-            // 在这里可以添加一些组件初始化的逻辑
-        },
+        mounted() { this.changeCurrency(); },
         template: '#original-content'
+    }).mount('#app');
+
+    window.addEventListener('message', (e) => {
+        if (e.data?.theme) document.documentElement.setAttribute('data-bs-theme', e.data.theme);
     });
-    app.mount('#app');
-
-    // ================================
-    // 主題偵測與同步（子頁）
-    // ================================
-
-    // 監聽父頁主題訊息（暗/亮主題）
-    window.addEventListener('message', (event) => {
-        const theme = event.data?.theme;
-        if (theme) {
-            document.documentElement.setAttribute('data-bs-theme', theme);
-        }
-    });
-
-    // 主動詢問父頁：請問目前主題？
     window.parent?.postMessage({ ask: 'theme' }, '*');
 </script>
 </body>
