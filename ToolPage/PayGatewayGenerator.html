@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>金流串接生成器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/vue@3"></script>
+    <style>
+        body { background-color: #f8f9fa; color: #212529; }
+        [data-bs-theme="dark"] body { background-color: #212529 !important; color: #f8f9fa !important; }
+        textarea, select, input { font-size: 0.9rem !important; }
+        .form-control, .form-select { background-color: #f5f5f5; color: #000; }
+        [data-bs-theme="dark"] .form-control, [data-bs-theme="dark"] .form-select { background-color: #343a40; color: #f8f9fa; }
+        .form-label { font-weight: bold; }
+        .btn { font-size: 0.85rem; }
+        .row .col { padding: 6px 12px; }
+        .accordion-button:not(.collapsed) { background-color: #e7f1ff; color: #0c63e4; }
+        [data-bs-theme="dark"] .accordion-button:not(.collapsed) { background-color: #1a3a5f; color: #6ea8fe; }
+        [data-bs-theme="dark"] .accordion-item { background-color: #2b3035; border-color: #495057; }
+        [data-bs-theme="dark"] .accordion-button { background-color: #212529; color: #f8f9fa; }
+        [data-bs-theme="dark"] .accordion-button::after { filter: invert(1); }
+    </style>
+</head>
+<body>
+<div id="app" class="container py-4"></div>
+
+<template id="original-content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>金流串接程式碼生成器</h2>
+        <button type="button" class="btn btn-primary btn-lg" @click="generateAll">產生程式碼 🚀</button>
+    </div>
+
+    <div class="accordion mb-4" id="configAccordion">
+        <!-- 1. 基本資訊 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">1. 基本資訊</button></h2>
+            <div id="collapse1" class="accordion-collapse collapse show"><div class="accordion-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">金流名稱 (英文)</label>
+                        <input class="form-control" v-model="gatewayName" placeholder="e.g. SmartPay" @input="updateDerived">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Catch ID</label>
+                        <input class="form-control" v-model="catchId">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Success Code (Pay)</label>
+                        <input class="form-control" v-model="successCode">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <label class="form-label">API 金額單位</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" v-model="amountUnit" value="DOLLAR">
+                                <label class="form-check-label">元 (Dollar)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" v-model="amountUnit" value="CENT">
+                                <label class="form-check-label">分 (Cent)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+
+        <!-- 2. URLs -->
+        <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">2. URLs 設定</button></h2>
+            <div id="collapse2" class="accordion-collapse collapse"><div class="accordion-body">
+                <div class="row mb-2" v-for="(label, key) in urlFields" :key="key">
+                    <div class="col-md-3"><label class="form-label">{{label}}</label></div>
+                    <div class="col-md-9"><input class="form-control" v-model="urls[key]"></div>
+                </div>
+            </div></div>
+        </div>
+
+        <!-- 3. 簽名 & Header -->
+        <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">3. 簽名 & Header</button></h2>
+            <div id="collapse3" class="accordion-collapse collapse"><div class="accordion-body">
+                <h5>簽名方式</h5>
+                <h5>簽名邏輯組合</h5>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label text-primary">1. 簽名前過濾</label>
+                        <select class="form-select" v-model="signFilter">
+                            <option value="REMOVE_EMPTY">移除空值</option>
+                            <option value="REMOVE_SIGN_EMPTY">移除 sign 與空值</option>
+                            <option value="NONE">不過濾</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-primary">2. 簽名字串拼接</label>
+                        <select class="form-select" v-model="signSort">
+                            <option value="SORT_K_V_AND">字典排序 (k=v&)</option>
+                            <option value="NO_SORT_K_V_AND">不排序 (k=v&)</option>
+                            <option value="SORT_KV">字典排序無符號 (kv)</option>
+                            <option value="NO_SORT_KV">不排序無符號 (kv)</option>
+                            <option value="JSON">JSON 字串</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-primary">3. 加簽演算法</label>
+                        <select class="form-select" v-model="signAlgo">
+                            <option value="MD5">MD5</option>
+                            <option value="SHA256">SHA-256</option>
+                            <option value="HMAC_SHA256">HMAC-SHA256</option>
+                            <option value="RSA">RSA</option>
+                            <option value="CUSTOM">完全自訂程式碼</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3" v-if="signAlgo === 'CUSTOM'">
+                    <textarea class="form-control" v-model="customSignCode" rows="6" placeholder="貼入 makeSign() 方法體..."></textarea>
+                </div>
+                <div class="mb-3" v-else>
+                    <label class="form-label">Sign Key 來源</label>
+                    <select class="form-select w-50" v-model="signKeySource">
+                        <option value="private">Private Key</option>
+                        <option value="merchant">Merchant Sign</option>
+                    </select>
+                </div>
+                
+                <h5 class="mt-4">Header 設定 <button class="btn btn-sm btn-outline-secondary" @click="headers.push({name: '', type: 'STATIC', extra: ''})">新增</button></h5>
+                <div class="row mb-2" v-for="(h, i) in headers" :key="i">
+                    <div class="col-3"><input class="form-control" v-model="h.name" placeholder="Header Name"></div>
+                    <div class="col-3">
+                        <select class="form-select" v-model="h.type">
+                            <option value="SIGN">簽名值</option>
+                            <option value="MCH_ID">第三方商戶號</option>
+                            <option value="TS_MS">時間戳(ms)</option>
+                            <option value="TS_S">時間戳(s)</option>
+                            <option value="PRIVATE_KEY">私鑰 (PrivateKey)</option>
+                            <option value="PUBLIC_KEY">公鑰 (PublicKey)</option>
+                            <option value="STATIC">固定字串</option>
+                            <option value="CUSTOM_PAY">自訂 Pay</option>
+                            <option value="CUSTOM_WD">自訂 Withdraw</option>
+                        </select>
+                    </div>
+                    <div class="col-5">
+                        <input class="form-control" v-if="['STATIC', 'CUSTOM_PAY', 'CUSTOM_WD'].includes(h.type)" v-model="h.extra" placeholder="自訂值/表達式">
+                    </div>
+                    <div class="col-1"><button class="btn btn-danger btn-sm" @click="headers.splice(i, 1)">刪</button></div>
+                </div>
+            </div></div>
+        </div>
+
+        <!-- 4. 收款 (Pay) 參數 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">4. 收款 (Pay) 參數</button></h2>
+            <div id="collapse4" class="accordion-collapse collapse"><div class="accordion-body">
+                <h5>請求方式設定</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Content Type</label>
+                        <select class="form-select" v-model="payReq.contentType">
+                            <option value="ContentType.JSON">JSON</option>
+                            <option value="ContentType.FORM_DATA">FORM DATA</option>
+                            <option value="ContentType.QUERY_PARAMS">QUERY PARAMS</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">HTTP Method</label>
+                        <select class="form-select" v-model="payReq.httpMethod">
+                            <option value="HttpMethod.POST">POST</option>
+                            <option value="HttpMethod.GET">GET</option>
+                            <option value="HttpMethod.PUT">PUT</option>
+                            <option value="HttpMethod.PATCH">PATCH</option>
+                            <option value="HttpMethod.DELETE">DELETE</option>
+                            <option value="HttpMethod.OPTIONS">OPTIONS</option>
+                            <option value="HttpMethod.HEAD">HEAD</option>
+                            <option value="HttpMethod.TRACE">TRACE</option>
+                        </select>
+                    </div>
+                </div>
+                <hr>
+                <param-table title="下單參數 (createOrderParams)"  :rows="payParams" @add="payParams.push({name:'', type:'MCH_ID', extra:''})" @remove="(i)=>payParams.splice(i, 1)"></param-table>
+                <hr>
+                <param-table title="查單參數 (refreshOrderParams)" :rows="payQueryParams" @add="payQueryParams.push({name:'', type:'MCH_ID', extra:''})" @remove="(i)=>payQueryParams.splice(i, 1)"></param-table>
+            </div></div>
+        </div>
+
+        <!-- 5. 收款回應設定 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5">5. 收款回應設定</button></h2>
+            <div id="collapse5" class="accordion-collapse collapse"><div class="accordion-body">
+                <div class="row mb-3">
+                    <div class="col-md-3"><label class="form-label">Pay URL 路徑</label><input class="form-control" v-model="payRes.payUrl"></div>
+                    <div class="col-md-3"><label class="form-label">channelOrderKey</label><input class="form-control" v-model="payRes.channelOrder"></div>
+                    <div class="col-md-3"><label class="form-label">orderStatusKey</label><input class="form-control" v-model="payRes.orderStatus"></div>
+                    <div class="col-md-3"><label class="form-label">confirmedAmount</label><input class="form-control" v-model="payRes.amount"></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Order Doing <button class="btn btn-sm btn-outline-secondary py-0" @click="payRes.doing.push({code:'', msg:''})">+</button></label>
+                        <div class="d-flex mb-1" v-for="(d, i) in payRes.doing" :key="i"><input class="form-control form-control-sm me-1" v-model="d.code"><input class="form-control form-control-sm me-1" v-model="d.msg"><button class="btn btn-sm btn-danger py-0" @click="payRes.doing.splice(i, 1)">-</button></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Order Fail <button class="btn btn-sm btn-outline-secondary py-0" @click="payRes.fail.push({code:'', msg:''})">+</button></label>
+                        <div class="d-flex mb-1" v-for="(f, i) in payRes.fail" :key="i"><input class="form-control form-control-sm me-1" v-model="f.code"><input class="form-control form-control-sm me-1" v-model="f.msg"><button class="btn btn-sm btn-danger py-0" @click="payRes.fail.splice(i, 1)">-</button></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Callback Keys (一行一個)</label>
+                        <textarea class="form-control form-control-sm" rows="3" v-model="payRes.callbackKeys"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4"><label class="form-label">Callback 訂單號 field</label><input class="form-control" v-model="payRes.cbOrder"></div>
+                    <div class="col-md-4"><label class="form-label">Callback 成功字串</label><input class="form-control" v-model="payRes.cbSuccess"></div>
+                    <div class="col-md-4"><label class="form-label">Callback 失敗字串</label><input class="form-control" v-model="payRes.cbFail"></div>
+                </div>
+            </div></div>
+        </div>
+
+        <!-- 6. 代付 (Withdraw) 參數 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6">6. 代付 (Withdraw) 參數</button></h2>
+            <div id="collapse6" class="accordion-collapse collapse"><div class="accordion-body">
+                <h5>請求方式設定</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Content Type</label>
+                        <select class="form-select" v-model="wdReq.contentType">
+                            <option value="ContentType.JSON">JSON (JsonDataUtil)</option>
+                            <option value="ContentType.FORM_DATA">FORM DATA (FormDataUtil)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">HTTP Method</label>
+                        <select class="form-select" v-model="wdReq.httpMethod">
+                            <option value="HttpMethod.POST">POST</option>
+                            <option value="HttpMethod.GET">GET</option>
+                        </select>
+                    </div>
+                </div>
+                <hr>
+                <param-table title="下單參數 (execute)"  :rows="wdParams" @add="wdParams.push({name:'', type:'MCH_ID', extra:''})" @remove="(i)=>wdParams.splice(i, 1)"></param-table>
+                <hr>
+                <param-table title="餘額參數 (getBalance)" :rows="wdBalanceParams" @add="wdBalanceParams.push({name:'', type:'MCH_ID', extra:''})" @remove="(i)=>wdBalanceParams.splice(i, 1)"></param-table>
+                <hr>
+                <param-table title="查單參數 (getOrder)" :rows="wdQueryParams" @add="wdQueryParams.push({name:'', type:'MCH_ID', extra:''})" @remove="(i)=>wdQueryParams.splice(i, 1)"></param-table>
+            </div></div>
+        </div>
+
+        <!-- 7. 代付回應設定 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7">7. 代付回應設定</button></h2>
+            <div id="collapse7" class="accordion-collapse collapse"><div class="accordion-body">
+                <h5>ResponseCode Enums <button class="btn btn-sm btn-outline-secondary" @click="wdRes.enums.push({name:'', code:'', desc:'', status:'STATUS_WITHDRAWING', isSuccess:false})">新增</button></h5>
+                <div class="row fw-bold mb-1">
+                    <div class="col-2">Enum名</div><div class="col-2">Third Code</div><div class="col-3">描述</div><div class="col-3">內部狀態</div><div class="col-1">Success?</div><div class="col-1"></div>
+                </div>
+                <div class="row mb-2" v-for="(e, i) in wdRes.enums" :key="i">
+                    <div class="col-2"><input class="form-control form-control-sm" v-model="e.name"></div>
+                    <div class="col-2"><input class="form-control form-control-sm" v-model="e.code"></div>
+                    <div class="col-3"><input class="form-control form-control-sm" v-model="e.desc"></div>
+                    <div class="col-3">
+                        <select class="form-select form-select-sm" v-model="e.status">
+                            <option value="WithdrawOrder.STATUS_WITHDRAWING">WITHDRAWING</option>
+                            <option value="WithdrawOrder.STATUS_WITHDRAWN">WITHDRAWN</option>
+                            <option value="WithdrawOrder.STATUS_FAILED_ON_WITHDRAWING">FAILED_ON_WITHDRAWING</option>
+                        </select>
+                    </div>
+                    <div class="col-1 text-center"><input type="radio" name="successEnum" :value="true" v-model="e.isSuccess" @change="setSuccessEnum(i)"></div>
+                    <div class="col-1"><button class="btn btn-danger btn-sm py-0" @click="wdRes.enums.splice(i, 1)">-</button></div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-4"><label class="form-label">Callback 訂單號 field</label><input class="form-control" v-model="wdRes.cbOrder"></div>
+                    <div class="col-md-4"><label class="form-label">Callback 成功字串</label><input class="form-control" v-model="wdRes.cbSuccess"></div>
+                    <div class="col-md-4"><label class="form-label">Callback 失敗字串</label><input class="form-control" v-model="wdRes.cbFail"></div>
+                </div>
+            </div></div>
+        </div>
+
+        <!-- 8. 測試設定 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8">8. 測試設定</button></h2>
+            <div id="collapse8" class="accordion-collapse collapse"><div class="accordion-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5>Channel Code Mapping <button class="btn btn-sm btn-outline-secondary" @click="testConfig.channels.push({internal:'', third:''})">+</button></h5>
+                        <div class="d-flex mb-1" v-for="(c, i) in testConfig.channels" :key="i">
+                            <input class="form-control form-control-sm me-1" placeholder="我方" v-model="c.internal">
+                            <input class="form-control form-control-sm me-1" placeholder="第三方" v-model="c.third">
+                            <button class="btn btn-danger btn-sm" @click="testConfig.channels.splice(i, 1)">-</button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="mt-3">
+                    <h5>支援幣種 (以逗號分隔)</h5>
+                    <input class="form-control" v-model="testConfig.currencies" placeholder="VND, THB, IDR...">
+                </div>
+            </div></div>
+        </div>
+    </div>
+
+    <!-- 輸出區域 -->
+    <ul class="nav nav-tabs" id="outputTabs" role="tablist">
+        <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#out1" type="button" role="tab">{{className}}Method.java</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#out2" type="button" role="tab">{{className}}WithdrawMethod.java</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#out3" type="button" role="tab">{{className}}MethodTest.java</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#out4" type="button" role="tab">{{className}}WithdrawMethodTest.java</button></li>
+    </ul>
+    <div class="tab-content mt-2">
+        <div class="tab-pane fade show active" id="out1" role="tabpanel">
+            <button class="btn btn-secondary btn-sm mb-2" @click="copy(outPay)">複製</button>
+            <textarea class="form-control text-monospace" rows="20" readonly v-model="outPay"></textarea>
+        </div>
+        <div class="tab-pane fade" id="out2" role="tabpanel">
+            <button class="btn btn-secondary btn-sm mb-2" @click="copy(outWd)">複製</button>
+            <textarea class="form-control text-monospace" rows="20" readonly v-model="outWd"></textarea>
+        </div>
+        <div class="tab-pane fade" id="out3" role="tabpanel">
+            <button class="btn btn-secondary btn-sm mb-2" @click="copy(outPayTest)">複製</button>
+            <textarea class="form-control text-monospace" rows="20" readonly v-model="outPayTest"></textarea>
+        </div>
+        <div class="tab-pane fade" id="out4" role="tabpanel">
+            <button class="btn btn-secondary btn-sm mb-2" @click="copy(outWdTest)">複製</button>
+            <textarea class="form-control text-monospace" rows="20" readonly v-model="outWdTest"></textarea>
+        </div>
+    </div>
+</template>
+
+<script>
+const paramTypeOptions = [
+    {v:'MCH_ID', l:'第三方商戶號'},
+    {v:'MY_MCH_ID', l:'我方商戶號'},
+    {v:'ORDER_ID', l:'訂單號'},
+    {v:'AMOUNT_BD', l:'金額 (BigDecimal)'},
+    {v:'AMOUNT_STR', l:'金額 (String)'},
+    {v:'CARD', l:'付款卡號'},
+    {v:'NAME', l:'真實姓名'},
+    {v:'EMAIL', l:'Email'},
+    {v:'PHONE', l:'手機號'},
+    {v:'BANK_CODE', l:'銀行代碼'},
+    {v:'NOTIFY_URL', l:'回調地址'},
+    {v:'STATIC', l:'固定字串'},
+    {v:'CUSTOM', l:'自訂表達式'}
+];
+
+const ParamTable = {
+    props: ['title', 'rows'],
+    template: `
+        <div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5>{{title}}</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary me-2" @click="showImport = !showImport">批量貼上 API 表格</button>
+                    <button class="btn btn-sm btn-outline-secondary" @click="$emit('add')">新增一行</button>
+                </div>
+            </div>
+            <div v-if="showImport" class="mb-3 p-3 bg-light border rounded">
+                <label class="form-label text-muted small">直接貼上 API 文件表格 (參數名需在第一欄)：</label>
+                <textarea class="form-control mb-2" rows="4" v-model="importText" placeholder="mchNum\tString\tY\t商户编号..."></textarea>
+                <button class="btn btn-sm btn-primary" @click="parseImport">解析並附加</button>
+                <button class="btn btn-sm btn-secondary ms-2" @click="showImport = false">取消</button>
+            </div>
+            <div class="row mb-1 fw-bold">
+                <div class="col-3">參數名</div><div class="col-4">值類型</div><div class="col-4">自訂值</div><div class="col-1"></div>
+            </div>
+            <div class="row mb-2" v-for="(r, i) in rows" :key="i">
+                <div class="col-3"><input class="form-control form-control-sm" v-model="r.name"></div>
+                <div class="col-4">
+                    <select class="form-select form-select-sm" v-model="r.type">
+                        <option v-for="o in opts" :value="o.v">{{o.l}}</option>
+                    </select>
+                </div>
+                <div class="col-4">
+                    <input class="form-control form-control-sm" v-if="['STATIC', 'CUSTOM', 'BANK_CODE'].includes(r.type)" v-model="r.extra" placeholder="依類型輸入">
+                </div>
+                <div class="col-1"><button class="btn btn-danger btn-sm py-0" @click="$emit('remove', i)">-</button></div>
+            </div>
+        </div>
+    `,
+    data() { return { opts: paramTypeOptions, showImport: false, importText: '' }; },
+    methods: {
+        genWithdrawRequest(urlVar, mapsVar, context) {
+            let hasHeader = !!this.genHeaders(context);
+            let className = this.wdReq.contentType === 'ContentType.JSON' ? 'JsonDataUtil' : 'FormDataUtil';
+            let method = this.wdReq.httpMethod === 'HttpMethod.POST' ? 'post' : 'get';
+            
+            if (className === 'JsonDataUtil') {
+                if (method === 'post') {
+                    if (hasHeader) return `Map<String, Object> responseMap = JsonDataUtil.post(${urlVar}, ${mapsVar}, Map.class, Header, 200);`;
+                    else return `Map<String, Object> responseMap = JsonDataUtil.post(${urlVar}, ${mapsVar}, Map.class, 200);`;
+                } else {
+                    if (hasHeader) return `Map<String, Object> responseMap = JsonDataUtil.get(${urlVar}, ${mapsVar}, Header, Map.class);`;
+                    else return `Map<String, Object> responseMap = JsonDataUtil.get(${urlVar}, ${mapsVar}, Map.class);`;
+                }
+            } else {
+                if (method === 'post') {
+                    if (hasHeader) return `Map<String, Object> responseMap = FormDataUtil.post(${urlVar}, ${mapsVar}, Map.class, Header);`;
+                    else return `Map<String, Object> responseMap = FormDataUtil.post(${urlVar}, ${mapsVar}, Map.class);`;
+                } else {
+                    if (hasHeader) return `Map<String, Object> responseMap = FormDataUtil.get(${urlVar}, ${mapsVar}, Header, Map.class);`;
+                    else return `Map<String, Object> responseMap = FormDataUtil.get(${urlVar}, ${mapsVar}, Map.class);`;
+                }
+            }
+        },
+        parseImport() {
+            if (!this.importText) return;
+            const lines = this.importText.split('\n');
+            lines.forEach(line => {
+                const parts = line.split(/\t|\s{2,}/);
+                if (parts.length > 0 && parts[0].trim() !== '') {
+                    let pName = parts[0].trim();
+                    // Skip header row if it looks like a header
+                    if (pName.toLowerCase() === '參數名' || pName.toLowerCase() === '字段名' || pName.toLowerCase() === '参数名' || pName.toLowerCase() === 'field') return;
+                    
+                    let lower = pName.toLowerCase();
+                    let desc = parts.join(' ').toLowerCase();
+                    let pType = 'CUSTOM';
+                    let pExtra = '';
+                    
+                    if (lower === 'mchname' || lower === 'merchantname' || desc.includes('商户名称')) pType = 'MY_MCH_ID';
+                    else if (lower.includes('mchnum') || lower.includes('merchantid') || lower.includes('mchno') || desc.includes('商户号') || desc.includes('商户编号')) pType = 'MCH_ID';
+                    else if (lower.includes('amount') || lower.includes('money') || desc.includes('金额')) pType = 'AMOUNT_BD';
+                    else if (lower.includes('card') || lower.includes('accno') || desc.includes('卡号') || desc.includes('账号')) pType = 'CARD';
+                    else if (lower.includes('bank') || desc.includes('银行')) pType = 'BANK_CODE';
+                    else if (lower.includes('mobile') || lower.includes('phone') || desc.includes('手机')) pType = 'PHONE';
+                    else if (lower.includes('name') || desc.includes('姓名')) pType = 'NAME';
+                    else if (lower.includes('mail') || desc.includes('邮箱')) pType = 'EMAIL';
+                    else if (lower.includes('notify') || lower.includes('url') || desc.includes('回调')) pType = 'NOTIFY_URL';
+                    else if (lower.includes('order') || desc.includes('订单')) pType = 'ORDER_ID';
+                    else if (lower.includes('type') || desc.includes('类型')) { pType = 'STATIC'; pExtra = ''; }
+                    
+                    this.rows.push({ name: pName, type: pType, extra: pExtra });
+                }
+            });
+            this.importText = '';
+            this.showImport = false;
+        }
+    }
+};
+const { createApp } = Vue;
+createApp({
+    components: { 'param-table': ParamTable },
+    data() {
+        return {
+            gatewayName: 'SmartPay', catchId: 'SMARTPAY', successCode: '200', amountUnit: 'DOLLAR', payReq: { contentType: 'ContentType.JSON', httpMethod: 'HttpMethod.POST' }, wdReq: { contentType: 'ContentType.JSON', httpMethod: 'HttpMethod.POST' },
+            urlFields: { payOrderUrl: '收款下單', payQueryUrl: '收款查單', withdrawOrderUrl: '代付下單', withdrawQueryUrl: '代付查單', balanceUrl: '餘額查詢' },
+            urls: { payOrderUrl: '', payQueryUrl: '', withdrawOrderUrl: '', withdrawQueryUrl: '', balanceUrl: '' },
+            signFilter: 'REMOVE_EMPTY', signSort: 'SORT_K_V_AND', signAlgo: 'MD5', signKeySource: 'private', customSignCode: '',
+            headers: [{name: 'x-signature', type: 'SIGN', extra: ''}, {name: 'x-mchNum', type: 'MCH_ID', extra: ''}],
+            payParams: [{name: 'mchNum', type: 'MCH_ID'}, {name: 'mchName', type: 'MY_MCH_ID'}, {name: 'mchOrderNo', type: 'ORDER_ID'}, {name: 'payMoney', type: 'AMOUNT_BD'}, {name: 'transAccNo', type: 'CARD'}, {name: 'paymentName', type: 'NAME'}, {name: 'email', type: 'EMAIL'}, {name: 'bankCode', type: 'BANK_CODE'}, {name: 'paymentMobile', type: 'PHONE'}, {name: 'notifyUrl', type: 'NOTIFY_URL'}],
+            payQueryParams: [{name: 'mchNum', type: 'MCH_ID'}, {name: 'mchOrderNo', type: 'ORDER_ID'}, {name: 'queryType', type: 'STATIC', extra: 'collect'}],
+            payRes: { payUrl: 'data.paymentLink', channelOrder: 'data.platformOrderNo', orderStatus: 'data.orderStatus', amount: 'data.actualPayAmount', doing: [{code:'await', msg:'订单待支付'}], fail: [{code:'fail', msg:'支付失败'}, {code:'awaitfail', msg:'支付超时'}], callbackKeys: 'platformOrderNo\nmchOrderNo\nmchNum\nmchName\nrequestAmount\nactualPayAmount\nmchFeeAmount\norderStatus\nerrorMessage', cbOrder: 'mchOrderNo', cbSuccess: 'success', cbFail: 'FAIL' },
+            wdParams: [{name: 'mchNum', type: 'MCH_ID'}, {name: 'mchName', type: 'MY_MCH_ID'}, {name: 'payMoney', type: 'AMOUNT_BD'}, {name: 'transAccNo', type: 'CARD'}, {name: 'paymentName', type: 'NAME'}, {name: 'bankCode', type: 'BANK_CODE'}, {name: 'paymentMobile', type: 'PHONE'}, {name: 'description', type: 'CUSTOM', extra: 'withdrawOrder.getRemark()== null ? "remark" : withdrawOrder.getRemark()'}, {name: 'email', type: 'EMAIL'}, {name: 'mchOrderNo', type: 'ORDER_ID'}, {name: 'notifyUrl', type: 'NOTIFY_URL'}],
+            wdBalanceParams: [{name: 'mchNum', type: 'MCH_ID'}, {name: 'currency', type: 'CUSTOM', extra: 'withdrawChannel.getCurrency().toUpperCase()'}],
+            wdQueryParams: [{name: 'mchNum', type: 'MCH_ID'}, {name: 'mchOrderNo', type: 'ORDER_ID'}, {name: 'queryType', type: 'STATIC', extra: 'pay'}],
+            wdRes: { enums: [
+                {name: 'PENDING', code: 'await', desc: '订单待支付', status: 'WithdrawOrder.STATUS_WITHDRAWING', isSuccess: false},
+                {name: 'SUCCESS', code: 'success', desc: '支付成功', status: 'WithdrawOrder.STATUS_WITHDRAWN', isSuccess: true},
+                {name: 'FAILED', code: 'fail', desc: '支付失败', status: 'WithdrawOrder.STATUS_FAILED_ON_WITHDRAWING', isSuccess: false},
+                {name: 'RETURNED', code: 'awaitfail', desc: '支付超时', status: 'WithdrawOrder.STATUS_FAILED_ON_WITHDRAWING', isSuccess: false}
+            ], cbOrder: 'mchOrderNo', cbSuccess: 'success', cbFail: 'fail' },
+            testConfig: { channels: [], banks: [], currencies: 'IDR' },
+            outPay: '', outWd: '', outPayTest: '', outWdTest: ''
+        };
+    },
+    computed: {
+        className() { return this.gatewayName ? this.gatewayName.charAt(0).toUpperCase() + this.gatewayName.slice(1) : 'Gateway'; },
+        pkgName() { return this.gatewayName.toLowerCase() + "pay"; }
+    },
+    methods: {
+        genWithdrawRequest(urlVar, mapsVar, context) {
+            let hasHeader = !!this.genHeaders(context);
+            let className = this.wdReq.contentType === 'ContentType.JSON' ? 'JsonDataUtil' : 'FormDataUtil';
+            let method = this.wdReq.httpMethod === 'HttpMethod.POST' ? 'post' : 'get';
+            
+            if (className === 'JsonDataUtil') {
+                if (method === 'post') {
+                    if (hasHeader) return `Map<String, Object> responseMap = JsonDataUtil.post(${urlVar}, ${mapsVar}, Map.class, Header, 200);`;
+                    else return `Map<String, Object> responseMap = JsonDataUtil.post(${urlVar}, ${mapsVar}, Map.class, 200);`;
+                } else {
+                    if (hasHeader) return `Map<String, Object> responseMap = JsonDataUtil.get(${urlVar}, ${mapsVar}, Header, Map.class);`;
+                    else return `Map<String, Object> responseMap = JsonDataUtil.get(${urlVar}, ${mapsVar}, Map.class);`;
+                }
+            } else {
+                if (method === 'post') {
+                    if (hasHeader) return `Map<String, Object> responseMap = FormDataUtil.post(${urlVar}, ${mapsVar}, Map.class, Header);`;
+                    else return `Map<String, Object> responseMap = FormDataUtil.post(${urlVar}, ${mapsVar}, Map.class);`;
+                } else {
+                    if (hasHeader) return `Map<String, Object> responseMap = FormDataUtil.get(${urlVar}, ${mapsVar}, Header, Map.class);`;
+                    else return `Map<String, Object> responseMap = FormDataUtil.get(${urlVar}, ${mapsVar}, Map.class);`;
+                }
+            }
+        },
+        updateDerived() { this.catchId = this.gatewayName.toUpperCase(); },
+        setSuccessEnum(idx) { this.wdRes.enums.forEach((e, i) => { if (i !== idx) e.isSuccess = false; }); },
+        copy(text) { navigator.clipboard.writeText(text); alert('Copied!'); },
+        generateAll() {
+            this.outPay = this.genPayMethod();
+            this.outWd = this.genWithdrawMethod();
+            this.outPayTest = this.genPayTest();
+            this.outWdTest = this.genWithdrawTest();
+        },
+        getParamExpr(p, context) {
+            let pre = context === 'PAY' ? 'dto.getPayOrder().' : 'withdrawOrder.';
+            let mchId = context === 'PAY' ? 'dto.getThirdMerchantId()' : 'withdrawChannel.getChannelMerchantId()';
+            let oid = context === 'PAY' ? 'dto.getOrderId()' : 'withdrawOrder.getWithdrawOrderId()';
+            let qoid = context === 'PAY' ? 'dto.getPayOrder().getPayOrderId()' : 'withdrawOrder.getWithdrawOrderId()';
+            if(context === 'PAY_QUERY') oid = qoid;
+            if(context === 'WD_QUERY') oid = qoid;
+            switch(p.type) {
+                case 'MCH_ID': return mchId;
+                case 'MY_MCH_ID': return context === 'PAY' ? 'dto.getPayOrder().getMerchantId()' : 'withdrawOrder.getAccountId()';
+                case 'ORDER_ID': return oid;
+                case 'AMOUNT_BD': return 'payMoneyNum';
+                case 'AMOUNT_STR': return 'amountStr';
+                case 'CARD': return context === 'PAY' ? `StringUtils.defaultIfEmpty(${pre}getOtherParamsMap().get("transAccNo"), ${pre}getPayAccountNum() != null ? ${pre}getPayAccountNum() : null)` : `${pre}getPayeeCardNo()`;
+                case 'NAME': return context === 'PAY' ? `StringUtils.defaultIfEmpty(${pre}getOtherParamsMap().get("paymentName"), ${pre}getRealName() != null ? ${pre}getRealName() : CryptTool.generateRandomFullName())` : `${pre}getPayeeCardName()`;
+                case 'EMAIL': return context === 'PAY' ? `StringUtils.defaultIfEmpty(${pre}getOtherParamsMap().get("email"), ${pre}getEmail() != null ? ${pre}getEmail() : CryptTool.getRandom(10) + "@gmail.com")` : `(${pre}getEmail() == null ? CryptTool.getRandom(10)+ "@gmail.com" : ${pre}getEmail())`;
+                case 'PHONE': return context === 'PAY' ? `StringUtils.defaultIfEmpty(${pre}getOtherParamsMap().get("paymentMobile"), ${pre}getPhoneNum() != null ? ${pre}getPhoneNum() : CryptTool.getNum(12))` : `(${pre}getPhoneNumber() == null ? "0" + CryptTool.getNum(withdrawChannel.getCurrency()) : ${pre}getPhoneNumber())`;
+                case 'BANK_CODE': return context === 'PAY' ? `${pre}getOtherParamsMap().get("${p.extra || 'bankCode'}") != null ? ${pre}getOtherParamsMap().get("${p.extra || 'bankCode'}") : null` : `withdrawChannel.getThirdBankCode()`;
+                case 'NOTIFY_URL': return context === 'PAY' ? 'dto.getNotifyUrl()' : 'NotifyUrl';
+                case 'STATIC': return `"${p.extra}"`;
+                case 'CUSTOM': return p.extra;
+                default: return '""';
+            }
+        },
+        genParamsMap(rows, context) {
+            if(!rows || rows.length === 0) return '';
+            return rows.map(r => `        maps.put("${r.name}", ${this.getParamExpr(r, context)});`).join('\n');
+        },
+        genHeaders(context) {
+            if(!this.headers || this.headers.length === 0) return '';
+            return this.headers.map(h => {
+                let v = '""';
+                let mchId = context.startsWith('PAY') ? 'dto.getThirdMerchantId()' : 'withdrawChannel.getChannelMerchantId()';
+                if(h.type === 'SIGN') {
+                    let key = this.signKeySource === 'private' ? (context.startsWith('PAY') ? 'dto.getPrivateKey()' : 'withdrawChannel.getPrivateKey()') : (context.startsWith('PAY') ? 'dto.getMerchantSign()' : 'withdrawChannel.getMerchantSign()');
+                    v = `makeSign(maps, ${key})`;
+                } else if(h.type === 'MCH_ID') v = mchId;
+                else if(h.type === 'TS_MS') v = 'String.valueOf(System.currentTimeMillis())';
+                else if(h.type === 'TS_S') v = 'String.valueOf(System.currentTimeMillis() / 1000)';
+                else if(h.type === 'PRIVATE_KEY') v = context.startsWith('PAY') ? 'dto.getPrivateKey()' : 'withdrawChannel.getPrivateKey()';
+                else if(h.type === 'PUBLIC_KEY') v = context.startsWith('PAY') ? 'dto.getPublicKey()' : 'withdrawChannel.getPublicKey()';
+                else if(h.type === 'STATIC') v = `"${h.extra}"`;
+                else if(h.type === 'CUSTOM_PAY' && context.startsWith('PAY')) v = h.extra;
+                else if(h.type === 'CUSTOM_WD' && context.startsWith('WD')) v = h.extra;
+                return `                new BasicHeader("${h.name}", ${v})`;
+            }).filter(x => !x.includes('""') || x.includes('""')).join(',\n');
+        },
+        genSignMethod() {
+            if (this.signAlgo === 'CUSTOM') return this.customSignCode;
+            
+            let filterCode = "";
+            if (this.signFilter === 'REMOVE_EMPTY') {
+                filterCode = `        // 1. 移除value為空的key
+        java.util.Iterator<Map.Entry<String, Object>> iterator = params.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Object> entry = iterator.next();
+            Object value = entry.getValue();
+            if (value == null || value.toString().isEmpty()) {
+                iterator.remove();
+            }
+        }`;
+            } else if (this.signFilter === 'REMOVE_SIGN_EMPTY') {
+                filterCode = `        // 1. 除了sign以外不为空的参数都需要参与签名
+        params.remove("sign");
+        params = params.entrySet().stream()
+                .filter(o -> o.getValue() != null && !"".equals(String.valueOf(o.getValue())))
+                .collect(java.util.stream.Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));`;
+            }
+
+            let appendKey = (this.signAlgo === 'HMAC_SHA256' || this.signAlgo === 'RSA') ? 'null' : '"&key=" + key';
+            let sortCode = "";
+            if (this.signSort === 'SORT_K_V_AND') {
+                sortCode = `        // 2. 字典排序並拼接
+        String signStr = SignUtil.makeSortSign(params, "=", "&", ${appendKey});`;
+            } else if (this.signSort === 'NO_SORT_K_V_AND') {
+                sortCode = `        // 2. 拼接字串 (不排序)
+        String signStr = SignUtil.makeSign(params, "=", "&", ${appendKey});`;
+            } else if (this.signSort === 'SORT_KV') {
+                sortCode = `        // 2. 字典排序並拼接(無符號)
+        String signStr = SignUtil.makeSortNoSymbolSign(params, ${appendKey});`;
+            } else if (this.signSort === 'NO_SORT_KV') {
+                sortCode = `        // 2. 拼接字串(無符號，不排序)
+        String signStr = SignUtil.makeNoSymbolSign(params, ${appendKey});`;
+            } else if (this.signSort === 'JSON') {
+                sortCode = `        // 2. 轉換為 JSON
+        String signStr = "";
+        try {
+            signStr = ObjectMapper.writeValueAsString(params);
+        } catch (Exception e) {
+            throw new RuntimeException("JSON轉換失敗", e);
+        }`;
+            }
+
+            let algoCode = "";
+            if (this.signAlgo === 'MD5') {
+                algoCode = `        // 3. 進行 MD5 加簽
+        String sign = DigestUtil.md5Hex(signStr).toUpperCase();`;
+            } else if (this.signAlgo === 'SHA256') {
+                algoCode = `        // 3. 進行 SHA-256 加簽
+        String sign = DigestUtil.sha256Hex(signStr).toUpperCase();`;
+            } else if (this.signAlgo === 'HMAC_SHA256') {
+                algoCode = `        // 3. 進行 HMAC-SHA256 加簽
+        String sign = DigestUtil.hmacSha256Hex(signStr, key).toUpperCase();`;
+            } else if (this.signAlgo === 'RSA') {
+                algoCode = `        // 3. 進行 RSA 加簽
+        String sign = "";
+        try {
+            sign = RSAUtil.sign(signStr, key);
+        } catch (Exception e) {
+            throw new RuntimeException("RSA簽名失敗", e);
+        }`;
+            }
+
+            return `    private String makeSign(Map<String, Object> params, String key) {
+${filterCode}
+
+${sortCode}
+
+${algoCode}
+        log.debug("{} make sign, signStr={}, sign={}", LOG_PREFIX, signStr, sign);
+        return sign;
+    }`;
+        },
+        needsPreamble(rows) {
+            return rows && rows.some(r => r.type === 'AMOUNT_BD' || r.type === 'AMOUNT_STR');
+        },
+        getPreamble(context) {
+            let pre = context.startsWith('PAY') ? 'dto.getAmount()' : 'withdrawOrder.getAmount()';
+            if (this.amountUnit === 'CENT') {
+                return `        String amountStr = ${pre}.toString();
+        BigDecimal payMoneyNum = new BigDecimal(amountStr);`;
+            }
+            return `        String amountStr = AmountUtil.toDollarStringNoDot(${pre});
+        BigDecimal payMoneyNum = new BigDecimal(amountStr);`;
+        },
+        genPayMethod() {
+            let cbKeys = this.payRes.callbackKeys ? this.payRes.callbackKeys.split('\n').filter(k=>k.trim()).map(k=>`        checkExistKeySet.add("${k.trim()}");`).join('\n') : '';
+            let doingStr = this.payRes.doing.map(d => `@QueryStatus(code = "${d.code}", msg = "${d.msg}")`).join(', ');
+            let failStr = this.payRes.fail.map(f => `@QueryStatus(code = "${f.code}", msg = "${f.msg}")`).join(', ');
+
+            return `package org.xxpay.trader.service.vendor.${this.pkgName};
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.xxpay.common.exception.TraderResponseCode;
+import org.xxpay.common.exception.XxPayTraderException;
+import org.xxpay.common.internaldto.PullPayOrderResponse;
+import org.xxpay.common.util.AmountUtil;
+import org.xxpay.common.util.CryptTool;
+import org.xxpay.common.util.RSAUtil;
+import org.xxpay.dal.dao.mapper.GlobalParamMapper;
+import org.xxpay.dal.dao.mapper.PayOrderMapper;
+import org.xxpay.dal.dao.model.GlobalParam;
+import org.xxpay.dal.dao.model.PayOrder;
+import org.xxpay.trader.service.vendor.template.AbstractPayVendorMethod;
+import org.xxpay.trader.service.vendor.template.annotation.CreateReponse;
+import org.xxpay.trader.service.vendor.template.annotation.QueryReponse;
+import org.xxpay.trader.service.vendor.template.annotation.QueryStatus;
+import org.xxpay.trader.service.vendor.template.dto.*;
+import org.xxpay.trader.service.vendor.template.enums.ContentType;
+import org.xxpay.trader.service.vendor.template.enums.UrlMode;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+/**
+ * 金流商名稱 ${this.gatewayName}支付
+ */
+@Slf4j
+@Component
+public class ${this.className}Method extends AbstractPayVendorMethod {
+    private static final String LOG_PREFIX = "${this.gatewayName}支付";
+    private static final String RESPONSE_SUCCESS = "${this.successCode}";
+    private final String RESPONSE_CODE_KEY = "code";
+    private final String RESPONSE_MSG_KEY = "msg";
+
+    @Resource
+    private PayOrderMapper payOrderMapper;
+
+    @Resource
+    private GlobalParamMapper globalParamMapper;
+
+    @Resource
+    private ObjectMapper ObjectMapper;
+
+    public String vendorCatchId() {
+        return "${this.catchId}";
+    }
+
+    @Override
+    protected Map<String, Object> createOrderParams(PayDataDTO dto, String thirdChannelCode) throws XxPayTraderException, IOException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException {
+        dto.setRequestType(${this.payReq.contentType}, ${this.payReq.httpMethod});
+
+${this.needsPreamble(this.payParams) ? this.getPreamble('PAY') : ''}
+        Map<String, Object> maps = new TreeMap<>();
+${this.genParamsMap(this.payParams, 'PAY')}
+
+${this.genHeaders('PAY') ? `        Header[] header = new Header[]{
+${this.genHeaders('PAY')}
+        };
+        dto.getRequestType().setHeaders(header);
+        log.info("{} Header : {}", LOG_PREFIX, header);` : ''}
+
+        return maps;
+    }
+
+    @Override
+    @CreateReponse(mode = UrlMode.NO_SUBMIT)
+    protected String getPayUrl(PayResponseDTO resDto, PayDataDTO dto) throws XxPayTraderException {
+        try {
+            GlobalParam globalParam = GlobalParam.builder().key("BOOT_SERVER").build();
+            String domain = globalParamMapper.findOne(globalParam).getValue();
+            payOrderMapper.updateExecuteStatus(dto.getOrderId(), PayOrder.EXECUTE_STATUS_NOT_PROCESSED);
+            return domain + "/otherParam.htm?c=" + dto.getOrderId();
+        } catch (Exception e) {
+            log.error("{} unexpected error: {}", LOG_PREFIX, e);
+            throw new XxPayTraderException(TraderResponseCode.PAY_FAILED);
+        }
+    }
+
+    @Override
+    @CreateReponse(mode = UrlMode.URL, codeKeyName = RESPONSE_CODE_KEY, msgKeyName = RESPONSE_MSG_KEY, successCode = RESPONSE_SUCCESS,
+            payUrlParamPath = "${this.payRes.payUrl}")
+    public String getNoSubmitPayUrl(PayResponseDTO resDto, PayDataDTO dto) throws XxPayTraderException {
+        return super.getNoSubmitPayUrl(resDto, dto);
+    }
+
+    @Override
+    protected Map<String, Object> refreshOrderParams(PayQueryDataDTO dto) throws XxPayTraderException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, MalformedURLException {
+        dto.setRequestType(${this.payReq.contentType}, ${this.payReq.httpMethod});
+
+        Map<String, Object> maps = new TreeMap<>();
+${this.genParamsMap(this.payQueryParams, 'PAY_QUERY')}
+
+${this.genHeaders('PAY_QUERY') ? `        Header[] header = new Header[]{
+${this.genHeaders('PAY_QUERY')}
+        };
+        dto.getRequestType().setHeaders(header);
+        log.info("{} Header : {}", LOG_PREFIX, header);` : ''}
+        return maps;
+    }
+
+    @Override
+    @QueryReponse(codeKeyName = RESPONSE_CODE_KEY, msgKeyName = RESPONSE_MSG_KEY, channelOrderKey = "${this.payRes.channelOrder}", orderStatusKey = "${this.payRes.orderStatus}", querySuccess = RESPONSE_SUCCESS,
+            orderSuccess = "success", orderDoing = {${doingStr}},
+            orderFail = {${failStr}}, confirmedActualAmount = "${this.payRes.amount}")
+    protected PullPayOrderResponse refreshOrderResult(PayResponseDTO resDto, PayQueryDataDTO dto) throws XxPayTraderException {
+        return null;
+    }
+
+    @Override
+    public CallbackResponseDTO callback(CallbackRequestDTO<?> dto) throws XxPayTraderException {
+        Set<String> checkExistKeySet = new HashSet<>();
+${cbKeys}
+        return CallbackResponseDTO.builder().checkKeySet(checkExistKeySet).build();
+    }
+
+${this.genSignMethod()}
+
+    @Override
+    public String getCallbackOrderNo(Map dataMap, HttpServletRequest request) {
+        return String.valueOf(dataMap.get("${this.payRes.cbOrder}"));
+    }
+
+    @Override
+    public ResponseEntity<String> getCallbackResponse(boolean isSuccess, Map formData) {
+        return isSuccess ? ResponseEntity.ok("${this.payRes.cbSuccess}") : ResponseEntity.ok("${this.payRes.cbFail}");
+    }
+
+    @Override
+    public BigDecimal getConfirmedAmount(String confirmedActualAmountString) {
+        if ("null".equals(confirmedActualAmountString) || confirmedActualAmountString == null)
+            return BigDecimal.ZERO;
+        BigDecimal result = new BigDecimal(confirmedActualAmountString);
+        ${this.amountUnit === 'DOLLAR' ? 'result = AmountUtil.toCent(result);' : '// API responds in cents, no conversion needed'}
+        return result;
+    }
+}
+`;
+        },
+        genWithdrawMethod() {
+            let enumsCode = this.wdRes.enums.map(e => `        ${e.name}("${e.code}", "${e.desc}", ${e.status})`).join(',\n');
+            let successEnumName = this.wdRes.enums.find(e => e.isSuccess)?.name || 'SUCCESS';
+            
+            return `package org.xxpay.common.withdraw.${this.pkgName};
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.xxpay.common.HttpLogService;
+import org.xxpay.common.enums.HttpRequestEnum;
+import org.xxpay.common.enums.OrderAction;
+import org.xxpay.common.enums.OrderType;
+import org.xxpay.common.exception.TraderResponseCode;
+import org.xxpay.common.exception.XxThirdPayTraderException;
+import org.xxpay.common.util.*;
+import org.xxpay.common.withdraw.WithdrawMethod;
+import org.xxpay.common.withdraw.WithdrawMethodResponse;
+import org.xxpay.common.withdraw.WithdrawNotifyResponse;
+import org.xxpay.dal.dao.mapper.WithdrawVendorMapper;
+import org.xxpay.dal.dao.model.WithdrawChannel;
+import org.xxpay.dal.dao.model.WithdrawOrder;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.stream.Stream;
+
+/**
+ * 金流商名稱 ${this.gatewayName}代付
+ */
+@Component
+@Slf4j
+public class ${this.className}WithdrawMethod implements WithdrawMethod {
+    private static final String LOG_PREFIX = "${this.gatewayName}代付";
+    private static final String RESPONSE_SUCCESS = "${this.successCode}";
+    private final String RESPONSE_CODE_KEY = "code";
+    private final String RESPONSE_MSG_KEY = "msg";
+
+    @Resource
+    private WithdrawVendorMapper withdrawVendorMapper;
+    @Resource
+    private HttpLogService httpLogService;
+    @Resource
+    private ObjectMapper ObjectMapper;
+
+    @Override
+    public boolean canSupport(String catchId) {
+        return "${this.catchId}".equals(catchId);
+    }
+
+    @Override
+    public boolean canDoQueryBalance() {
+        return true;
+    }
+
+    @Override
+    public BigDecimal getBalance(WithdrawChannel withdrawChannel) throws Exception {
+        Map<String, Object> maps = new TreeMap<>();
+${this.genParamsMap(this.wdBalanceParams, 'WD_BAL')}
+
+${this.genHeaders('WD_BAL') ? `        Header[] Header = new Header[]{
+${this.genHeaders('WD_BAL')}
+        };
+        log.info("{} Header : {}", LOG_PREFIX, Header);` : ''}
+
+        String balanceQueryUrl = withdrawChannel.getBalanceQueryUrl();
+        log.info("{}餘額查詢url:{} , request:{}", LOG_PREFIX, balanceQueryUrl, maps);
+        ${this.genWithdrawRequest('balanceQueryUrl', 'maps', 'WD_BAL')}
+        log.info("{}餘額查詢response: {}", LOG_PREFIX, responseMap);
+
+        String statusCode = String.valueOf(responseMap.get(RESPONSE_CODE_KEY));
+        if (!RESPONSE_SUCCESS.equals(statusCode)) {
+            String message = String.valueOf(responseMap.get(RESPONSE_MSG_KEY));
+            log.info("{}餘額查詢失敗 response code={} message={}", LOG_PREFIX, statusCode, message);
+            throw new XxThirdPayTraderException(TraderResponseCode.WITHDRAW_METHOD_RESPONSE_FAIL, Objects.toString(responseMap));
+        }
+
+        Map<String, Object> data = (Map<String, Object>) responseMap.get("data");
+        return AmountUtil.toCent(ConverterUtils.getAsBigDecimal(data.get("balance"), BigDecimal.ZERO));
+    }
+
+    @Override
+    public WithdrawMethodResponse execute(WithdrawChannel withdrawChannel, WithdrawOrder withdrawOrder) throws Exception {
+        String NotifyUrl = withdrawVendorMapper.findOneByCatchId(withdrawChannel.getCatchId()).getOurNotifyUrl();
+${this.needsPreamble(this.wdParams) ? this.getPreamble('WD') : ''}
+
+        Map<String, Object> maps = new TreeMap<>();
+${this.genParamsMap(this.wdParams, 'WD')}
+
+${this.genHeaders('WD') ? `        Header[] Header = new Header[]{
+${this.genHeaders('WD')}
+        };
+        log.info("{} Header : {}", LOG_PREFIX, Header);` : ''}
+
+        String executeUrl = withdrawChannel.getOrderOriginationUrl();
+        log.info("{}下單請求={}", LOG_PREFIX, maps);
+        httpLogService.addRequestLog(OrderAction.SUBMIT, OrderType.WITHDRAW, withdrawOrder.getWithdrawOrderId(), maps, withdrawChannel.getAccountId());
+        ${this.genWithdrawRequest('executeUrl', 'maps', 'WD')}
+        httpLogService.addResponseLog(OrderAction.SUBMIT, OrderType.WITHDRAW, withdrawOrder.getWithdrawOrderId(), responseMap);
+        log.info("{}下單請求結果={}", LOG_PREFIX, responseMap);
+
+        String statusCode = String.valueOf(responseMap.get(RESPONSE_CODE_KEY));
+        if (!RESPONSE_SUCCESS.equals(statusCode)) {
+            String message = String.valueOf(responseMap.get(RESPONSE_MSG_KEY));
+            log.info("{}下單失敗 response code={} message={}", LOG_PREFIX, statusCode, message);
+            throw new XxThirdPayTraderException(TraderResponseCode.WITHDRAW_METHOD_RESPONSE_FAIL, Objects.toString(responseMap));
+        }
+
+        return WithdrawMethodResponse.builder()
+                .returnCode(TraderResponseCode.SUCCESS.getCode())
+                .returnMessage("Successfully created")
+                .build();
+    }
+
+    @Override
+    public WithdrawMethodResponse getOrder(WithdrawOrder withdrawOrder, WithdrawChannel withdrawChannel, HttpRequestEnum enums) throws Exception {
+        Map<String, Object> maps = new TreeMap<>();
+${this.genParamsMap(this.wdQueryParams, 'WD_QUERY')}
+
+${this.genHeaders('WD_QUERY') ? `        Header[] Header = new Header[]{
+${this.genHeaders('WD_QUERY')}
+        };
+        log.info("{} Header : {}", LOG_PREFIX, Header);` : ''}
+
+        String requestUrl = withdrawChannel.getOrderQueryUrl();
+        log.info("{}查询订单={}", LOG_PREFIX, maps);
+        httpLogService.addRequestLog(OrderAction.QUERY, OrderType.WITHDRAW, withdrawOrder.getWithdrawOrderId(), maps, withdrawChannel.getAccountId());
+        ${this.genWithdrawRequest('requestUrl', 'maps', 'WD_QUERY')}
+        httpLogService.addResponseLog(OrderAction.QUERY, OrderType.WITHDRAW, withdrawOrder.getWithdrawOrderId(), responseMap);
+        log.info("{}查询订单结果={}", LOG_PREFIX, responseMap);
+
+        String statusCode = String.valueOf(responseMap.get(RESPONSE_CODE_KEY));
+        if (!RESPONSE_SUCCESS.equals(statusCode)) {
+            String message = String.valueOf(responseMap.get(RESPONSE_MSG_KEY));
+            log.info("{}查询订单失敗 response code={} message={}", LOG_PREFIX, statusCode, message);
+            throw new XxThirdPayTraderException(TraderResponseCode.WITHDRAW_METHOD_RESPONSE_FAIL, Objects.toString(responseMap));
+        }
+
+        Map<String, Object> data = (Map<String, Object>) responseMap.get("data");
+        String payStatus = String.valueOf(data.get("orderStatus"));
+        log.info("{}查询订单结果={}", LOG_PREFIX, payStatus);
+        ResponseCode responseCode = ResponseCode.getResponse(payStatus);
+
+        return WithdrawMethodResponse.builder()
+                .returnCode(payStatus)
+                .returnMessage(responseCode.getDesc())
+                .withdrawOrderId(withdrawOrder.getWithdrawOrderId())
+                .orderStatus(responseCode.getStatus())
+                .build();
+    }
+
+    @Override
+    public WithdrawNotifyResponse checkNotifySign(WithdrawChannel withdrawChannel, Map<String, String> params) throws Exception {
+        // 驗簽
+        // if (!verifySign(new TreeMap<>(params), withdrawChannel.getThirdMerchantSign())) {
+        //     log.info("{}訂單回調驗簽失敗 params :{}", LOG_PREFIX, params);
+        //     throw new XxPayTraderException(TraderResponseCode.SIGN_VERIFICATION_FAILED);
+        // }
+        return WithdrawNotifyResponse.builder()
+                .withdrawOrderId(params.get("${this.wdRes.cbOrder}"))
+                .build();
+    }
+
+    private boolean verifySign(Map<String, Object> map, String key) {
+        String sign = Objects.toString(map.get("signature"), null);
+        map.remove("signature");
+        if (StringUtils.isNotBlank(sign)) {
+            return sign.equals(makeSign(map, key));
+        } else {
+            return true;
+        }
+    }
+
+${this.genSignMethod()}
+
+    @Getter
+    @AllArgsConstructor
+    private enum ResponseCode {
+${enumsCode};
+
+        private final String code;
+        private final String desc;
+        private final int status;
+
+        public static ResponseCode getResponse(String code) {
+            return Stream.of(ResponseCode.values()).filter(r -> r.getCode().equals(code)).findFirst().orElse(PENDING);
+        }
+    }
+
+    @Override
+    public boolean shouldChargeFeeOnFailed() {
+        return false;
+    }
+
+    @Override
+    public String getThirdOrderSuccessCode() {
+        return ResponseCode.${successEnumName}.getCode();
+    }
+
+    @Override
+    public String getCallbackOrderNo(Map dataMap, HttpServletRequest request) {
+        return String.valueOf(dataMap.get("${this.wdRes.cbOrder}"));
+    }
+
+    @Override
+    public ResponseEntity getCallbackResponse(boolean isSuccess, Map formData) {
+        return isSuccess ? ResponseEntity.ok("${this.wdRes.cbSuccess}") : ResponseEntity.ok("${this.wdRes.cbFail}");
+    }
+}
+`;
+        },
+        genPayTest() {
+            let chMap = this.testConfig.channels.map(c => `        map.put("${c.internal}", "${c.third}");`).join('\n');
+            
+            return `package org.xxpay.trader.pay;
+
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
+import org.xxpay.common.util.OrderIdUtil;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+//@RunWith(SpringRunner.class)
+//@SpringBootTest
+@FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
+public class ${this.className}MethodTest extends AbstractPayMethodTest {
+    
+    private static final String MERCHANT_ID = "a100";
+    private static final String CENT_AMOUNT = "1000000";
+    private static final String PAY_ORDER_ID = OrderIdUtil.getOrder("TEST", 8);
+
+    private static final String THIRD_MERCHANTID = "";
+    private static final String THIRD_MERCHANTSIGN = "";
+    private static final String PUBLIC_KEY = "";
+    private static final String PRIVATE_KEY = "";
+
+    @Override
+    protected String vendorName() {
+        return "${this.gatewayName}支付";
+    }
+
+    @Override
+    protected String catchId() {
+        return "${this.catchId}";
+    }
+
+    @Override
+    protected String originationURL() {
+        return "${this.urls.payOrderUrl}";
+    }
+
+    @Override
+    protected String queryURL() {
+        return "${this.urls.payQueryUrl}";
+    }
+
+    @Override
+    protected String balanceURL() {
+        return null;
+    }
+
+    @Override
+    protected Map<String, String> channelCodeMapping() {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+${chMap}
+        return map;
+    }
+
+    // @Test
+    public void autoPrintSQL() throws Exception {
+        printVendorInsertSQL();
+        printVendorChannelInsertSQL();
+    }
+
+    // @Test
+    public void executeOrder() {
+        executeOrder(getDto());
+    }
+
+    // @Test
+    public void queryOrder() {
+        queryOrder(getDto());
+    }
+
+    private TestRequestDTO getDto() {
+        return TestRequestDTO.builder()
+                .mvc(mvc)
+                .merchantId(MERCHANT_ID)
+                .centAmount(CENT_AMOUNT)
+                .thirdMerchantId(THIRD_MERCHANTID)
+                .thirdMerchantSign(THIRD_MERCHANTSIGN)
+                .publicKey(PUBLIC_KEY)
+                .privateKey(PRIVATE_KEY)
+                .payOrderId(PAY_ORDER_ID)
+                .currency("IDR")
+                .build();
+    }
+}
+`;
+        },
+        genWithdrawTest() {
+            let currArr = this.testConfig.currencies.split(',').map(c => `list.add(CurrencyEnum.${c.trim()});`).join('\n        ');
+            
+            return `package org.xxpay.trader.withdraw;
+
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
+import org.xxpay.common.CurrencyEnum;
+import org.xxpay.common.util.OrderIdUtil;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+//@RunWith(SpringRunner.class)
+//@SpringBootTest
+@FixMethodOrder(value = MethodSorters.NAME_ASCENDING)
+public class ${this.className}WithdrawMethodTest extends AbstractWithdrawMethodTest {
+
+    private static final String MERCHANT_ID = "a100";
+    private static final String CENT_AMOUNT = "5000000";
+    private static final String WITHDRAW_ORDER_ID = OrderIdUtil.getOrder("WTEST", 8);
+    private static String PAYEE_CARD_NO = "852199902758";
+    private static String PAYEE_CARD_NAME = "LE PHUOC THO";
+    private static String BANK_NAME = "Bank Danamon";
+    private static String BRANCH_NAME = "testbank1";
+    private static String BANK_PROVINCE = "c";
+    private static String BANK_CITY = "test";
+    private static String IFSC = "SBIN0013292";
+
+    private static final String THIRD_MERCHANTID = "";
+    private static final String THIRD_MERCHANTSIGN = "";
+    private static final String PUBLIC_KEY = "";
+    private static final String PRIVATE_KEY = "";
+
+    @Override
+    protected String vendorName() {
+        return "${this.gatewayName}代付";
+    }
+
+    @Override
+    protected String catchId() {
+        return "${this.catchId}";
+    }
+
+    @Override
+    protected String originationURL() {
+        return "${this.urls.withdrawOrderUrl}";
+    }
+
+    @Override
+    protected String queryURL() {
+        return "${this.urls.withdrawQueryUrl}";
+    }
+
+    @Override
+    protected String balanceURL() {
+        return "${this.urls.balanceUrl}";
+    }
+
+    @Override
+    protected Map<String, String> bankCodeMapping() {
+        Map<String, String> bankCode = new LinkedHashMap<>();
+        // TODO: 請從 Bank-Tool 生成並貼上至此
+        return bankCode;
+    }
+
+    @Override
+    protected List<CurrencyEnum> supportCurrency() {
+        List<CurrencyEnum> list = new ArrayList<>();
+        ${currArr}
+        return list;
+    }
+
+    // @Test
+    public void autoPrintSQL() throws Exception {
+        printVendorInsertSQL();
+        printWithdrawChannelBankInsertSQL();
+    }
+
+    // @Test
+    public void autoQueryBalance() {
+        queryBalance(getDto());
+    }
+
+    // @Test
+    public void executeOrder() {
+        executeOrder(getDto());
+    }
+
+    // @Test
+    public void queryOrder() {
+        queryOrder(getDto());
+    }
+
+    private TestRequestDTO getDto() {
+        return TestRequestDTO.builder()
+                .mvc(mvc)
+                .merchantId(MERCHANT_ID)
+                .centAmount(CENT_AMOUNT)
+                .thirdMerchantId(THIRD_MERCHANTID)
+                .thirdMerchantSign(THIRD_MERCHANTSIGN)
+                .payeeCardNo(PAYEE_CARD_NO)
+                .publicKey(PUBLIC_KEY)
+                .privateKey(PRIVATE_KEY)
+                .payeeCardName(PAYEE_CARD_NAME)
+                .bankName(BANK_NAME)
+                .withdrawOrderId(WITHDRAW_ORDER_ID)
+                .currency(supportCurrency().get(0))
+                .channelExtra("00842001")
+                .idNumber("12345563333")
+                .build();
+    }
+}
+`;
+        }
+    },
+    template: '#original-content'
+}).mount('#app');
+
+window.addEventListener('message', (e) => {
+    if (e.data?.theme) document.documentElement.setAttribute('data-bs-theme', e.data.theme);
+});
+window.parent?.postMessage({ ask: 'theme' }, '*');
+</script>
+</body>
+</html>
