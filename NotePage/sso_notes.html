@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSO 架構學習筆記</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f8f9fa;
+    color: #1a1a2e;
+    line-height: 1.7;
+    padding: 32px 16px;
+  }
+  .page { max-width: 860px; margin: 0 auto; }
+
+  h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 4px; color: #1a1a2e; }
+  .meta { font-size: 0.82rem; color: #888; margin-bottom: 36px; }
+
+  h2 {
+    font-size: 1.1rem; font-weight: 700;
+    margin: 36px 0 14px;
+    padding-left: 12px;
+    border-left: 4px solid #6c63ff;
+    color: #1a1a2e;
+  }
+  h3 { font-size: 0.95rem; font-weight: 600; margin: 20px 0 8px; color: #333; }
+
+  p { margin-bottom: 12px; font-size: 0.93rem; color: #333; }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid #eee;
+  }
+
+  .code {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    margin: 12px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .hl-green { color: #a6e3a1; }
+  .hl-yellow { color: #f9e2af; }
+  .hl-red { color: #f38ba8; }
+  .hl-blue { color: #89b4fa; }
+  .hl-purple { color: #cba6f7; }
+  .hl-gray { color: #6c7086; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 8px 0; }
+  th { background: #f0efff; color: #4a3f8f; padding: 8px 12px; text-align: left; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+  tr:last-child td { border-bottom: none; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin: 2px;
+  }
+  .tag-purple { background: #ede9fe; color: #6c63ff; }
+  .tag-green  { background: #e6faf0; color: #2d9e6b; }
+  .tag-red    { background: #fff0f0; color: #e05252; }
+  .tag-blue   { background: #e8f3ff; color: #2563eb; }
+  .tag-amber  { background: #fff8e6; color: #b45309; }
+
+  .callout {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-size: 0.88rem;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .callout-purple { background: #f3f0ff; border-left: 4px solid #6c63ff; }
+  .callout-green  { background: #f0fdf4; border-left: 4px solid #2d9e6b; }
+  .callout-amber  { background: #fffbeb; border-left: 4px solid #f59e0b; }
+  .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .callout-body { color: #333; line-height: 1.6; }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0;
+    font-size: 0.82rem;
+  }
+  .flow-box {
+    background: #f0efff;
+    color: #4a3f8f;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .flow-arrow { color: #aaa; font-size: 1rem; }
+  .flow-label { color: #888; font-size: 0.75rem; }
+
+  svg { width: 100%; height: auto; display: block; }
+  .svg-wrap {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 12px 0;
+    border: 1px solid #eee;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    overflow-x: auto;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .divider { border: none; border-top: 1px solid #eee; margin: 32px 0; }
+
+  [data-bs-theme="dark"] body { background: #212529; color: #f8f9fa; }
+  [data-bs-theme="dark"] h1 { color: #f8f9fa; }
+  [data-bs-theme="dark"] h2 { color: #f8f9fa; border-left-color: #8b7cf8; }
+  [data-bs-theme="dark"] h3 { color: #dee2e6; }
+  [data-bs-theme="dark"] p { color: #dee2e6; }
+  [data-bs-theme="dark"] .card { background: #343a40; border-color: #495057; box-shadow: none; }
+  [data-bs-theme="dark"] .svg-wrap { background: #343a40; border-color: #495057; box-shadow: none; }
+  [data-bs-theme="dark"] table th { background: #3a3460; color: #c4b5fd; }
+  [data-bs-theme="dark"] table td { border-bottom-color: #495057; color: #dee2e6; }
+  [data-bs-theme="dark"] .callout-purple { background: #2d2a4a; }
+  [data-bs-theme="dark"] .callout-green  { background: #1a3a2a; }
+  [data-bs-theme="dark"] .callout-amber  { background: #3a2e10; }
+  [data-bs-theme="dark"] .callout-body { color: #dee2e6; }
+  [data-bs-theme="dark"] .flow-box { background: #3a3460; color: #c4b5fd; }
+  [data-bs-theme="dark"] .flow-label { color: #adb5bd; }
+  [data-bs-theme="dark"] .meta { color: #adb5bd; }
+  [data-bs-theme="dark"] .tag-purple { background: #3a3460; color: #c4b5fd; }
+  [data-bs-theme="dark"] .tag-green  { background: #1a3a2a; color: #6ee7b7; }
+  [data-bs-theme="dark"] .tag-red    { background: #3a1a1a; color: #fca5a5; }
+  [data-bs-theme="dark"] .tag-blue   { background: #1a2a4a; color: #93c5fd; }
+  [data-bs-theme="dark"] .tag-amber  { background: #3a2a10; color: #fcd34d; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>SSO 架構學習筆記</h1>
+  <p class="meta">來源：與 Claude 的架構討論 · 對應專案：login_utils</p>
+
+  <!-- ── 1. 什麼是 SSO ── -->
+  <h2>一、什麼是 SSO？</h2>
+  <div class="card">
+    <p>SSO（Single Sign-On，單點登入）讓用戶登入一次，就能使用多個服務，不需要重複輸入帳密。</p>
+    <div class="callout callout-purple">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <strong>從 Google 觀察到的</strong>：登入 Gmail 之後，打開 YouTube、Drive、Maps 都不需要再登入。這就是 SSO 的用戶體驗。背後的核心是 <code>accounts.google.com</code> 這個統一認證服務。
+      </div>
+    </div>
+    <h3>用戶看到的</h3>
+    <div class="flow">
+      <div class="flow-box">進入任一服務</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box">導向統一登入頁</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box">輸入一次帳密</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-box">所有服務可用</div>
+    </div>
+    <h3>工程師看到的</h3>
+    <div class="code"><span class="hl-green">Auth Service</span> 負責：
+  簽發 Token、Refresh Token、撤銷 Token、統一登出
+
+<span class="hl-blue">各業務服務</span> 負責：
+  用 Public Key 本地驗 Token（<span class="hl-yellow">不需要每個 request 回打 Auth Service</span>）
+  自己的 RBAC 邏輯</div>
+  </div>
+
+  <!-- ── 2. 兩種方案對比 ── -->
+  <h2>二、兩種設計方案比較</h2>
+
+  <div class="callout callout-amber">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-body">
+      討論過程中釐清的關鍵觀念：<strong>Library 方案</strong>和 <strong>SSO 服務方案</strong>是兩個不同目標的解法，不能混為一談。
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Library 方案（我最初的想法）</h3>
+      <p>把認證邏輯打包成 Maven library，各服務 import 引入。</p>
+      <p><span class="tag tag-green">✓ 無單點故障</span></p>
+      <p><span class="tag tag-green">✓ 各服務完全獨立</span></p>
+      <p><span class="tag tag-red">✗ 沒有統一登入體驗</span></p>
+      <p><span class="tag tag-red">✗ Token 即時撤銷困難</span></p>
+      <p><span class="tag tag-red">✗ 升級安全邏輯要所有服務重新部署</span></p>
+      <p style="margin-top:8px;font-size:0.82rem;color:#888;">適合：小型專案、各服務是獨立產品</p>
+    </div>
+    <div class="card">
+      <h3>SSO 獨立服務（業界做法）</h3>
+      <p>Auth Service 獨立部署，各服務用 Public Key 本地驗 Token。</p>
+      <p><span class="tag tag-green">✓ 統一登入體驗</span></p>
+      <p><span class="tag tag-green">✓ 集中撤銷（Redis 黑名單）</span></p>
+      <p><span class="tag tag-green">✓ 安全邏輯只改一處</span></p>
+      <p><span class="tag tag-green">✓ 多實例解決單點故障</span></p>
+      <p><span class="tag tag-red">✗ 需要維運多個服務</span></p>
+      <p style="margin-top:8px;font-size:0.82rem;color:#888;">適合：中大型、需要跨服務統一登入</p>
+    </div>
+  </div>
+
+  <table>
+    <thead><tr><th>比較項目</th><th>Library 方案</th><th>SSO 獨立服務</th></tr></thead>
+    <tbody>
+      <tr><td>單點故障</td><td>✓ 無（library 不會掛）</td><td>✓ 多實例解決</td></tr>
+      <tr><td>Token 即時撤銷</td><td>✗ 困難</td><td>✓ 集中黑名單</td></tr>
+      <tr><td>安全邏輯升級</td><td>✗ 所有服務重新部署</td><td>✓ 只改 Auth Service</td></tr>
+      <tr><td>統一登入體驗</td><td>✗ 各服務各自登入</td><td>✓ 一次登入全部用</td></tr>
+      <tr><td>複雜度</td><td>低</td><td>較高</td></tr>
+      <tr><td>真實案例</td><td>—</td><td>Auth0、Keycloak、Okta</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ── 3. 架構圖：我的設計 ── -->
+  <h2>三、我的專案架構（login_utils 作為 SSO 服務）</h2>
+
+  <div class="svg-wrap">
+    <svg viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#6c63ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="arrg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#aaa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- 用戶 -->
+      <rect x="295" y="10" width="90" height="36" rx="8" fill="#f0efff" stroke="#6c63ff" stroke-width="1"/>
+      <text x="340" y="26" text-anchor="middle" font-size="11" font-weight="600" fill="#4a3f8f">用戶</text>
+      <text x="340" y="40" text-anchor="middle" font-size="9" fill="#888">瀏覽器 / App</text>
+
+      <line x1="340" y1="46" x2="340" y2="68" stroke="#6c63ff" stroke-width="1.2" marker-end="url(#arr)"/>
+
+      <!-- SSO -->
+      <rect x="140" y="70" width="400" height="56" rx="10" fill="#f3f0ff" stroke="#6c63ff" stroke-width="1.2"/>
+      <text x="340" y="90" text-anchor="middle" font-size="11" font-weight="700" fill="#4a3f8f">login_utils SSO（統一認證服務）</text>
+      <text x="340" y="106" text-anchor="middle" font-size="9" fill="#6c63ff">OAuth2 授權碼流程 · RS256 簽發 · Refresh Token · Token 撤銷</text>
+      <text x="340" y="120" text-anchor="middle" font-size="9" fill="#888">只在登入 / 登出 / Refresh 時被呼叫</text>
+
+      <!-- SSO → 三個服務（虛線，表示 Public Key 分發） -->
+      <line x1="220" y1="126" x2="130" y2="186" stroke="#aaa" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrg)"/>
+      <line x1="340" y1="126" x2="340" y2="186" stroke="#aaa" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrg)"/>
+      <line x1="460" y1="126" x2="550" y2="186" stroke="#aaa" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrg)"/>
+
+      <text x="160" y="162" text-anchor="middle" font-size="8" fill="#aaa">Public Key</text>
+      <text x="340" y="162" text-anchor="middle" font-size="8" fill="#aaa">Public Key</text>
+      <text x="520" y="162" text-anchor="middle" font-size="8" fill="#aaa">Public Key</text>
+
+      <!-- 工廠 -->
+      <rect x="40" y="186" width="178" height="72" rx="10" fill="#e6faf0" stroke="#2d9e6b" stroke-width="1"/>
+      <text x="129" y="206" text-anchor="middle" font-size="11" font-weight="700" fill="#1a6b47">智慧工廠系統</text>
+      <text x="129" y="222" text-anchor="middle" font-size="9" fill="#2d9e6b">本地驗 Token（Public Key）</text>
+      <text x="129" y="236" text-anchor="middle" font-size="9" fill="#555">RBAC：操作員/維護員/主管</text>
+      <text x="129" y="250" text-anchor="middle" font-size="9" fill="#888">Python FastAPI · IoT</text>
+
+      <!-- 金融 -->
+      <rect x="251" y="186" width="178" height="72" rx="10" fill="#e8f3ff" stroke="#2563eb" stroke-width="1"/>
+      <text x="340" y="206" text-anchor="middle" font-size="11" font-weight="700" fill="#1e40af">金融管理平台</text>
+      <text x="340" y="222" text-anchor="middle" font-size="9" fill="#2563eb">本地驗 Token（Public Key）</text>
+      <text x="340" y="236" text-anchor="middle" font-size="9" fill="#555">RBAC：用戶/投資人/Premium</text>
+      <text x="340" y="250" text-anchor="middle" font-size="9" fill="#888">Python FastAPI · Claude API</text>
+
+      <!-- 搶票 -->
+      <rect x="462" y="186" width="178" height="72" rx="10" fill="#fff0f0" stroke="#e05252" stroke-width="1"/>
+      <text x="551" y="206" text-anchor="middle" font-size="11" font-weight="700" fill="#9b1c1c">演唱會搶票</text>
+      <text x="551" y="222" text-anchor="middle" font-size="9" fill="#e05252">本地驗 Token（Public Key）</text>
+      <text x="551" y="236" text-anchor="middle" font-size="9" fill="#555">RBAC：用戶/主辦方/管理員</text>
+      <text x="551" y="250" text-anchor="middle" font-size="9" fill="#888">Java Spring Boot · Kafka</text>
+
+      <!-- 說明標籤：Auth 掛了的情況 -->
+      <rect x="80" y="276" width="520" height="28" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1"/>
+      <text x="340" y="289" text-anchor="middle" font-size="9.5" fill="#92400e">⚡ SSO 掛了？已登入的用戶照常使用（各服務本地驗 Token）；只有新登入請求會失敗</text>
+      <text x="340" y="300" text-anchor="middle" font-size="9" fill="#b45309">解法：SSO 多實例部署，Redis Sentinel，消除單點故障</text>
+
+      <!-- 流程說明 -->
+      <rect x="40" y="322" width="600" height="82" rx="10" fill="#f8f9fa" stroke="#ddd" stroke-width="1"/>
+      <text x="60" y="342" font-size="10" font-weight="700" fill="#333">OAuth2 授權碼流程</text>
+      <text x="60" y="358" font-size="9" fill="#555">1. 用戶訪問工廠系統，沒有 Token → 導向 SSO 登入頁（帶 callback URL）</text>
+      <text x="60" y="372" font-size="9" fill="#555">2. 在 SSO 輸入帳密，驗證成功 → 發出授權碼（code），導回工廠系統</text>
+      <text x="60" y="386" font-size="9" fill="#555">3. 工廠系統後端拿 code 換 Token（Access Token + Refresh Token）</text>
+      <text x="60" y="400" font-size="9" fill="#555">4. 之後的請求：工廠系統本地驗 Token，不打 SSO → 已登入金融/搶票服務也可直接使用</text>
+    </svg>
+  </div>
+
+  <!-- ── 4. OAuth2 授權碼流程 ── -->
+  <h2>四、OAuth2 授權碼流程（核心）</h2>
+  <div class="card">
+    <p>這是 SSO 的核心機制，也是 Google、GitHub 登入背後的原理。</p>
+    <div class="code"><span class="hl-gray">步驟 1：用戶訪問業務服務</span>
+工廠系統：「你沒有 Token，去 SSO 登入」
+→ <span class="hl-blue">Redirect</span> 到 SSO，帶上 <span class="hl-yellow">redirect_uri=工廠系統的callback URL</span>
+
+<span class="hl-gray">步驟 2：用戶在 SSO 登入</span>
+SSO 驗證帳密成功
+→ 產生一次性 <span class="hl-yellow">授權碼（code）</span>，有效期很短（10秒）
+→ <span class="hl-blue">Redirect</span> 回工廠系統，帶上 code
+
+<span class="hl-gray">步驟 3：業務服務後端換 Token</span>
+工廠系統後端 → SSO API：<span class="hl-green">「我有 code，換 Token」</span>
+SSO 驗證 code 有效 → 回傳 <span class="hl-green">Access Token + Refresh Token</span>
+
+<span class="hl-gray">步驟 4：後續請求</span>
+工廠系統用 <span class="hl-purple">Public Key 本地驗 Access Token</span>
+→ 完全不需要打 SSO！
+→ 其他已登入的服務也直接可用（Token 格式相同）</div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon">✅</span>
+      <div class="callout-body">
+        <strong>為什麼用授權碼（code）而不是直接給 Token？</strong><br>
+        避免 Token 暴露在瀏覽器 URL 中（瀏覽器歷史記錄、Server Log 都看不到 Token）。code 只能用一次，換完就失效。
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5. RS256 vs HS256 ── -->
+  <h2>五、RS256 vs HS256</h2>
+  <div class="card">
+    <div class="grid2">
+      <div>
+        <h3><span class="tag tag-red">HS256（對稱加密）</span></h3>
+        <div class="code"><span class="hl-gray">同一把 secret key</span>
+簽發 Token：用 secret
+驗證 Token：用 secret
+
+問題：
+各服務都要知道 secret
+→ secret 洩漏風險高
+→ 單一系統可以，
+  多服務不適合</div>
+      </div>
+      <div>
+        <h3><span class="tag tag-green">RS256（非對稱加密）</span></h3>
+        <div class="code"><span class="hl-gray">一對 key：Private + Public</span>
+簽發 Token：Private Key（只有 SSO 有）
+驗證 Token：Public Key（任何服務都可以有）
+
+好處：
+各服務只需要 Public Key
+→ 就算 Public Key 洩漏也沒關係
+→ 無法偽造 Token
+→ <span class="hl-green">多服務架構的標準選擇</span></div>
+      </div>
+    </div>
+    <div class="callout callout-purple">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        SSO 對外暴露一個 <strong>Public Key API</strong>，各服務啟動時下載 Public Key 快取在本地。之後驗 Token 完全不需要網路請求。
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6. 雙 Token 機制 ── -->
+  <h2>六、雙 Token 機制</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th></th><th>Access Token</th><th>Refresh Token</th></tr></thead>
+      <tbody>
+        <tr><td><strong>用途</strong></td><td>訪問業務 API</td><td>換新的 Access Token</td></tr>
+        <tr><td><strong>有效期</strong></td><td>15 分鐘</td><td>7 天</td></tr>
+        <tr><td><strong>存放位置</strong></td><td>Memory（前端）</td><td>HttpOnly Cookie（防 XSS）</td></tr>
+        <tr><td><strong>是否存 DB</strong></td><td>否（無狀態）</td><td>是（可以撤銷）</td></tr>
+        <tr><td><strong>撤銷方式</strong></td><td>等待自然過期（15分鐘）</td><td>直接從 DB 刪除</td></tr>
+      </tbody>
+    </table>
+    <div class="code"><span class="hl-gray">正常流程：</span>
+用戶登入 → SSO 發 Access Token（15min）+ Refresh Token（7天）
+每次 API 請求帶 Access Token → 業務服務本地驗
+
+<span class="hl-gray">Token 過期：</span>
+Access Token 過期 → 前端自動用 Refresh Token 換新的 Access Token
+Refresh Token 過期 → 重新登入
+
+<span class="hl-gray">強制登出 / 封號：</span>
+從 DB 刪除 Refresh Token → 下次刷新失敗 → 用戶被迫重新登入
+Access Token 最多再用 15 分鐘（這是可接受的時間差）</div>
+  </div>
+
+  <!-- ── 7. 業界方案對比 ── -->
+  <h2>七、業界 SSO 方案</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>方案</th><th>定位</th><th>特色</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Auth0</strong></td><td>SaaS，給開發者用</td><td>開箱即用，貴</td></tr>
+        <tr><td><strong>Keycloak</strong></td><td>開源，自架</td><td>功能完整，企業常用</td></tr>
+        <tr><td><strong>Okta</strong></td><td>企業 SaaS</td><td>企業級，很貴</td></tr>
+        <tr><td><strong>AWS Cognito</strong></td><td>雲端服務</td><td>AWS 生態整合好</td></tr>
+        <tr><td><strong>自己做（login_utils）</strong></td><td>Side project</td><td>理解原理，面試展示</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-amber">
+      <span class="callout-icon">🎯</span>
+      <div class="callout-body">
+        <strong>面試時怎麼說：</strong><br>
+        「我知道業界有 Auth0、Keycloak 這些成熟方案，但我選擇自己實作，目的是深入理解 OAuth2 流程、RS256 加密、Token 撤銷的設計取捨。如果是公司產品，我會優先評估現有方案。」
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 8. login_utils MVP 範圍 ── -->
+  <h2>八、login_utils MVP 開發計畫（6 週）</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>週次</th><th>任務</th><th>產出</th></tr></thead>
+      <tbody>
+        <tr><td>Week 1-2</td><td>HS256 升級 RS256、雙 Token 機制、Token 撤銷（Redis 黑名單）</td><td>安全的 Token 基礎</td></tr>
+        <tr><td>Week 3-4</td><td>OAuth2 授權碼流程、Redirect 機制、callback URL 設定</td><td>核心 SSO 流程可用</td></tr>
+        <tr><td>Week 5-6</td><td>管理後台、系統註冊、登入記錄、部署</td><td>完整可展示的 SSO 服務</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:16px;">完成後各服務接入方式</h3>
+    <div class="code"><span class="hl-gray">// 各服務啟動時，從 SSO 下載 Public Key</span>
+GET <span class="hl-green">https://sso.yourdomain.com/api/public-key</span>
+
+<span class="hl-gray">// 之後每個請求，本地驗 Token（不打網路）</span>
+<span class="hl-blue">JwtUtil.verify(token, publicKey)</span> <span class="hl-gray">// RS256 本地驗證</span>
+
+<span class="hl-gray">// 只有這三種情況才打 SSO：</span>
+POST /api/login         <span class="hl-gray">// 登入</span>
+POST /api/logout        <span class="hl-gray">// 登出</span>
+POST /api/refresh-token <span class="hl-gray">// 刷新 Token</span></div>
+  </div>
+
+  <!-- ── 9. 關鍵學習 ── -->
+  <h2>九、關鍵學習總結</h2>
+  <div class="card">
+    <div class="callout callout-purple">
+      <span class="callout-icon">1️⃣</span>
+      <div class="callout-body"><strong>SSO 和 Library 是不同目標的解法</strong>：SSO 解決「用戶體驗（一次登入）」，Library 解決「工程問題（不重複寫代碼）」。我的 login_utils 是 SSO，不是 Library。</div>
+    </div>
+    <div class="callout callout-purple">
+      <span class="callout-icon">2️⃣</span>
+      <div class="callout-body"><strong>本地驗 Token 是關鍵設計</strong>：各服務用 Public Key 本地驗，不是每個 request 都回打 SSO。SSO 掛了，已登入用戶照常使用。</div>
+    </div>
+    <div class="callout callout-purple">
+      <span class="callout-icon">3️⃣</span>
+      <div class="callout-body"><strong>授權碼（code）的存在是為了安全</strong>：避免 Token 出現在瀏覽器 URL 中，code 只能用一次，換完失效。</div>
+    </div>
+    <div class="callout callout-purple">
+      <span class="callout-icon">4️⃣</span>
+      <div class="callout-body"><strong>雙 Token 解決撤銷問題</strong>：Access Token 短期（15分鐘），Refresh Token 存 DB 可即時撤銷。強制登出時刪 Refresh Token，最多 15 分鐘後自動失效。</div>
+    </div>
+    <div class="callout callout-purple">
+      <span class="callout-icon">5️⃣</span>
+      <div class="callout-body"><strong>我觀察到 Google 的現象是對的，推理方向也對</strong>，只是共用認證的方式是「獨立服務」而非「Library」。這個思維過程本身在面試時就是加分項。</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+window.addEventListener('message', (e) => {
+  if (e.data?.theme) document.documentElement.setAttribute('data-bs-theme', e.data.theme);
+});
+window.parent?.postMessage({ ask: 'theme' }, '*');
+</script>
+</body>
+</html>

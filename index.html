@@ -49,24 +49,6 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link"
-                    id="tab3-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#tab3"
-                    type="button" role="tab"
-                    aria-controls="tab3"
-                    aria-selected="false">銀行對應工具</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link"
-                    id="tab4-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#tab4"
-                    type="button" role="tab"
-                    aria-controls="tab4"
-                    aria-selected="false">格式轉換工具</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link"
                     id="tab5-tab"
                     data-bs-toggle="tab"
                     data-bs-target="#tab5"
@@ -76,12 +58,12 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link"
-                    id="tab6-tab"
+                    id="tab7-tab"
                     data-bs-toggle="tab"
-                    data-bs-target="#tab6"
+                    data-bs-target="#tab7"
                     type="button" role="tab"
-                    aria-controls="tab6"
-                    aria-selected="false">金流串接生成器</button>
+                    aria-controls="tab7"
+                    aria-selected="false">筆記</button>
         </li>
     </ul>
 
@@ -95,14 +77,14 @@
         <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
             <iframe src="ToolPage/Bank-Tool.html"></iframe>
         </div>
-        <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab">
-            <iframe src="ToolPage/DataFormat.html"></iframe>
-        </div>
         <div class="tab-pane fade" id="tab5" role="tabpanel" aria-labelledby="tab5-tab">
             <iframe src="ToolPage/JSON_Format.html"></iframe>
         </div>
         <div class="tab-pane fade" id="tab6" role="tabpanel" aria-labelledby="tab6-tab">
             <iframe src="ToolPage/PayGatewayGenerator.html"></iframe>
+        </div>
+        <div class="tab-pane fade" id="tab7" role="tabpanel" aria-labelledby="tab7-tab">
+            <iframe src="ToolPage/NoteWebPage.html"></iframe>
         </div>
     </div>
 
@@ -187,6 +169,27 @@
     }
 
     setup();
+
+    // 選擇「筆記」頁籤時強制淺色，離開後還原
+    let themeBeforeNotes = null;
+
+    document.getElementById('tab7-tab').addEventListener('show.bs.tab', () => {
+        themeBeforeNotes = getCurrentTheme();
+        if (themeBeforeNotes !== 'light') {
+            htmlEl.setAttribute('data-bs-theme', 'light');
+            updateToggleButton('light');
+            sendThemeToIframes('light');
+        }
+    });
+
+    document.getElementById('tab7-tab').addEventListener('hide.bs.tab', () => {
+        if (themeBeforeNotes && themeBeforeNotes !== 'light') {
+            htmlEl.setAttribute('data-bs-theme', themeBeforeNotes);
+            updateToggleButton(themeBeforeNotes);
+            sendThemeToIframes(themeBeforeNotes);
+        }
+        themeBeforeNotes = null;
+    });
 </script>
 </body>
 </html>
