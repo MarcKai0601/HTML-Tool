@@ -8,7 +8,7 @@
   <style>
     iframe {
       width: 100%;
-      height: 800px;
+      height: calc(100vh - 120px);
       border: none;
     }
     .tab-content {
@@ -43,6 +43,15 @@
               aria-controls="note2"
               aria-selected="false">SSO 學習筆記</button>
     </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link"
+              id="note3-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#note3"
+              type="button" role="tab"
+              aria-controls="note3"
+              aria-selected="false">Server 組成筆記</button>
+    </li>
   </ul>
 
   <div class="tab-content mt-3" id="noteTabsContent">
@@ -51,6 +60,9 @@
     </div>
     <div class="tab-pane fade" id="note2" role="tabpanel" aria-labelledby="note2-tab">
       <iframe src="../NotePage/sso_notes.html" id="iframe-sso"></iframe>
+    </div>
+    <div class="tab-pane fade" id="note3" role="tabpanel" aria-labelledby="note3-tab">
+      <iframe src="../NotePage/server-guide.html" id="iframe-server"></iframe>
     </div>
   </div>
 
