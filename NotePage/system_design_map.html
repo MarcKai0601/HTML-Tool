@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>系統設計知識宇宙</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff;
+  --bg2: #f7f7f5;
+  --bg3: #efefec;
+  --border: #e0ded8;
+  --border2: #c8c6be;
+  --txt: #1a1a18;
+  --txt2: #4a4a45;
+  --txt3: #888780;
+
+  --purple-bg: #EEEDFE;
+  --purple-border: #534AB7;
+  --purple-txt: #26215C;
+
+  --teal-bg: #E1F5EE;
+  --teal-border: #1D9E75;
+  --teal-txt: #04342C;
+
+  --amber-bg: #FAEEDA;
+  --amber-border: #854F0B;
+  --amber-txt: #412402;
+
+  --coral-bg: #FAECE7;
+  --coral-border: #993C1D;
+  --coral-txt: #4A1B0C;
+
+  --blue-bg: #E6F1FB;
+  --blue-border: #185FA5;
+  --blue-txt: #042C53;
+
+  --green-bg: #EAF3DE;
+  --green-border: #3B6D11;
+  --green-txt: #173404;
+
+  --gray-bg: #F1EFE8;
+  --gray-border: #5F5E5A;
+  --gray-txt: #2C2C2A;
+}
+
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+#shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+
+header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+header h1 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--txt);
+  letter-spacing: .02em;
+  margin-bottom: 6px;
+}
+header p {
+  font-size: 13px;
+  color: var(--txt2);
+}
+
+/* ─── TABS ─── */
+#tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+  overflow-x: auto;
+}
+.tab-btn {
+  font-size: 13px;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  color: var(--txt2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  font-family: 'IBM Plex Mono', monospace;
+  transition: color .15s, border-color .15s;
+}
+.tab-btn:hover { color: var(--txt); }
+.tab-btn.active {
+  color: #534AB7;
+  border-bottom-color: #534AB7;
+  font-weight: 500;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ─── SVG DIAGRAM WRAPPER ─── */
+.diagram-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.diagram-label {
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--txt3);
+  margin-bottom: 10px;
+  letter-spacing: .06em;
+}
+
+/* ─── SVG variable mappings (light mode) ─── */
+.diagram-wrap svg {
+  --t: #4a4a45;
+  --b: #e0ded8;
+  --bg2: #f7f7f5;
+}
+/* colour ramps - light mode */
+.c-purple rect, .c-purple circle, .c-purple ellipse { fill: #EEEDFE; stroke: #534AB7; }
+.c-purple .t, .c-purple .ts, .c-purple .th { fill: #3C3489; }
+.c-teal rect, .c-teal circle, .c-teal ellipse { fill: #E1F5EE; stroke: #1D9E75; }
+.c-teal .t, .c-teal .ts, .c-teal .th { fill: #085041; }
+.c-coral rect, .c-coral circle, .c-coral ellipse { fill: #FAECE7; stroke: #993C1D; }
+.c-coral .t, .c-coral .ts, .c-coral .th { fill: #712B13; }
+.c-amber rect, .c-amber circle, .c-amber ellipse { fill: #FAEEDA; stroke: #854F0B; }
+.c-amber .t, .c-amber .ts, .c-amber .th { fill: #633806; }
+.c-blue rect, .c-blue circle, .c-blue ellipse { fill: #E6F1FB; stroke: #185FA5; }
+.c-blue .t, .c-blue .ts, .c-blue .th { fill: #0C447C; }
+.c-green rect, .c-green circle, .c-green ellipse { fill: #EAF3DE; stroke: #3B6D11; }
+.c-green .t, .c-green .ts, .c-green .th { fill: #27500A; }
+.c-gray rect, .c-gray circle, .c-gray ellipse { fill: #F1EFE8; stroke: #888780; }
+.c-gray .t, .c-gray .ts, .c-gray .th { fill: #444441; }
+.c-pink rect, .c-pink circle, .c-pink ellipse { fill: #FBEAF0; stroke: #993556; }
+.c-pink .t, .c-pink .ts, .c-pink .th { fill: #4B1528; }
+
+/* pre-built SVG classes */
+.t  { font-size: 14px; fill: #1a1a18; font-family: 'Noto Sans TC', sans-serif; }
+.ts { font-size: 12px; fill: #4a4a45; font-family: 'Noto Sans TC', sans-serif; }
+.th { font-size: 14px; font-weight: 500; fill: #1a1a18; font-family: 'Noto Sans TC', sans-serif; }
+.box { fill: #F1EFE8; stroke: #888780; stroke-width: 0.5; }
+.arr { stroke: #4a4a45; stroke-width: 1.5; fill: none; }
+.leader { stroke: #888780; stroke-width: 0.5; stroke-dasharray: 3 3; fill: none; }
+.node { cursor: pointer; }
+.node:hover { opacity: 0.85; }
+
+/* ─── KNOWLEDGE MAP ─── */
+#role-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+#role-bar span {
+  font-size: 12px;
+  color: var(--txt3);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.rbtn {
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--bg2);
+  color: var(--txt2);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.rbtn:hover { border-color: var(--txt3); color: var(--txt); }
+.rbtn.active[data-role="backend"] { background: var(--purple-bg); border-color: var(--purple-border); color: var(--purple-txt); }
+.rbtn.active[data-role="devops"]  { background: var(--teal-bg);   border-color: var(--teal-border);   color: var(--teal-txt); }
+.rbtn.active[data-role="infra"]   { background: var(--coral-bg);  border-color: var(--coral-border);  color: var(--coral-txt); }
+
+#legend {
+  display: flex;
+  gap: 14px;
+  margin-left: auto;
+  align-items: center;
+}
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--txt3);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+.leg-core { background: #534AB7; }
+.leg-know { background: #1D9E75; }
+.leg-skip { background: var(--border2); }
+
+.layer {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: border-color .15s;
+}
+.layer:hover { border-color: var(--border2); }
+
+.layer-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  cursor: pointer;
+  background: var(--bg2);
+  user-select: none;
+  transition: background .15s;
+}
+.layer-head:hover { background: var(--bg3); }
+
+.layer-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.layer-name { font-size: 13px; font-weight: 500; color: var(--txt); min-width: 180px; }
+.layer-sub { font-size: 11px; color: var(--txt3); font-family: 'IBM Plex Mono', monospace; flex: 1; }
+.layer-chevron { font-size: 12px; color: var(--txt3); transition: transform .2s; font-family: 'IBM Plex Mono', monospace; }
+.layer.open .layer-chevron { transform: rotate(180deg); }
+
+.layer-body {
+  display: none;
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+.layer.open .layer-body { display: block; }
+
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.tcard {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  cursor: pointer;
+  background: var(--bg2);
+  transition: border-color .15s, background .15s;
+}
+.tcard:hover { border-color: var(--border2); background: var(--bg3); }
+.tcard.selected { border-color: #534AB7 !important; }
+
+.tcard.imp-core { border-left: 3px solid #534AB7; background: var(--purple-bg); }
+.tcard.imp-core:hover { background: #e3e1fc; }
+.tcard.imp-know { border-left: 3px solid #1D9E75; background: var(--teal-bg); }
+.tcard.imp-know:hover { background: #caeedd; }
+.tcard.imp-skip { opacity: .5; }
+
+.tcard-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+.tcard.imp-core .tcard-name { color: #26215C; }
+.tcard.imp-know .tcard-name { color: #04342C; }
+.tcard.imp-skip .tcard-name { color: var(--txt2); }
+
+.tcard-prob { font-size: 11px; line-height: 1.45; }
+.tcard.imp-core .tcard-prob { color: #3C3489; }
+.tcard.imp-know .tcard-prob { color: #085041; }
+.tcard.imp-skip .tcard-prob { color: var(--txt3); }
+
+.known-tag {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: var(--teal-bg);
+  color: var(--teal-txt);
+  border: 1px solid var(--teal-border);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.detail {
+  display: none;
+  margin-top: 12px;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 16px 18px;
+  background: var(--bg2);
+  animation: fadeIn .15s ease;
+}
+.detail.open { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+
+.detail-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--txt);
+  margin-bottom: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+@media (max-width: 600px) { .detail-grid { grid-template-columns: 1fr; } }
+
+.dsec label {
+  display: block;
+  font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: .08em;
+  color: var(--txt3);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+.dsec p { font-size: 13px; color: var(--txt2); line-height: 1.55; }
+
+.tools-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.tool {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  color: var(--txt2);
+  background: var(--bg3);
+  font-family: 'IBM Plex Mono', monospace;
+}
+.tool.hl {
+  border-color: #854F0B;
+  color: #412402;
+  background: var(--amber-bg);
+}
+
+.role-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.role-row span.lbl { font-size: 11px; color: var(--txt3); font-family: 'IBM Plex Mono', monospace; }
+.rbadge { font-size: 11px; padding: 3px 9px; border-radius: 10px; font-family: 'IBM Plex Mono', monospace; }
+.rb-backend { background: var(--purple-bg); color: var(--purple-txt); border: 1px solid var(--purple-border); }
+.rb-devops  { background: var(--teal-bg);   color: var(--teal-txt);   border: 1px solid var(--teal-border); }
+.rb-infra   { background: var(--coral-bg);  color: var(--coral-txt);  border: 1px solid var(--coral-border); }
+
+.ext-label {
+  font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: .08em;
+  color: var(--txt3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.ext-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.ext-link {
+  font-size: 12px;
+  padding: 4px 11px;
+  border-radius: 8px;
+  background: var(--blue-bg);
+  border: 1px solid var(--blue-border);
+  color: var(--blue-txt);
+  cursor: pointer;
+  transition: background .12s;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.ext-link:hover { background: #c8dcf2; }
+
+#role-note {
+  margin-top: 24px;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg2);
+  font-size: 13px;
+  color: var(--txt2);
+  line-height: 1.7;
+}
+#role-note strong { color: var(--txt); }
+</style>
+</head>
+<body>
+<div id="shell">
+  <header>
+    <h1>系統設計知識宇宙</h1>
+    <p>Java Backend 工程師的系統架構學習地圖 · 各視角技術深度 · 因果解釋 · 工具比較</p>
+  </header>
+
+  <div id="tab-bar">
+    <button class="tab-btn active" data-tab="arch">① 七層架構全貌</button>
+    <button class="tab-btn" data-tab="company">② 公司類型 × 人才</button>
+    <button class="tab-btn" data-tab="roles">③ 工程師角色深度</button>
+    <button class="tab-btn" data-tab="map">④ 知識主題地圖</button>
+  </div>
+
+  <!-- ══════════════ TAB 1: 七層架構 ══════════════ -->
+  <div class="tab-panel active" id="tab-arch">
+    <div class="diagram-wrap">
+      <div class="diagram-label">SYSTEM ARCHITECTURE OVERVIEW — 點擊任一層深入了解</div>
+      <svg width="100%" viewBox="0 0 680 720" role="img">
+        <title>現代系統架構全貌圖</title>
+        <desc>從 Client 到 Infra 的七層架構分類圖，每層可點擊深入了解</desc>
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <g class="node c-blue" onclick="sendPrompt('深入說明系統架構的 Client / Presentation Layer：包含哪些技術、職責、面試常見問題')">
+          <rect x="40" y="30" width="600" height="64" rx="10" stroke-width="0.5"/>
+          <text class="th" x="160" y="56" text-anchor="middle" dominant-baseline="central">Client / Presentation Layer</text>
+          <text class="ts" x="160" y="76" text-anchor="middle" dominant-baseline="central">Web · Mobile · Desktop</text>
+          <text class="ts" x="480" y="56" text-anchor="middle" dominant-baseline="central">React / Vue · iOS / Android · Electron</text>
+          <text class="ts" x="480" y="76" text-anchor="middle" dominant-baseline="central">SSR · CSR · PWA · BFF</text>
+        </g>
+        <line x1="340" y1="94" x2="340" y2="114" class="arr" marker-end="url(#arrow)"/>
+
+        <g class="node c-teal" onclick="sendPrompt('深入說明系統架構的 API Gateway / Edge Layer：職責、常見技術、面試要點')">
+          <rect x="40" y="114" width="600" height="64" rx="10" stroke-width="0.5"/>
+          <text class="th" x="160" y="140" text-anchor="middle" dominant-baseline="central">API Gateway / Edge Layer</text>
+          <text class="ts" x="160" y="160" text-anchor="middle" dominant-baseline="central">流量入口、跨切面關注點</text>
+          <text class="ts" x="480" y="140" text-anchor="middle" dominant-baseline="central">Nginx · Kong · Cloudflare · AWS API GW</text>
+          <text class="ts" x="480" y="160" text-anchor="middle" dominant-baseline="central">Auth · Rate Limit · SSL termination · Routing</text>
+        </g>
+        <line x1="340" y1="178" x2="340" y2="198" class="arr" marker-end="url(#arrow)"/>
+
+        <g class="node c-purple" onclick="sendPrompt('深入說明系統架構的 Application / Service Layer：Monolith vs Microservices、設計模式、面試常見問題')">
+          <rect x="40" y="198" width="600" height="64" rx="10" stroke-width="0.5"/>
+          <text class="th" x="160" y="224" text-anchor="middle" dominant-baseline="central">Application / Service Layer</text>
+          <text class="ts" x="160" y="244" text-anchor="middle" dominant-baseline="central">業務邏輯核心</text>
+          <text class="ts" x="480" y="224" text-anchor="middle" dominant-baseline="central">Monolith · Microservices · Serverless</text>
+          <text class="ts" x="480" y="244" text-anchor="middle" dominant-baseline="central">DDD · Clean Arch · CQRS · Event Sourcing</text>
+        </g>
+        <line x1="340" y1="262" x2="340" y2="282" class="arr" marker-end="url(#arrow)"/>
+
+        <g class="node c-amber" onclick="sendPrompt('深入說明系統架構的 Async Messaging Layer：為什麼需要、Kafka vs RabbitMQ、面試常見問題')">
+          <rect x="40" y="282" width="600" height="64" rx="10" stroke-width="0.5"/>
+          <text class="th" x="160" y="308" text-anchor="middle" dominant-baseline="central">Async / Messaging Layer</text>
+          <text class="ts" x="160" y="328" text-anchor="middle" dominant-baseline="central">解耦、削峰、事件驅動</text>
+          <text class="ts" x="480" y="308" text-anchor="middle" dominant-baseline="central">Kafka · RabbitMQ · SQS · Redis Pub/Sub</text>
+          <text class="ts" x="480" y="328" text-anchor="middle" dominant-baseline="central">At-least-once · Exactly-once · Dead letter</text>
+        </g>
+        <line x1="340" y1="346" x2="340" y2="366" class="arr" marker-end="url(#arrow)"/>
+
+        <g class="node c-coral" onclick="sendPrompt('深入說明系統架構的 Data Layer：SQL vs NoSQL 怎麼選、Cache 策略、面試常見問題')">
+          <rect x="40" y="366" width="600" height="64" rx="10" stroke-width="0.5"/>
+          <text class="th" x="160" y="392" text-anchor="middle" dominant-baseline="central">Data Layer</text>
+          <text class="ts" x="160" y="412" text-anchor="middle" dominant-baseline="central">持久化、查詢、快取</text>
+          <text class="ts" x="480" y="392" text-anchor="middle" dominant-baseline="central">PostgreSQL · MySQL · MongoDB · Cassandra</text>
+          <text class="ts" x="480" y="412" text-anchor="middle" dominant-baseline="central">Redis · Elasticsearch · S3 · Read replica</text>
+        </g>
+        <line x1="340" y1="430" x2="340" y2="450" class="arr" marker-end="url(#arrow)"/>
+
+        <g class="node c-green" onclick="sendPrompt('深入說明系統架構的 Platform / DevOps Layer：CI/CD、Container、Service Mesh、面試常見問題')">
+          <rect x="40" y="450" width="600" height="64" rx="10" stroke-width="0.5"/>
+          <text class="th" x="160" y="476" text-anchor="middle" dominant-baseline="central">Platform / DevOps Layer</text>
+          <text class="ts" x="160" y="496" text-anchor="middle" dominant-baseline="central">部署、可觀測性、自動化</text>
+          <text class="ts" x="480" y="476" text-anchor="middle" dominant-baseline="central">Docker · Kubernetes · Helm · Terraform</text>
+          <text class="ts" x="480" y="496" text-anchor="middle" dominant-baseline="central">CI/CD · Service Mesh · Prometheus · Grafana</text>
+        </g>
+        <line x1="340" y1="514" x2="340" y2="534" class="arr" marker-end="url(#arrow)"/>
+
+        <g class="node c-gray" onclick="sendPrompt('深入說明系統架構的 Infrastructure / Cloud Layer：Region、AZ、CDN、面試常見問題')">
+          <rect x="40" y="534" width="600" height="64" rx="10" stroke-width="0.5"/>
+          <text class="th" x="160" y="560" text-anchor="middle" dominant-baseline="central">Infrastructure / Cloud Layer</text>
+          <text class="ts" x="160" y="580" text-anchor="middle" dominant-baseline="central">實體與雲端資源</text>
+          <text class="ts" x="480" y="560" text-anchor="middle" dominant-baseline="central">AWS · GCP · Azure · On-premise</text>
+          <text class="ts" x="480" y="580" text-anchor="middle" dominant-baseline="central">VPC · CDN · Load Balancer · Region / AZ</text>
+        </g>
+
+        <text class="ts" x="340" y="640" text-anchor="middle" dominant-baseline="central" opacity="0.5">↑ 點擊任一層深入了解技術細節與面試要點</text>
+        <rect x="620" y="114" width="48" height="484" rx="8" fill="none" stroke="#888780" stroke-width="0.5" stroke-dasharray="4 3"/>
+        <text class="ts" x="644" y="356" text-anchor="middle" dominant-baseline="central" transform="rotate(-90,644,356)" opacity="0.7">Security · Observability · Reliability · Scalability</text>
+      </svg>
+    </div>
+    <p style="font-size:13px;color:#4a4a45;line-height:1.7;padding: 0 4px;">以上七層是面試官最常用的心智模型。Backend 工程師主要活在 ③ Application Layer，但需要理解整條鏈的上下文，才能在系統設計題中說出「why this layer exists」的因果邏輯。點擊任一層觸發深入問答。</p>
+  </div>
+
+  <!-- ══════════════ TAB 2: 公司類型 ══════════════ -->
+  <div class="tab-panel" id="tab-company">
+    <div class="diagram-wrap">
+      <div class="diagram-label">COMPANY TYPE × TALENT MAP — 點擊格子了解該角色在各公司的要求</div>
+      <svg width="100%" viewBox="0 0 680 860" role="img">
+        <title>不同公司類型的人才能力地圖</title>
+        <desc>從技術層次出發，對應 Google、接案公司、獨立工作者三種角色分布</desc>
+        <defs>
+          <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <g class="node c-blue" onclick="sendPrompt('Google 或大型科技公司（FAANG）需要哪些人才結構？各角色的技術深度要求？')">
+          <rect x="200" y="16" width="140" height="36" rx="8" stroke-width="0.5"/>
+          <text class="th" x="270" y="34" text-anchor="middle" dominant-baseline="central">Google / FAANG</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('接案公司或中小型產品公司需要哪些人才結構？跟大廠有什麼差異？')">
+          <rect x="354" y="16" width="140" height="36" rx="8" stroke-width="0.5"/>
+          <text class="th" x="424" y="34" text-anchor="middle" dominant-baseline="central">接案 / 自有產品</text>
+        </g>
+        <g class="node c-amber" onclick="sendPrompt('獨立工作者（Indie hacker、Freelancer）需要具備哪些技術能力？怎麼取捨？')">
+          <rect x="508" y="16" width="140" height="36" rx="8" stroke-width="0.5"/>
+          <text class="th" x="578" y="34" text-anchor="middle" dominant-baseline="central">獨立工作者</text>
+        </g>
+
+        <!-- UI / UX row -->
+        <g class="c-gray"><rect x="40" y="68" width="150" height="52" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="88" text-anchor="middle" dominant-baseline="central">UI / UX</text>
+          <text class="ts" x="115" y="106" text-anchor="middle" dominant-baseline="central">Design · Frontend</text>
+        </g>
+        <g class="node c-blue" onclick="sendPrompt('Google 的 UI/UX 工程師跟設計師如何分工？Frontend SWE 的定位？')">
+          <rect x="200" y="68" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="88" text-anchor="middle" dominant-baseline="central">設計師獨立職能</text>
+          <text class="ts" x="270" y="106" text-anchor="middle" dominant-baseline="central">Frontend SWE 專職</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('接案公司的 UI/UX 工程師通常要做什麼？全端工程師要懂多少設計？')">
+          <rect x="354" y="68" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="88" text-anchor="middle" dominant-baseline="central">工程師兼顧設計</text>
+          <text class="ts" x="424" y="106" text-anchor="middle" dominant-baseline="central">Figma 基本操作</text>
+        </g>
+        <g class="node c-amber" onclick="sendPrompt('獨立工作者要自己做 UI/UX 嗎？用哪些工具最有效率？')">
+          <rect x="508" y="68" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="88" text-anchor="middle" dominant-baseline="central">自己設計 or 模板</text>
+          <text class="ts" x="578" y="106" text-anchor="middle" dominant-baseline="central">Tailwind · shadcn</text>
+        </g>
+
+        <!-- Full-stack / Application -->
+        <g class="c-purple"><rect x="40" y="130" width="150" height="52" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="150" text-anchor="middle" dominant-baseline="central">Full-stack / App</text>
+          <text class="ts" x="115" y="168" text-anchor="middle" dominant-baseline="central">HTTP · REST · Auth</text>
+        </g>
+        <g class="node c-blue" onclick="sendPrompt('Google SWE 的 Application Layer 技術深度要求？面試考什麼？')">
+          <rect x="200" y="130" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="150" text-anchor="middle" dominant-baseline="central">Backend SWE 深專</text>
+          <text class="ts" x="270" y="168" text-anchor="middle" dominant-baseline="central">系統設計必考</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('接案公司全端工程師需要具備哪些 Application Layer 技能？')">
+          <rect x="354" y="130" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="150" text-anchor="middle" dominant-baseline="central">全端核心技能</text>
+          <text class="ts" x="424" y="168" text-anchor="middle" dominant-baseline="central">REST · Auth · DB</text>
+        </g>
+        <g class="node c-amber" onclick="sendPrompt('獨立工作者的 Application Layer 最低需要具備什麼？怎麼快速上手？')">
+          <rect x="508" y="130" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="150" text-anchor="middle" dominant-baseline="central">必備核心</text>
+          <text class="ts" x="578" y="168" text-anchor="middle" dominant-baseline="central">框架 + BaaS 優先</text>
+        </g>
+
+        <!-- Gateway / CI/CD -->
+        <g class="c-teal"><rect x="40" y="192" width="150" height="52" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="212" text-anchor="middle" dominant-baseline="central">Gateway · CI/CD</text>
+          <text class="ts" x="115" y="230" text-anchor="middle" dominant-baseline="central">Nginx · Pipeline</text>
+        </g>
+        <g class="node c-blue" onclick="sendPrompt('Google 的 CI/CD 是怎麼運作的？SRE 跟 SWE 在這層怎麼分工？')">
+          <rect x="200" y="192" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="212" text-anchor="middle" dominant-baseline="central">SRE 負責維運</text>
+          <text class="ts" x="270" y="230" text-anchor="middle" dominant-baseline="central">SWE 只寫 pipeline</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('接案公司全端工程師需要懂多少 Nginx 跟 CI/CD？推薦哪些工具？')">
+          <rect x="354" y="192" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="212" text-anchor="middle" dominant-baseline="central">工程師兼顧</text>
+          <text class="ts" x="424" y="230" text-anchor="middle" dominant-baseline="central">GitHub Actions · Nginx</text>
+        </g>
+        <g class="node c-amber" onclick="sendPrompt('獨立工作者的 CI/CD 跟 Gateway 怎麼用最省力？Vercel、Railway 這類平台適合嗎？')">
+          <rect x="508" y="192" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="212" text-anchor="middle" dominant-baseline="central">平台托管優先</text>
+          <text class="ts" x="578" y="230" text-anchor="middle" dominant-baseline="central">Vercel · Railway</text>
+        </g>
+
+        <!-- Container / K8s -->
+        <g class="c-green"><rect x="40" y="254" width="150" height="52" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="274" text-anchor="middle" dominant-baseline="central">Container / K8s</text>
+          <text class="ts" x="115" y="292" text-anchor="middle" dominant-baseline="central">Docker · Kubernetes</text>
+        </g>
+        <g class="node c-blue" onclick="sendPrompt('Google 的 Container 跟 K8s 技術深度要求？SRE 跟 DevOps 工程師的職責？')">
+          <rect x="200" y="254" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="274" text-anchor="middle" dominant-baseline="central">DevOps / SRE 深專</text>
+          <text class="ts" x="270" y="292" text-anchor="middle" dominant-baseline="central">K8s 內部深度定制</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('接案公司需要懂多深的 Docker 和 K8s？Full-stack 工程師需要會嗎？')">
+          <rect x="354" y="254" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="274" text-anchor="middle" dominant-baseline="central">Docker 必備</text>
+          <text class="ts" x="424" y="292" text-anchor="middle" dominant-baseline="central">K8s 基礎了解</text>
+        </g>
+        <g class="node c-amber" onclick="sendPrompt('獨立工作者需要用 Docker 嗎？什麼時候才需要 K8s？')">
+          <rect x="508" y="254" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="274" text-anchor="middle" dominant-baseline="central">Docker 夠用</text>
+          <text class="ts" x="578" y="292" text-anchor="middle" dominant-baseline="central">K8s 通常不需要</text>
+        </g>
+
+        <!-- Observability -->
+        <g class="c-amber"><rect x="40" y="316" width="150" height="52" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="336" text-anchor="middle" dominant-baseline="central">Observability</text>
+          <text class="ts" x="115" y="354" text-anchor="middle" dominant-baseline="central">Metrics · Trace · Log</text>
+        </g>
+        <g class="node c-blue" onclick="sendPrompt('Google SRE 的 Observability 職責？SLO、Error budget 是什麼？')">
+          <rect x="200" y="316" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="336" text-anchor="middle" dominant-baseline="central">SRE 核心職能</text>
+          <text class="ts" x="270" y="354" text-anchor="middle" dominant-baseline="central">SLO · Error budget</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('接案公司的 Observability 最低要做到什麼程度？推薦哪些工具？')">
+          <rect x="354" y="316" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="336" text-anchor="middle" dominant-baseline="central">基礎 Log + Alert</text>
+          <text class="ts" x="424" y="354" text-anchor="middle" dominant-baseline="central">Sentry · Grafana</text>
+        </g>
+        <g class="node c-amber" onclick="sendPrompt('獨立工作者需要做 Observability 嗎？最低限度要監控什麼？')">
+          <rect x="508" y="316" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="336" text-anchor="middle" dominant-baseline="central">Error log 即可</text>
+          <text class="ts" x="578" y="354" text-anchor="middle" dominant-baseline="central">Sentry 免費版</text>
+        </g>
+
+        <!-- Network / OS -->
+        <g class="c-coral"><rect x="40" y="378" width="150" height="52" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="398" text-anchor="middle" dominant-baseline="central">Network / OS</text>
+          <text class="ts" x="115" y="416" text-anchor="middle" dominant-baseline="central">TCP · Kernel · TLS</text>
+        </g>
+        <g class="node c-blue" onclick="sendPrompt('Google SWE 面試的 Network 跟 OS 考題有哪些？需要了解到什麼深度？')">
+          <rect x="200" y="378" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="398" text-anchor="middle" dominant-baseline="central">面試必考</text>
+          <text class="ts" x="270" y="416" text-anchor="middle" dominant-baseline="central">深度理解 TCP · OS</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('接案公司工程師需要懂多少 TCP 和 OS 知識？')">
+          <rect x="354" y="378" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="398" text-anchor="middle" dominant-baseline="central">HTTP 層了解即可</text>
+          <text class="ts" x="424" y="416" text-anchor="middle" dominant-baseline="central">TCP 基本概念</text>
+        </g>
+        <g class="node c-amber" onclick="sendPrompt('獨立工作者需要懂 Network 跟 OS 底層嗎？')">
+          <rect x="508" y="378" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="398" text-anchor="middle" dominant-baseline="central">幾乎不需要</text>
+          <text class="ts" x="578" y="416" text-anchor="middle" dominant-baseline="central">遇到再查即可</text>
+        </g>
+
+        <!-- Hardware -->
+        <g class="c-gray"><rect x="40" y="440" width="150" height="52" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="460" text-anchor="middle" dominant-baseline="central">Hardware</text>
+          <text class="ts" x="115" y="478" text-anchor="middle" dominant-baseline="central">CPU · Memory · SSD</text>
+        </g>
+        <g class="node c-blue" onclick="sendPrompt('Google 哪些角色需要了解 Hardware 層？需要到什麼深度？')">
+          <rect x="200" y="440" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="460" text-anchor="middle" dominant-baseline="central">Infra / SRE 需要</text>
+          <text class="ts" x="270" y="478" text-anchor="middle" dominant-baseline="central">效能工程師深專</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('接案公司需要硬體層知識嗎？什麼情況下才會碰到？')">
+          <rect x="354" y="440" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="460" text-anchor="middle" dominant-baseline="central">幾乎不需要</text>
+          <text class="ts" x="424" y="478" text-anchor="middle" dominant-baseline="central">雲端已抽象化</text>
+        </g>
+        <g class="node c-amber" onclick="sendPrompt('獨立工作者需要懂硬體層嗎？')">
+          <rect x="508" y="440" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="460" text-anchor="middle" dominant-baseline="central">不需要</text>
+          <text class="ts" x="578" y="478" text-anchor="middle" dominant-baseline="central">雲服務全包</text>
+        </g>
+
+        <!-- Summary -->
+        <line x1="40" y1="516" x2="640" y2="516" stroke="#c8c6be" stroke-width="0.5"/>
+        <g class="c-gray"><rect x="40" y="528" width="150" height="52" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="548" text-anchor="middle" dominant-baseline="central">角色特徵</text>
+        </g>
+        <g class="node c-blue" onclick="sendPrompt('想進 Google 或 FAANG，最重要的準備方向是什麼？系統設計面試怎麼準備？')">
+          <rect x="200" y="528" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="548" text-anchor="middle" dominant-baseline="central">深度專精單一領域</text>
+          <text class="ts" x="270" y="566" text-anchor="middle" dominant-baseline="central">分工極細 · 流程重</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('想在接案公司或中小型產品公司發展，最重要的技能組合是什麼？')">
+          <rect x="354" y="528" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="548" text-anchor="middle" dominant-baseline="central">廣度 + 足夠深度</text>
+          <text class="ts" x="424" y="566" text-anchor="middle" dominant-baseline="central">交付速度優先</text>
+        </g>
+        <g class="node c-amber" onclick="sendPrompt('想成為獨立工作者，最重要的技能組合跟心態是什麼？')">
+          <rect x="508" y="528" width="140" height="52" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="548" text-anchor="middle" dominant-baseline="central">極致槓桿工具</text>
+          <text class="ts" x="578" y="566" text-anchor="middle" dominant-baseline="central">產品思維第一</text>
+        </g>
+
+        <text class="ts" x="340" y="840" text-anchor="middle" opacity="0.4">點擊任意格子深入了解該角色在該層的要求</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══════════════ TAB 3: 工程師角色深度 ══════════════ -->
+  <div class="tab-panel" id="tab-roles">
+    <div class="diagram-wrap">
+      <div class="diagram-label">ENGINEER ROLE DEPTH COMPARISON — 點擊格子深入了解</div>
+      <svg width="100%" viewBox="0 0 680 860" role="img">
+        <title>三種工程師角色技術深度對比</title>
+        <desc>Full-stack/Backend、DevOps/SRE、Systems/Infra 三種角色在各技術層的涵蓋深度比較</desc>
+        <defs>
+          <marker id="arrow3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- Headers -->
+        <g class="node c-purple" onclick="sendPrompt('Full-stack / Backend Engineer 的完整技術能力要求、面試考點、職涯發展路徑')">
+          <rect x="200" y="14" width="140" height="44" rx="8" stroke-width="0.5"/>
+          <text class="th" x="270" y="31" text-anchor="middle" dominant-baseline="central">Full-stack /</text>
+          <text class="th" x="270" y="49" text-anchor="middle" dominant-baseline="central">Backend</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('DevOps / SRE 的完整技術能力要求、面試考點、跟 Backend 的分工界線')">
+          <rect x="354" y="14" width="140" height="44" rx="8" stroke-width="0.5"/>
+          <text class="th" x="424" y="31" text-anchor="middle" dominant-baseline="central">DevOps /</text>
+          <text class="th" x="424" y="49" text-anchor="middle" dominant-baseline="central">SRE</text>
+        </g>
+        <g class="node c-coral" onclick="sendPrompt('Systems / Infra Engineer 的完整技術能力要求、面試考點、跟 SRE 的分工界線')">
+          <rect x="508" y="14" width="140" height="44" rx="8" stroke-width="0.5"/>
+          <text class="th" x="578" y="31" text-anchor="middle" dominant-baseline="central">Systems /</text>
+          <text class="th" x="578" y="49" text-anchor="middle" dominant-baseline="central">Infra</text>
+        </g>
+
+        <!-- Legend -->
+        <rect x="42" y="22" width="14" height="14" rx="2" fill="#1D9E75" opacity="0.85"/>
+        <text class="ts" x="62" y="29" dominant-baseline="central">核心</text>
+        <rect x="42" y="42" width="14" height="14" rx="2" fill="#888780" opacity="0.35"/>
+        <text class="ts" x="62" y="49" dominant-baseline="central">了解即可</text>
+
+        <!-- UI / Frontend -->
+        <g class="c-gray"><rect x="40" y="76" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="91" text-anchor="middle" dominant-baseline="central">UI / Frontend</text>
+          <text class="ts" x="115" y="107" text-anchor="middle" dominant-baseline="central">React · CSS · UX</text>
+        </g>
+        <g class="node c-purple" onclick="sendPrompt('Full-stack 工程師需要懂多深的 Frontend？React 跟 CSS 要到什麼程度？')">
+          <rect x="200" y="76" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="91" text-anchor="middle" dominant-baseline="central">核心（Full-stack）</text>
+          <text class="ts" x="270" y="107" text-anchor="middle" dominant-baseline="central">Backend 可略</text>
+        </g>
+        <g class="node c-gray" onclick="sendPrompt('DevOps / SRE 需要懂 Frontend 嗎？')">
+          <rect x="354" y="76" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="91" text-anchor="middle" dominant-baseline="central">不需要</text>
+          <text class="ts" x="424" y="107" text-anchor="middle" dominant-baseline="central">—</text>
+        </g>
+        <g class="node c-gray" onclick="sendPrompt('Systems / Infra 工程師需要懂 Frontend 嗎？')">
+          <rect x="508" y="76" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="91" text-anchor="middle" dominant-baseline="central">不需要</text>
+          <text class="ts" x="578" y="107" text-anchor="middle" dominant-baseline="central">—</text>
+        </g>
+
+        <!-- Application Protocol -->
+        <g class="c-purple"><rect x="40" y="130" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="145" text-anchor="middle" dominant-baseline="central">Application Protocol</text>
+          <text class="ts" x="115" y="161" text-anchor="middle" dominant-baseline="central">HTTP · REST · gRPC</text>
+        </g>
+        <g class="node c-purple" onclick="sendPrompt('Backend Engineer 的 HTTP / REST / gRPC 深度要求？面試考什麼？')">
+          <rect x="200" y="130" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="145" text-anchor="middle" dominant-baseline="central">核心技能</text>
+          <text class="ts" x="270" y="161" text-anchor="middle" dominant-baseline="central">API 設計 · Dubbo</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('DevOps / SRE 需要懂多深的 HTTP 和 gRPC？Gateway 設定跟 Backend 怎麼分工？')">
+          <rect x="354" y="130" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="145" text-anchor="middle" dominant-baseline="central">了解即可</text>
+          <text class="ts" x="424" y="161" text-anchor="middle" dominant-baseline="central">Gateway 設定層</text>
+        </g>
+        <g class="node c-gray" onclick="sendPrompt('Systems / Infra 工程師需要懂應用層協議嗎？')">
+          <rect x="508" y="130" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="145" text-anchor="middle" dominant-baseline="central">了解即可</text>
+          <text class="ts" x="578" y="161" text-anchor="middle" dominant-baseline="central">協議設計非主責</text>
+        </g>
+
+        <!-- Auth / Data / Scalability -->
+        <g class="c-purple"><rect x="40" y="184" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="199" text-anchor="middle" dominant-baseline="central">Auth · Data · Scale</text>
+          <text class="ts" x="115" y="215" text-anchor="middle" dominant-baseline="central">RBAC · Cache · Sharding</text>
+        </g>
+        <g class="node c-purple" onclick="sendPrompt('Backend 工程師的 Auth / DB / Scalability 核心知識點有哪些？面試怎麼考？')">
+          <rect x="200" y="184" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="199" text-anchor="middle" dominant-baseline="central">核心技能</text>
+          <text class="ts" x="270" y="215" text-anchor="middle" dominant-baseline="central">系統設計必考</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('DevOps / SRE 需要懂 DB sharding 和 Auth 嗎？跟 Backend 怎麼協作？')">
+          <rect x="354" y="184" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="199" text-anchor="middle" dominant-baseline="central">部分核心</text>
+          <text class="ts" x="424" y="215" text-anchor="middle" dominant-baseline="central">SLO · 容量規劃</text>
+        </g>
+        <g class="node c-gray" onclick="sendPrompt('Systems / Infra 工程師需要懂 Application 層的 Auth 和 DB 設計嗎？')">
+          <rect x="508" y="184" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="199" text-anchor="middle" dominant-baseline="central">了解即可</text>
+          <text class="ts" x="578" y="215" text-anchor="middle" dominant-baseline="central">—</text>
+        </g>
+
+        <!-- CI/CD · Gateway -->
+        <g class="c-teal"><rect x="40" y="238" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="253" text-anchor="middle" dominant-baseline="central">CI/CD · Gateway</text>
+          <text class="ts" x="115" y="269" text-anchor="middle" dominant-baseline="central">Nginx · Pipeline</text>
+        </g>
+        <g class="node c-purple" onclick="sendPrompt('Backend 工程師需要懂多深的 CI/CD 和 Nginx？跟 DevOps 怎麼分工？')">
+          <rect x="200" y="238" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="253" text-anchor="middle" dominant-baseline="central">使用層</text>
+          <text class="ts" x="270" y="269" text-anchor="middle" dominant-baseline="central">寫 pipeline · 用 GW</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('DevOps / SRE 的 CI/CD 和 Nginx 職責範圍？要到什麼深度？')">
+          <rect x="354" y="238" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="253" text-anchor="middle" dominant-baseline="central">核心技能</text>
+          <text class="ts" x="424" y="269" text-anchor="middle" dominant-baseline="central">設計 · 維運 · 調優</text>
+        </g>
+        <g class="node c-gray" onclick="sendPrompt('Systems / Infra 工程師的 CI/CD 責任到哪裡？')">
+          <rect x="508" y="238" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="253" text-anchor="middle" dominant-baseline="central">了解即可</text>
+          <text class="ts" x="578" y="269" text-anchor="middle" dominant-baseline="central">—</text>
+        </g>
+
+        <!-- Container / K8s -->
+        <g class="c-teal"><rect x="40" y="292" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="307" text-anchor="middle" dominant-baseline="central">Container / K8s</text>
+          <text class="ts" x="115" y="323" text-anchor="middle" dominant-baseline="central">Docker · Helm · K8s</text>
+        </g>
+        <g class="node c-purple" onclick="sendPrompt('Backend 工程師需要懂多深的 Docker 和 K8s？面試會考嗎？')">
+          <rect x="200" y="292" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="307" text-anchor="middle" dominant-baseline="central">Docker 核心</text>
+          <text class="ts" x="270" y="323" text-anchor="middle" dominant-baseline="central">K8s 基本操作</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('DevOps / SRE 的 K8s 深度要求？Helm、Operator、Autoscaling 要懂到什麼程度？')">
+          <rect x="354" y="292" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="307" text-anchor="middle" dominant-baseline="central">核心技能</text>
+          <text class="ts" x="424" y="323" text-anchor="middle" dominant-baseline="central">HPA · Helm · RBAC</text>
+        </g>
+        <g class="node c-coral" onclick="sendPrompt('Systems / Infra 工程師在 K8s 裡負責什麼？跟 DevOps 的界線在哪？')">
+          <rect x="508" y="292" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="307" text-anchor="middle" dominant-baseline="central">底層核心</text>
+          <text class="ts" x="578" y="323" text-anchor="middle" dominant-baseline="central">CNI · etcd · 節點調優</text>
+        </g>
+
+        <!-- Observability -->
+        <g class="c-teal"><rect x="40" y="346" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="361" text-anchor="middle" dominant-baseline="central">Observability</text>
+          <text class="ts" x="115" y="377" text-anchor="middle" dominant-baseline="central">Metrics · Trace · Log</text>
+        </g>
+        <g class="node c-purple" onclick="sendPrompt('Backend 工程師需要自己做 Observability 嗎？需要懂到什麼程度？')">
+          <rect x="200" y="346" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="361" text-anchor="middle" dominant-baseline="central">使用層</text>
+          <text class="ts" x="270" y="377" text-anchor="middle" dominant-baseline="central">加 trace · 看 metric</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('SRE 的 Observability 核心職責？SLO、Error budget、Alerting 怎麼設計？')">
+          <rect x="354" y="346" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="361" text-anchor="middle" dominant-baseline="central">核心技能</text>
+          <text class="ts" x="424" y="377" text-anchor="middle" dominant-baseline="central">SLO · Alerting 設計</text>
+        </g>
+        <g class="node c-coral" onclick="sendPrompt('Systems / Infra 工程師在 Observability 層負責什麼？底層 eBPF 監控是什麼？')">
+          <rect x="508" y="346" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="361" text-anchor="middle" dominant-baseline="central">底層監控</text>
+          <text class="ts" x="578" y="377" text-anchor="middle" dominant-baseline="central">eBPF · Kernel metric</text>
+        </g>
+
+        <!-- Network Protocol -->
+        <g class="c-coral"><rect x="40" y="400" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="415" text-anchor="middle" dominant-baseline="central">Network Protocol</text>
+          <text class="ts" x="115" y="431" text-anchor="middle" dominant-baseline="central">TCP · TLS · DNS</text>
+        </g>
+        <g class="node c-gray" onclick="sendPrompt('Backend 工程師需要懂多深的 TCP 和 TLS？什麼情況下需要深入？')">
+          <rect x="200" y="400" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="415" text-anchor="middle" dominant-baseline="central">了解即可</text>
+          <text class="ts" x="270" y="431" text-anchor="middle" dominant-baseline="central">HTTP 層使用為主</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('DevOps / SRE 需要懂多深的 TCP · TLS · DNS？網路故障排查怎麼做？')">
+          <rect x="354" y="400" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="415" text-anchor="middle" dominant-baseline="central">核心技能</text>
+          <text class="ts" x="424" y="431" text-anchor="middle" dominant-baseline="central">故障排查 · mTLS</text>
+        </g>
+        <g class="node c-coral" onclick="sendPrompt('Systems / Infra 工程師的網路深度要求？DPDK、kernel bypass 是什麼？')">
+          <rect x="508" y="400" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="415" text-anchor="middle" dominant-baseline="central">深度核心</text>
+          <text class="ts" x="578" y="431" text-anchor="middle" dominant-baseline="central">DPDK · packet 設計</text>
+        </g>
+
+        <!-- OS / Kernel -->
+        <g class="c-coral"><rect x="40" y="454" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="469" text-anchor="middle" dominant-baseline="central">OS / Kernel</text>
+          <text class="ts" x="115" y="485" text-anchor="middle" dominant-baseline="central">Process · I/O · cgroup</text>
+        </g>
+        <g class="node c-gray" onclick="sendPrompt('Backend 工程師需要懂 OS 和 Kernel 嗎？什麼情況下會用到？')">
+          <rect x="200" y="454" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="469" text-anchor="middle" dominant-baseline="central">面試需要</text>
+          <text class="ts" x="270" y="485" text-anchor="middle" dominant-baseline="central">Thread · I/O 模型</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('DevOps / SRE 的 OS 和 Kernel 深度？cgroup、namespace、Linux 調優')">
+          <rect x="354" y="454" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="469" text-anchor="middle" dominant-baseline="central">核心技能</text>
+          <text class="ts" x="424" y="485" text-anchor="middle" dominant-baseline="central">cgroup · 系統調優</text>
+        </g>
+        <g class="node c-coral" onclick="sendPrompt('Systems / Infra 工程師的 Kernel 深度要求？eBPF、系統呼叫、Kernel module')">
+          <rect x="508" y="454" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="469" text-anchor="middle" dominant-baseline="central">深度核心</text>
+          <text class="ts" x="578" y="485" text-anchor="middle" dominant-baseline="central">eBPF · Kernel module</text>
+        </g>
+
+        <!-- Hardware -->
+        <g class="c-coral"><rect x="40" y="508" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="523" text-anchor="middle" dominant-baseline="central">Hardware</text>
+          <text class="ts" x="115" y="539" text-anchor="middle" dominant-baseline="central">CPU · Memory · NIC</text>
+        </g>
+        <g class="node c-gray" onclick="sendPrompt('Backend 工程師需要懂硬體層嗎？效能優化什麼時候會需要這層知識？')">
+          <rect x="200" y="508" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="523" text-anchor="middle" dominant-baseline="central">幾乎不需要</text>
+          <text class="ts" x="270" y="539" text-anchor="middle" dominant-baseline="central">—</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('DevOps / SRE 需要懂硬體層嗎？容量規劃跟 NUMA 的關係？')">
+          <rect x="354" y="508" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="523" text-anchor="middle" dominant-baseline="central">了解即可</text>
+          <text class="ts" x="424" y="539" text-anchor="middle" dominant-baseline="central">容量規劃 · NUMA</text>
+        </g>
+        <g class="node c-coral" onclick="sendPrompt('Systems / Infra 工程師的硬體層核心知識？CPU affinity、NUMA、NIC offload')">
+          <rect x="508" y="508" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="523" text-anchor="middle" dominant-baseline="central">深度核心</text>
+          <text class="ts" x="578" y="539" text-anchor="middle" dominant-baseline="central">CPU affinity · NIC</text>
+        </g>
+
+        <!-- Divider -->
+        <line x1="40" y1="574" x2="640" y2="574" stroke="#c8c6be" stroke-width="0.5"/>
+
+        <!-- Core focus row -->
+        <g class="c-gray"><rect x="40" y="584" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="599" text-anchor="middle" dominant-baseline="central">核心問題</text>
+          <text class="ts" x="115" y="615" text-anchor="middle" dominant-baseline="central">這個角色在解決什麼</text>
+        </g>
+        <g class="node c-purple" onclick="sendPrompt('Backend / Full-stack 工程師的核心價值是什麼？面試官怎麼評估？')">
+          <rect x="200" y="584" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="599" text-anchor="middle" dominant-baseline="central">「功能正確且可擴展」</text>
+          <text class="ts" x="270" y="615" text-anchor="middle" dominant-baseline="central">業務邏輯 · 資料模型</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('DevOps / SRE 的核心價值是什麼？SRE 跟 DevOps 的本質差異？')">
+          <rect x="354" y="584" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="599" text-anchor="middle" dominant-baseline="central">「系統穩定且可交付」</text>
+          <text class="ts" x="424" y="615" text-anchor="middle" dominant-baseline="central">Reliability · Automation</text>
+        </g>
+        <g class="node c-coral" onclick="sendPrompt('Systems / Infra 工程師的核心價值是什麼？什麼公司會需要這個角色？')">
+          <rect x="508" y="584" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="599" text-anchor="middle" dominant-baseline="central">「效能極限 · 基礎可信」</text>
+          <text class="ts" x="578" y="615" text-anchor="middle" dominant-baseline="central">Latency · Throughput</text>
+        </g>
+
+        <!-- Interview focus -->
+        <g class="c-gray"><rect x="40" y="638" width="150" height="44" rx="5" stroke-width="0.5"/>
+          <text class="th" x="115" y="653" text-anchor="middle" dominant-baseline="central">面試重點</text>
+        </g>
+        <g class="node c-purple" onclick="sendPrompt('Backend / Full-stack 面試的經典題型有哪些？系統設計面試怎麼準備？')">
+          <rect x="200" y="638" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="270" y="653" text-anchor="middle" dominant-baseline="central">系統設計 · API 設計</text>
+          <text class="ts" x="270" y="669" text-anchor="middle" dominant-baseline="central">DB 選型 · Cache 策略</text>
+        </g>
+        <g class="node c-teal" onclick="sendPrompt('DevOps / SRE 面試的經典題型有哪些？怎麼準備？')">
+          <rect x="354" y="638" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="424" y="653" text-anchor="middle" dominant-baseline="central">K8s 原理 · CI/CD 設計</text>
+          <text class="ts" x="424" y="669" text-anchor="middle" dominant-baseline="central">故障排查 · SLO 設計</text>
+        </g>
+        <g class="node c-coral" onclick="sendPrompt('Systems / Infra 工程師面試的經典題型？底層原理怎麼考？')">
+          <rect x="508" y="638" width="140" height="44" rx="5" stroke-width="0.5"/>
+          <text class="ts" x="578" y="653" text-anchor="middle" dominant-baseline="central">OS 原理 · 網路深度</text>
+          <text class="ts" x="578" y="669" text-anchor="middle" dominant-baseline="central">效能分析 · 底層設計</text>
+        </g>
+
+        <!-- You are here -->
+        <line x1="40" y1="700" x2="640" y2="700" stroke="#c8c6be" stroke-width="0.5" stroke-dasharray="4 4"/>
+        <g class="node c-purple" onclick="sendPrompt('我是 Java Backend 工程師，目標是進國際公司，現在應該優先補哪些知識？')">
+          <rect x="200" y="712" width="140" height="36" rx="6" stroke-width="0.5"/>
+          <text class="th" x="270" y="730" text-anchor="middle" dominant-baseline="central">你目前在這裡</text>
+        </g>
+        <text class="ts" x="270" y="758" text-anchor="middle" opacity="0.7">Java Backend →</text>
+        <text class="ts" x="270" y="774" text-anchor="middle" opacity="0.7">往 FAANG Backend 強化</text>
+
+        <text class="ts" x="340" y="820" text-anchor="middle" opacity="0.4">點擊任意格子深入了解該角色在該層的要求與面試考點</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══════════════ TAB 4: 知識主題地圖 ══════════════ -->
+  <div class="tab-panel" id="tab-map">
+    <div id="role-bar">
+      <span>視角 /</span>
+      <button class="rbtn active" data-role="backend">Backend / Full-stack</button>
+      <button class="rbtn" data-role="devops">DevOps / SRE</button>
+      <button class="rbtn" data-role="infra">Systems / Infra</button>
+      <div id="legend">
+        <span class="leg"><span class="leg-dot leg-core"></span>核心</span>
+        <span class="leg"><span class="leg-dot leg-know"></span>需了解</span>
+        <span class="leg"><span class="leg-dot leg-skip"></span>可略</span>
+      </div>
+    </div>
+    <div id="layers"></div>
+    <div id="role-note"></div>
+  </div>
+</div>
+
+<script>
+// ── Tab switching ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ── Knowledge Map Data ──
+const DATA = [
+  { id:'ui', name:'UI / Frontend', sub:'React · Vue · CSS · Tailwind · UX', color:'#534AB7',
+    topics:[
+      { id:'react', name:'React / Vue', known:false,
+        problem:'瀏覽器如何高效更新 DOM？狀態怎麼管理不混亂？',
+        why:'Virtual DOM diff 算法只更新有變動的節點，減少重繪成本。React 引入單向資料流讓狀態可預測。',
+        tools:['React','Vue','Next.js','Svelte'], hl:'Next.js',
+        vs:'React 生態大、適合複雜應用；Vue 學習曲線低；Next.js 加入 SSR 解決 SEO 問題；Svelte 無 runtime 產物最小。',
+        roles:{backend:'know',devops:'skip',infra:'skip'},
+        extend:['SSR / CSR / SSG','BFF pattern','Web performance']},
+      { id:'css', name:'CSS / Tailwind', known:false,
+        problem:'樣式如何維護且不互相污染？',
+        why:'全域 CSS 在大型專案必然衝突。CSS Modules / BEM 做命名隔離；Tailwind 用 utility class 直接消滅命名問題。',
+        tools:['Tailwind','CSS Modules','styled-components','shadcn/ui'], hl:'Tailwind',
+        vs:'Tailwind 開發快但 HTML 雜亂；CSS Modules 乾淨但需額外設定；styled-components 讓樣式貼近元件但增加 bundle size。',
+        roles:{backend:'skip',devops:'skip',infra:'skip'},
+        extend:['Design system','Component library','CSS-in-JS']}
+    ]},
+  { id:'proto', name:'Application Protocol', sub:'HTTP · REST · gRPC · Dubbo · GraphQL · WebSocket', color:'#534AB7',
+    topics:[
+      { id:'http', name:'HTTP 1 / 2 / 3', known:false,
+        problem:'網路傳輸的瓶頸在哪？每個版本解決了什麼問題？',
+        why:'HTTP/1.1 有 head-of-line blocking；HTTP/2 引入 multiplexing 讓多請求並行；HTTP/3 改用 QUIC（UDP）把 HOL blocking 移到 transport 層解決。',
+        tools:['Nginx','Envoy','Wireshark','curl'], hl:'Nginx',
+        vs:'HTTP/2 在高延遲網路優勢明顯；HTTP/3 對封包丟失率高的行動網路改善最大；HTTP/1.1 仍是最廣泛支援的。',
+        roles:{backend:'core',devops:'know',infra:'know'},
+        extend:['QUIC 原理','WebSocket vs SSE','TLS 1.3']},
+      { id:'rest', name:'REST API 設計', known:false,
+        problem:'前後端或服務之間怎麼定義統一的溝通契約？',
+        why:'Stateless + Resource-based 設計讓服務可水平擴展；每個請求帶完整狀態讓 LB 可無感路由；URI 語義化讓 API 可讀。',
+        tools:['OpenAPI / Swagger','Postman','Spring MVC','Hapi'], hl:'OpenAPI / Swagger',
+        vs:'REST 適合 CRUD 對外 API；GraphQL 讓前端靈活查詢省去 over-fetch；gRPC 適合內部高效能服務間通訊。',
+        roles:{backend:'core',devops:'know',infra:'skip'},
+        extend:['API versioning 策略','Idempotency key','OpenAPI codegen']},
+      { id:'grpc', name:'gRPC', known:false,
+        problem:'微服務間 HTTP JSON 序列化太慢、payload 太大怎麼辦？',
+        why:'Protobuf 二進位序列化比 JSON 小 5–10x；基於 HTTP/2 原生 multiplexing；強型別 schema 讓雙方契約明確不易出錯。',
+        tools:['Protobuf','gRPC-Java','grpc-gateway','buf'], hl:'Protobuf',
+        vs:'gRPC 效能好但 debug 難、瀏覽器不能直接呼叫；REST 對外 API 更友善；Thrift 是另一個二進位 RPC 方案但生態較小。',
+        roles:{backend:'core',devops:'know',infra:'skip'},
+        extend:['Protobuf schema 設計','Streaming RPC','gRPC-gateway']},
+      { id:'dubbo', name:'Dubbo', known:false,
+        problem:'Java 微服務生態需要把服務發現、RPC、熔斷整合在一起怎麼辦？',
+        why:'Dubbo 將服務註冊（Nacos/ZK）、負載均衡、熔斷整進 RPC 框架，Java 工程師不用手動拼各種中間件。',
+        tools:['Apache Dubbo','Nacos','Zookeeper','Sentinel'], hl:'Apache Dubbo',
+        vs:'Dubbo 是 Java 生態整合方案；gRPC 是語言中立標準；Spring Cloud 體系更完整但更重；Dubbo 3.x 已支援 gRPC 協議。',
+        roles:{backend:'core',devops:'know',infra:'skip'},
+        extend:['Nacos 服務發現','Spring Cloud 對比','Dubbo 3 Triple 協議']},
+      { id:'graphql', name:'GraphQL', known:false,
+        problem:'REST API 回傳固定結構，前端經常 over-fetch 或 under-fetch 怎麼辦？',
+        why:'前端宣告想要的欄位，server 只回傳那些欄位；一次 request 可取得多個 resource，減少 round-trip。',
+        tools:['Apollo Server','GraphQL Java','Hasura','Strawberry'], hl:'Apollo Server',
+        vs:'GraphQL 靈活但複雜（N+1 問題、caching 難）；REST 簡單易 Cache；BFF 是另一個解法不改後端 API。',
+        roles:{backend:'know',devops:'skip',infra:'skip'},
+        extend:['N+1 問題與 DataLoader','Schema-first vs Code-first','Federation']}
+    ]},
+  { id:'auth', name:'Auth & Identity', sub:'SSO · CAS · OAuth 2.0 · JWT · RBAC · OIDC', color:'#1D9E75',
+    topics:[
+      { id:'sso', name:'SSO', known:true,
+        problem:'用戶登入一次就能訪問多個系統，怎麼實現？',
+        why:'集中式 Identity Provider 負責驗證並發 Token，各子系統只需驗 Token 不各自維護 session，用戶改密或停用帳號只改一處。',
+        tools:['Keycloak','Okta','Auth0','Microsoft Entra'], hl:'Keycloak',
+        vs:'SSO 解決多系統登入；OAuth 解決第三方授權；SAML 是企業老標準；OIDC 是基於 OAuth 的現代認證標準。',
+        roles:{backend:'core',devops:'know',infra:'skip'},
+        extend:['OIDC vs SAML','Keycloak 架構','Identity federation']},
+      { id:'cas', name:'CAS 協議', known:true,
+        problem:'組織內多個 Web 應用如何共享登入狀態？',
+        why:'CAS Server 統一驗證，發 Service Ticket 給各應用，各應用向 CAS 驗票而非各自存 session，票一旦用過即失效防重放。',
+        tools:['Apereo CAS','Spring Security CAS'], hl:'Apereo CAS',
+        vs:'CAS 是具體 SSO 實作協議；SAML 是 XML-heavy 的企業標準；OIDC 是現代替代（JSON-based，更適合行動端）。',
+        roles:{backend:'core',devops:'skip',infra:'skip'},
+        extend:['SAML 2.0 流程','OIDC 取代 CAS','Proxy Ticket 機制']},
+      { id:'oauth', name:'OAuth 2.0', known:false,
+        problem:'第三方應用如何在不拿到用戶密碼的情況下取得授權？',
+        why:'Authorization Code Flow：第三方只拿到有限範圍的 Access Token 而非密碼；Token 有效期短，Refresh Token 控制長期存取。',
+        tools:['OAuth 2.0 RFC','PKCE','Keycloak','Spring Security OAuth2'], hl:'PKCE',
+        vs:'Implicit Flow 已廢棄；Authorization Code + PKCE 是目前 SPA / Mobile 最佳實踐；Client Credentials 用於 M2M。',
+        roles:{backend:'core',devops:'skip',infra:'skip'},
+        extend:['PKCE flow 詳解','Refresh token rotation','OAuth scope 設計']},
+      { id:'jwt', name:'JWT', known:false,
+        problem:'如何在不查 DB 的情況下驗證用戶身份？',
+        why:'Token 自帶 Header.Payload.Signature，服務端只需用公鑰驗簽不需查 session store，天生支援水平擴展。',
+        tools:['JWT (RFC 7519)','jjwt (Java)','jose4j','Auth0 SDK'], hl:'jjwt (Java)',
+        vs:'JWT 無狀態易擴展但無法主動撤銷（須等 exp）；Opaque Token 可立即撤銷但每次需查 introspection endpoint；實務常混用。',
+        roles:{backend:'core',devops:'skip',infra:'skip'},
+        extend:['Token rotation 策略','JWK 公鑰驗簽','JWT 安全陷阱（alg:none）']},
+      { id:'rbac', name:'RBAC', known:true,
+        problem:'不同角色應有不同操作權限，怎麼設計才方便維護？',
+        why:'把權限綁在 Role 上而非 User 上，User 只需指派角色；Role 變動時不需逐一修改千個用戶的權限清單。',
+        tools:['Spring Security','Casbin','OPA (Open Policy Agent)','AWS IAM'], hl:'Casbin',
+        vs:'RBAC 簡單適合角色清晰的系統；ABAC 能根據屬性動態授權但複雜；ReBAC（Google Zanzibar）適合社交圖譜授權。',
+        roles:{backend:'core',devops:'skip',infra:'skip'},
+        extend:['ABAC 設計','OPA + Rego 語言','Google Zanzibar / ReBAC']}
+    ]},
+  { id:'data', name:'Data & Storage', sub:'DB · Cache · Sharding · ETL · CAP · Read replica', color:'#185FA5',
+    topics:[
+      { id:'etl', name:'ETL / ELT', known:true,
+        problem:'不同系統的資料如何整合到分析平台？順序有差嗎？',
+        why:'ETL（先轉換再載入）適合傳統 DW，資料量小或需嚴格清洗；ELT（先載入再轉換）搭配 Cloud DW 更具彈性。',
+        tools:['Apache Airflow','dbt','Apache Spark','Fivetran'], hl:'Apache Airflow',
+        vs:'ETL 適合資料量可控的傳統系統；ELT 搭配 Cloud DW 更省成本；Streaming ETL（Flink/Kafka Streams）用於即時需求。',
+        roles:{backend:'know',devops:'know',infra:'skip'},
+        extend:['Streaming ETL','Data lake vs Data warehouse','dbt 轉換模式']},
+      { id:'cache', name:'Cache 策略', known:false,
+        problem:'DB 查詢太慢，重複請求如何加速？寫入時怎麼保持一致？',
+        why:'Cache-aside：cache miss 才查 DB 最靈活；Write-through：寫 DB 同時寫 cache 確保一致；Write-back：先寫 cache 再非同步寫 DB 效能最高但有丟資料風險。',
+        tools:['Redis','Memcached','Caffeine (local)','Ehcache'], hl:'Redis',
+        vs:'Cache-aside 最通用；Write-through 一致性好但寫延遲增加；Write-back 效能最高但 cache 掛掉會丟資料；Local cache 最快但多節點需考慮失效廣播。',
+        roles:{backend:'core',devops:'know',infra:'skip'},
+        extend:['Redis Cluster 架構','Cache invalidation 策略','Hot key / Big key 問題']},
+      { id:'sharding', name:'DB Sharding', known:false,
+        problem:'單一 DB 撐不住龐大寫入量或儲存量怎麼辦？',
+        why:'Horizontal sharding 把資料按 shard key 分散到多個 DB，每個節點只存一部分資料，寫入壓力線性分散。',
+        tools:['Vitess','Citus (PostgreSQL)','ShardingSphere','TiDB'], hl:'ShardingSphere',
+        vs:'Read replica 解決讀壓力（不解決寫）；Vertical scaling 有天花板；Sharding 解決寫和儲存但跨 shard 查詢複雜；NewSQL（TiDB）試圖兩全。',
+        roles:{backend:'core',devops:'know',infra:'know'},
+        extend:['Consistent hashing','Cross-shard 查詢','Vitess 架構']},
+      { id:'cap', name:'CAP Theorem', known:false,
+        problem:'分散式系統在網路分區時一致性跟可用性只能選一個？',
+        why:'分散式系統遇到網路分區（P 無法避免）必須在 C（所有節點看到相同資料）和 A（仍然回應請求）之間取捨，沒有完美答案。',
+        tools:['Zookeeper (CP)','Cassandra (AP)','etcd (CP)','Consul'], hl:'etcd (CP)',
+        vs:'CP 系統（Zookeeper/etcd）犧牲可用性保一致性，適合 config 管理；AP 系統（Cassandra）犧牲強一致性保可用，適合高可用場景；RDBMS 在單機不適用 CAP。',
+        roles:{backend:'core',devops:'know',infra:'know'},
+        extend:['BASE vs ACID','Eventual consistency','PACELC theorem']},
+      { id:'replica', name:'Read Replica', known:false,
+        problem:'大量讀請求把 Primary DB 打爆，但又不想 Sharding 怎麼辦？',
+        why:'Primary 負責所有寫入，非同步複製到 Replica，讀請求路由到 Replica 減輕 Primary 壓力；複製延遲（replication lag）是主要取捨。',
+        tools:['MySQL Replication','PostgreSQL Streaming Replication','AWS RDS Multi-AZ'], hl:'PostgreSQL Streaming Replication',
+        vs:'同步複製：無 lag 但增加寫延遲；非同步複製：高效能但有 lag；Multi-AZ 是 HA 不是 Read Replica（不分散讀）。',
+        roles:{backend:'core',devops:'know',infra:'know'},
+        extend:['Replication lag 監控','CQRS 模式','Patroni HA']}
+    ]},
+  { id:'scale', name:'Scalability & Reliability', sub:'LB · Rate limit · Circuit breaker · Saga · Idempotency', color:'#993C1D',
+    topics:[
+      { id:'lb', name:'Load Balancer', known:false,
+        problem:'單一服務節點撐不住流量，如何分散請求？L4 和 L7 有什麼差？',
+        why:'L4 LB 只看 TCP/UDP，速度極快但不理解 HTTP；L7 LB 讀 HTTP Header/Path 可做智慧路由、A/B 測試、SSL termination。',
+        tools:['Nginx','HAProxy','AWS ALB (L7)','AWS NLB (L4)'], hl:'Nginx',
+        vs:'L4 延遲低適合 TCP stream；L7 功能多適合 HTTP；DNS LB 最簡單但 TTL 造成 failover 慢；Consistent hashing LB 避免 session 失效。',
+        roles:{backend:'know',devops:'core',infra:'core'},
+        extend:['Consistent hashing LB','Health check 設計','Sticky session 問題']},
+      { id:'ratelimit', name:'Rate Limiting', known:false,
+        problem:'如何防止惡意流量或單一用戶佔用過多資源？',
+        why:'Token bucket 允許突發流量（桶裡有 token 就放行）；Sliding window log 最精確但記憶體高；Fixed window 最簡單但邊界時刻會有 2x 流量問題。',
+        tools:['Redis + Lua script','Nginx limit_req','Kong rate-limit','Sentinel'], hl:'Redis + Lua script',
+        vs:'Token bucket 最通用允許合理突發；Leaky bucket 強制平滑輸出適合後端保護；Sliding window 精確適合 API 計費場景。',
+        roles:{backend:'core',devops:'core',infra:'skip'},
+        extend:['Distributed rate limit','Token bucket 實作','Redis INCR 計數器']},
+      { id:'cb', name:'Circuit Breaker', known:false,
+        problem:'下游服務故障時如何避免整個呼叫鏈崩潰（Cascading failure）？',
+        why:'當失敗率超過閾值進入 Open 狀態，直接回傳 fallback 不再等待超時，保護上游資源；半開狀態定期試探是否恢復。',
+        tools:['Resilience4j','Sentinel','Hystrix (deprecated)','go-circuit-breaker'], hl:'Resilience4j',
+        vs:'Resilience4j 是 Hystrix 的現代替代，函數式 API 更乾淨；Sentinel 是阿里系方案有更完整的流控和降級策略；兩者都支援 Java。',
+        roles:{backend:'core',devops:'know',infra:'skip'},
+        extend:['Bulkhead pattern','Retry with exponential backoff','Fallback 設計模式']},
+      { id:'saga', name:'Saga Pattern', known:false,
+        problem:'微服務跨多個 DB 的操作如何保持資料一致性（沒有跨 DB 的 transaction）？',
+        why:'傳統 2PC 在微服務下不可行（阻塞、耦合）。Saga 把分散式交易拆成本地交易序列，每步附補償操作（Compensating transaction）。',
+        tools:['Axon Framework','Temporal','Eventuate Tram','手動 Outbox'], hl:'Temporal',
+        vs:'Choreography：各服務監聽事件去中心化，難追蹤全貌；Orchestration：有中央協調者易追蹤但成為單點；Temporal 提供 Workflow as Code 讓 Orchestration 更易維護。',
+        roles:{backend:'core',devops:'skip',infra:'skip'},
+        extend:['Outbox pattern','Idempotency key 設計','Temporal workflow']},
+      { id:'idempotent', name:'Idempotency', known:false,
+        problem:'網路重試導致同一操作被執行多次（重複扣款、重複訂單）怎麼防止？',
+        why:'Idempotency Key：客戶端帶唯一 key，服務端記錄已處理的 key，相同 key 直接回傳之前的結果不重複執行。',
+        tools:['Redis SET NX（唯一 key 鎖）','DB unique constraint','Stripe Idempotency API'], hl:'Redis SET NX（唯一 key 鎖）',
+        vs:'DB unique constraint 最可靠但有效能問題；Redis NX 快但 Redis 掛掉有風險；兩層結合是最佳實踐。',
+        roles:{backend:'core',devops:'skip',infra:'skip'},
+        extend:['At-least-once vs exactly-once','Kafka consumer 冪等','Outbox pattern']}
+    ]},
+  { id:'gateway', name:'Gateway · Nginx · CI/CD', sub:'API Gateway · Reverse proxy · Pipeline · GitOps', color:'#0F6E56',
+    topics:[
+      { id:'apigw', name:'API Gateway', known:false,
+        problem:'微服務對外暴露 N 個端點，如何統一管理認證、路由、限流？',
+        why:'Gateway 是所有流量的入口，把橫切關注點（Auth、Rate limit、Log、Tracing）集中處理，各微服務只管自己的業務邏輯。',
+        tools:['Kong','Apache APISIX','AWS API Gateway','Spring Cloud Gateway'], hl:'Kong',
+        vs:'Kong 外掛豐富適合自建大型系統；APISIX 效能更高；AWS API Gateway 無需自建維運；Spring Cloud Gateway 適合 Spring 全家桶。',
+        roles:{backend:'know',devops:'core',infra:'know'},
+        extend:['Service mesh vs API Gateway','BFF pattern','mTLS at gateway']},
+      { id:'nginx', name:'Nginx', known:false,
+        problem:'如何做 Reverse proxy、靜態資源服務、SSL termination？',
+        why:'Nginx 採事件驅動非同步架構（epoll），單 worker 能同時處理數萬個連線，比 Apache 的 process-per-request 模型省數十倍記憶體。',
+        tools:['Nginx','OpenResty','Traefik','Caddy'], hl:'Nginx',
+        vs:'Nginx 穩定成熟是業界標準；Traefik 對 Container 環境自動服務發現更友善；Caddy 自動 HTTPS 設定最簡單適合小型部署。',
+        roles:{backend:'know',devops:'core',infra:'know'},
+        extend:['Nginx worker tuning','OpenResty Lua 擴展','Traefik + K8s Ingress']},
+      { id:'cicd', name:'CI/CD', known:false,
+        problem:'程式碼合併後如何自動驗證品質並安全部署到生產環境？',
+        why:'自動化 Build → Test → Deploy 消除人工操作的不確定性，讓 release 從危險事件變成日常操作，降低 MTTR（平均修復時間）。',
+        tools:['GitHub Actions','GitLab CI','Jenkins','ArgoCD (GitOps)'], hl:'GitHub Actions',
+        vs:'GitHub Actions 與 GitHub 整合最順；GitLab CI 適合自建環境；Jenkins 最靈活但維護成本高；ArgoCD 專注 GitOps K8s 部署，宣告式管理。',
+        roles:{backend:'know',devops:'core',infra:'know'},
+        extend:['GitOps 原則','Blue-green deploy','Canary deploy','ArgoCD rollout']}
+    ]},
+  { id:'container', name:'Container & Orchestration', sub:'Docker · Kubernetes · Helm · Service mesh', color:'#3B6D11',
+    topics:[
+      { id:'docker', name:'Docker', known:false,
+        problem:'開發環境跟生產環境不一致（works on my machine）怎麼解決？',
+        why:'Container 把應用與其依賴打包成 image，隔離於 OS 之上，跑在任何有 container runtime 的環境都一致；比 VM 輕量因為共享 OS kernel。',
+        tools:['Docker','Podman','containerd','BuildKit'], hl:'Docker',
+        vs:'Docker 最通用有 daemon 管理；Podman 無 daemon 更安全（rootless）；containerd 是 K8s 底層用的精簡 runtime；都遵循 OCI 標準。',
+        roles:{backend:'know',devops:'core',infra:'core'},
+        extend:['Multi-stage build 優化','Docker networking 模式','OCI image spec']},
+      { id:'k8s', name:'Kubernetes', known:false,
+        problem:'大量 container 如何自動調度、擴縮容、做到自我修復？',
+        why:'宣告式管理：你描述「期望狀態」，K8s control plane 持續確保實際狀態與期望一致；掛掉的 pod 自動重啟，節點掛掉自動遷移。',
+        tools:['kubectl','Helm','Kustomize','K3s (輕量)'], hl:'Helm',
+        vs:'K8s 功能完整但複雜，學習曲線陡；K3s 輕量適合邊緣和開發；ECS 全托管省維運；Nomad 更靈活但生態小。',
+        roles:{backend:'know',devops:'core',infra:'core'},
+        extend:['HPA / VPA 自動擴縮容','Operator pattern','K8s Networking (CNI)','etcd 角色']},
+      { id:'mesh', name:'Service Mesh', known:false,
+        problem:'微服務間的 mTLS、重試、Circuit break 能否不改程式碼就自動注入？',
+        why:'Sidecar proxy 注入每個 pod，攔截所有進出流量，在 infra 層統一處理可觀測性、安全策略、流量控制，業務程式碼零感知。',
+        tools:['Istio','Linkerd','Envoy','Cilium (eBPF)'], hl:'Istio',
+        vs:'Istio 功能最全但 Sidecar 增加資源開銷；Linkerd 輕量易上手；Cilium 基於 eBPF 無 Sidecar overhead 是新趨勢。',
+        roles:{backend:'skip',devops:'core',infra:'core'},
+        extend:['eBPF 原理','mTLS 自動化','Traffic shifting（Canary）','Ambient mesh']}
+    ]},
+  { id:'obs', name:'Observability', sub:'Metrics · Logs · Traces · SLO · Alerting', color:'#854F0B',
+    topics:[
+      { id:'metrics', name:'Metrics / Alerting', known:false,
+        problem:'系統現在是否健康？如何在用戶發現問題前主動感知？',
+        why:'時序資料庫讓你聚合大量指標（請求數、延遲、錯誤率）；Alert rule 在指標超出閾值時自動通知，縮短 MTTD（平均偵測時間）。',
+        tools:['Prometheus','Grafana','Datadog','VictoriaMetrics'], hl:'Prometheus',
+        vs:'Prometheus 開源標準適合自建；Datadog SaaS 開箱即用但貴；VictoriaMetrics 在高基數場景效能更好。',
+        roles:{backend:'know',devops:'core',infra:'core'},
+        extend:['SLO / Error budget 設計','PromQL 查詢語言','Alertmanager 路由']},
+      { id:'tracing', name:'Distributed Tracing', known:false,
+        problem:'一個請求跨越 10 個微服務，哪一段最慢？哪裡出錯？',
+        why:'Trace ID 貫穿整條呼叫鏈，每個服務建立 Span 記錄自己的耗時，最終組成完整 Waterfall，讓分散式系統的請求路徑可視化。',
+        tools:['OpenTelemetry','Jaeger','Zipkin','Tempo'], hl:'OpenTelemetry',
+        vs:'OpenTelemetry 是廠商中立的標準 SDK（推薦）；Jaeger / Zipkin 是 backend storage；DataDog APM 是 SaaS 整合方案；Tempo + Grafana 是低成本自建組合。',
+        roles:{backend:'know',devops:'core',infra:'know'},
+        extend:['OpenTelemetry SDK 整合','Trace sampling 策略','Exemplars 連結 Metrics']},
+      { id:'logging', name:'Centralized Logging', known:false,
+        problem:'幾十個服務的 log 散落各處，出問題時如何快速搜尋關聯？',
+        why:'Structured logging（JSON 格式）讓 log 可被機器解析；集中儲存 + 搜尋引擎讓跨服務 trace id 搜尋從分鐘縮短到秒。',
+        tools:['ELK Stack','Loki + Grafana','Fluentd / Vector','Sentry'], hl:'Loki + Grafana',
+        vs:'ELK 功能強大但資源消耗高；Loki 輕量只索引 label 不索引全文，適合已有 Prometheus + Grafana 的環境；Sentry 專注 error tracking。',
+        roles:{backend:'know',devops:'core',infra:'know'},
+        extend:['Structured logging 設計','Log retention 策略','Loki LogQL']}
+    ]},
+  { id:'network', name:'Network Protocol', sub:'TCP · UDP · TLS · DNS · QUIC', color:'#D85A30',
+    topics:[
+      { id:'tcp', name:'TCP / IP', known:false,
+        problem:'網路傳輸如何保證資料可靠送達且順序正確？',
+        why:'三次握手建立連接確認雙方能收發；序號 + 確認號保證順序和不遺失；滑動視窗控制流量；擁塞控制避免網路崩潰。',
+        tools:['Wireshark','tcpdump','ss / netstat','curl'], hl:'Wireshark',
+        vs:'TCP 可靠但有 HOL blocking 和 連線建立開銷；UDP 快速無保證適合音視頻；QUIC 在 UDP 上實作可靠性，解決 TCP 的 HOL blocking。',
+        roles:{backend:'know',devops:'core',infra:'core'},
+        extend:['TCP tuning（SO_REUSEPORT）','QUIC 協議原理','Congestion control 演算法']},
+      { id:'tls', name:'TLS / mTLS', known:false,
+        problem:'網路傳輸如何防止被竊聽和篡改？服務間如何雙向驗證身份？',
+        why:'非對稱加密交換對稱金鑰（握手期），後續用對稱加密傳輸（性能）；mTLS 讓客戶端也出示憑證，解決服務間 Zero Trust 信任問題。',
+        tools:['OpenSSL','Let\'s Encrypt','cert-manager (K8s)','SPIFFE'], hl:'cert-manager (K8s)',
+        vs:'TLS 1.2 需 2 RTT 握手；TLS 1.3 優化為 1 RTT；mTLS 雙向驗證適合 Zero Trust 架構；Service mesh 可自動化 mTLS 憑證輪換。',
+        roles:{backend:'know',devops:'core',infra:'core'},
+        extend:['Zero Trust 架構','Certificate rotation 自動化','SPIFFE / SPIRE']},
+      { id:'dns', name:'DNS', known:false,
+        problem:'如何把人類可讀的域名解析成 IP？服務發現和 Failover 怎麼用 DNS 做？',
+        why:'Recursive resolver 代替客戶端查詢；Authoritative server 是最終答案的來源；TTL 控制快取時間，短 TTL 讓 Failover 更快但增加查詢壓力。',
+        tools:['CoreDNS (K8s 內建)','Route53','Cloudflare DNS','dig / nslookup'], hl:'CoreDNS (K8s 內建)',
+        vs:'Route53 支援 Latency-based / Geolocation routing；Cloudflare DNS 速度快且有 DDoS 防護；CoreDNS 可寫 plugin 自訂解析邏輯，是 K8s 內部服務發現的基礎。',
+        roles:{backend:'know',devops:'core',infra:'core'},
+        extend:['DNS-based 服務發現','GeoDNS / Anycast','CoreDNS plugin 開發']}
+    ]},
+  { id:'os', name:'OS / Kernel', sub:'Process · Thread · I/O 模型 · cgroup · eBPF', color:'#3B6D11',
+    topics:[
+      { id:'io', name:'I/O 模型 / epoll', known:false,
+        problem:'如何用少量 thread 處理大量並發連線？',
+        why:'Blocking I/O 每個連線需一個 thread，C10K 問題就此而來；epoll 讓單 thread 監控數萬個 fd 的狀態變化，是 Nginx / Node.js 高效能的根本。',
+        tools:['epoll (Linux)','io_uring','libuv','Netty (Java)'], hl:'Netty (Java)',
+        vs:'select/poll 效能差（O(n) 掃描）；epoll 是 O(1) 事件通知；io_uring 是 Linux 5.1+ 的更新非同步 I/O 機制，零拷貝效能更好。',
+        roles:{backend:'know',devops:'know',infra:'core'},
+        extend:['io_uring 原理','Netty pipeline 架構','Event loop 模型']},
+      { id:'thread', name:'Thread / Coroutine', known:false,
+        problem:'並發任務如何在不浪費 CPU 的情況下高效執行？',
+        why:'OS Thread 有 Context switch 和 stack 記憶體開銷；Coroutine / Virtual Thread 在 user space 切換，省去系統呼叫，百萬並發成為可能。',
+        tools:['Java Virtual Thread (Project Loom)','Kotlin Coroutines','Go goroutine','async/await'], hl:'Java Virtual Thread (Project Loom)',
+        vs:'OS Thread 最通用但重（1MB stack）；Java Virtual Thread 讓傳統 blocking code 透明地變非阻塞；Go goroutine 是語言原生輕量並發（4KB stack）。',
+        roles:{backend:'know',devops:'skip',infra:'core'},
+        extend:['Project Loom 詳解','Go scheduler 原理','Async/Await 本質']},
+      { id:'cgroup', name:'cgroup / namespace', known:false,
+        problem:'如何隔離不同行程的資源使用，讓 container 成為可能？',
+        why:'Linux namespace 提供視圖隔離（PID、網路、檔案系統隔離）；cgroup 限制並記錄 CPU / Memory / IO 用量 — Docker 的底層本質就是這兩個 Linux feature。',
+        tools:['systemd','Docker (上層封裝)','K8s resource limits','cgroupv2'], hl:'cgroupv2',
+        vs:'namespace 隔離可見性（各自看到不同的世界）；cgroup 隔離資源量（限制用多少）；VM 用 hypervisor 做完整隔離但更重；seccomp 進一步限制 system call。',
+        roles:{backend:'skip',devops:'core',infra:'core'},
+        extend:['eBPF 可觀測性','seccomp syscall filtering','K8s resource QoS 等級']}
+    ]},
+  { id:'hw', name:'Hardware', sub:'CPU Cache · Memory 層級 · SSD / NVMe · NIC', color:'#5F5E5A',
+    topics:[
+      { id:'cpu', name:'CPU / Cache 層級', known:false,
+        problem:'為什麼同樣邏輯的程式碼效能可以差 10 倍？',
+        why:'CPU Cache miss 代價極高（L1 ~1ns，RAM ~100ns，相差 100x）；Cache line 對齊讓資料局部性良好；NUMA 讓記憶體存取延遲因 CPU 所在 socket 而異。',
+        tools:['perf (Linux)','Flame graph','JVM JIT / JFR','Intel VTune'], hl:'perf (Linux)',
+        vs:'L1/L2 cache 是 per-core；L3 cache 是 shared；跨 NUMA node 存取慢 2-3x；CPU affinity 綁定行程到特定 core 避免 cache 失效。',
+        roles:{backend:'skip',devops:'skip',infra:'core'},
+        extend:['NUMA 架構','CPU affinity 設定','JVM GC tuning']},
+      { id:'storage', name:'HDD / SSD / NVMe', known:false,
+        problem:'儲存媒介選型如何影響系統架構設計決策？',
+        why:'NVMe SSD 隨機讀寫是 HDD 的 1000x；這個延遲差距決定了 Write-ahead log、B-tree vs LSM-tree 的設計選擇，也決定了 Redis 要把資料放 RAM 而非磁碟。',
+        tools:['fio (benchmark)','iostat','hdparm'], hl:'fio (benchmark)',
+        vs:'HDD 便宜適合冷資料備份；SSD 適合熱資料；NVMe 適合 DB 或高 IOPS 場景；記憶體 DB（Redis）把資料放 RAM 直接跳過磁碟延遲。',
+        roles:{backend:'skip',devops:'know',infra:'core'},
+        extend:['LSM-tree vs B-tree','WAL (Write-ahead log)','Storage tiering 設計']}
+    ]}
+];
+
+const ROLE_NOTES = {
+  backend: '你目前的位置：Java Backend。這個視角下，<strong>紫色核心</strong>是你最需要深入的層次：Application Protocol、Auth、Data、Scalability。Container 和 Observability 需要能操作和理解，但不需要到 DevOps 的深度。Network Protocol 和 OS 層對面試有幫助，硬體層可以略過。',
+  devops: 'DevOps / SRE 視角：技術帶寬從 CI/CD 一直延伸到 OS / Kernel。核心是 <strong>Gateway + CI/CD、Container / K8s、Observability、Network / OS</strong>。應用層只需要理解夠用即可，硬體層需要基本概念做容量規劃。SRE 特別要掌握 SLO、Error budget 和故障排查。',
+  infra: 'Systems / Infra 視角：技術帶寬深入底層。核心是 <strong>Network Protocol（封包級）、OS / Kernel（eBPF、系統呼叫）、Hardware（CPU NUMA、NIC）</strong>。上層應用只需了解。這個角色在台灣市場稀少，主要出現在大廠、CDN 公司、高頻交易場景。'
+};
+
+let role = 'backend';
+let openLayer = null;
+let openTopic = null;
+
+function imp(topic) { return topic.roles[role] || 'skip'; }
+function impDot(layer) {
+  const has = (v) => layer.topics.some(t => imp(t) === v);
+  if(has('core')) return '#534AB7';
+  if(has('know')) return '#1D9E75';
+  return '#c8c6be';
+}
+function impLabel(v) { return v==='core'?'核心':v==='know'?'需了解':'可略'; }
+
+function renderAll() {
+  const wrap = document.getElementById('layers');
+  wrap.innerHTML = '';
+  DATA.forEach(layer => {
+    const el = document.createElement('div');
+    el.className = 'layer' + (openLayer===layer.id?' open':'');
+    el.innerHTML = `
+      <div class="layer-head" data-lid="${layer.id}">
+        <span class="layer-dot" style="background:${impDot(layer)}"></span>
+        <span class="layer-name">${layer.name}</span>
+        <span class="layer-sub">${layer.sub}</span>
+        <span class="layer-chevron">▾</span>
+      </div>
+      <div class="layer-body">
+        <div class="topics-grid">
+          ${layer.topics.map(t => {
+            const i = imp(t);
+            const sel = openTopic === layer.id+':'+t.id;
+            return `<div class="tcard imp-${i}${sel?' selected':''}" data-tid="${layer.id}:${t.id}">
+              <div class="tcard-name">${t.name}</div>
+              <div class="tcard-prob">${t.problem}</div>
+              ${t.known?'<span class="known-tag">已知 ✓</span>':''}
+            </div>`;
+          }).join('')}
+        </div>
+        ${openTopic&&openTopic.startsWith(layer.id+':')?renderDetail(layer):''}
+      </div>`;
+    wrap.appendChild(el);
+  });
+
+  document.getElementById('role-note').innerHTML = ROLE_NOTES[role];
+
+  wrap.querySelectorAll('.layer-head').forEach(h => {
+    h.addEventListener('click', () => {
+      const lid = h.dataset.lid;
+      openLayer = openLayer===lid ? null : lid;
+      if(openLayer!==lid) openTopic = null;
+      renderAll();
+    });
+  });
+  wrap.querySelectorAll('.tcard').forEach(c => {
+    c.addEventListener('click', e => {
+      e.stopPropagation();
+      const tid = c.dataset.tid;
+      const lid = tid.split(':')[0];
+      openLayer = lid;
+      openTopic = openTopic===tid ? null : tid;
+      renderAll();
+    });
+  });
+}
+
+function renderDetail(layer) {
+  if(!openTopic) return '';
+  const tid = openTopic.split(':')[1];
+  const t = layer.topics.find(x=>x.id===tid);
+  if(!t) return '';
+  return `<div class="detail open">
+    <div class="detail-title">${t.name}</div>
+    <div class="role-row">
+      <span class="lbl">各角色重要度：</span>
+      <span class="rbadge rb-backend">Backend: ${impLabel(t.roles.backend)}</span>
+      <span class="rbadge rb-devops">DevOps: ${impLabel(t.roles.devops)}</span>
+      <span class="rbadge rb-infra">Infra: ${impLabel(t.roles.infra)}</span>
+    </div>
+    <div class="detail-grid">
+      <div class="dsec"><label>解決的問題</label><p>${t.problem}</p></div>
+      <div class="dsec"><label>為什麼這樣設計（因果）</label><p>${t.why}</p></div>
+      <div class="dsec"><label>相似工具比較 / 優缺點</label><p>${t.vs}</p></div>
+      <div class="dsec"><label>常用工具</label>
+        <div class="tools-row">${t.tools.map(x=>`<span class="tool${x===t.hl?' hl':''}">${x}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div class="ext-label">延伸學習方向</div>
+    <div class="ext-row">${t.extend.map(e=>`<span class="ext-link" onclick="ask('${e}')">${e} →</span>`).join('')}</div>
+  </div>`;
+}
+
+function ask(topic) {
+  const q = `深入說明 ${topic}：原理是什麼、為什麼重要、面試考點有哪些`;
+  if(typeof sendPrompt==='function') sendPrompt(q);
+  else prompt('複製這個問題到 Claude：', q);
+}
+
+document.querySelectorAll('.rbtn').forEach(b => {
+  b.addEventListener('click', () => {
+    role = b.dataset.role;
+    openTopic = null;
+    document.querySelectorAll('.rbtn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    renderAll();
+  });
+});
+
+renderAll();
+</script>
+</body>
+</html>

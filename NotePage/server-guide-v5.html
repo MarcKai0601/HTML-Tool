@@ -231,10 +231,12 @@ hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
 .subtab-b.active { background:#2563eb; border-color:#2563eb; }
 .subtab-g.active { background:#059669; border-color:#059669; }
 .subtab-o.active { background:#d97706; border-color:#d97706; }
+.subtab-t.active { background:#0d9488; border-color:#0d9488; color:#fff; }
 .subdiv { display:none; }
 .subdiv.active { display:block; }
 [data-bs-theme="dark"] .subtab { background:#1c1f2e; border-color:#2a2e42; color:#9ca3af; }
 [data-bs-theme="dark"] .subtab.active { background:#7c3aed; border-color:#7c3aed; color:#fff; }
+[data-bs-theme="dark"] .subtab-t.active { background:#0d9488; border-color:#0d9488; color:#fff; }
 </style>
 </head>
 <body>
@@ -244,7 +246,7 @@ hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
   <h1>🤖 AI 產業全景指南</h1>
   <div class="sub">AI 機房組成 · 產業因果邏輯 · 台股題材與個股相關性 · 獲利驅動原理</div>
   <div class="badge-row">
-    <span class="badge badge-v">v4.0</span>
+    <span class="badge badge-v">v5.0</span>
     <span class="badge badge-new">🔥 GTC 台北 2026：Vera Rubin 量產 · Token 經濟學</span>
     <span class="badge badge-new">台股供應鏈全面更新 · RTX Spark 聯發科 · 機器人 AI</span>
   </div>
@@ -259,16 +261,19 @@ hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
     <button class="tab" onclick="show('assembly',this)">④ 組裝流程</button>
     <button class="tab" onclick="show('datacenter',this)">⑤ 資料中心</button>
     <button class="tab" onclick="show('foundry',this)">⑥ 晶圓代工</button>
+    <button class="tab" onclick="show('packaging',this)">⑦ 封裝與模組</button>
+    <button class="tab" onclick="show('icdesign',this)">⑧ IC設計與光電訊號</button>
   </div>
   <div class="tabs-label">AI 產業 &amp; 投資</div>
   <div class="tabs">
     <button class="tab" onclick="show('gtc2026',this)" style="background:#fef3c7;color:#92400e;font-weight:700">🔥 GTC 台北 2026</button>
-    <button class="tab" onclick="show('cake',this)">⑦ 五層蛋糕論</button>
-    <button class="tab" onclick="show('causal',this)">⑧ 獲利因果鏈</button>
-    <button class="tab" onclick="show('history',this)">⑨ AI 發展歷程</button>
-    <button class="tab" onclick="show('themes',this)">⑩ 題材投資邏輯</button>
-    <button class="tab" onclick="show('taiwan',this)">⑪ 台股供應鏈</button>
-    <button class="tab" onclick="show('future',this)">⑫ 未來技術雷達</button>
+    <button class="tab" onclick="show('musk',this)" style="background:#fce7f3;color:#9d174d;font-weight:700">🚀 馬斯克大計劃</button>
+    <button class="tab" onclick="show('cake',this)">⑨ 五層蛋糕論</button>
+    <button class="tab" onclick="show('causal',this)">⑩ 獲利因果鏈</button>
+    <button class="tab" onclick="show('history',this)">⑪ AI 發展歷程</button>
+    <button class="tab" onclick="show('themes',this)">⑫ 題材投資邏輯</button>
+    <button class="tab" onclick="show('taiwan',this)">⑬ 台股供應鏈</button>
+    <button class="tab" onclick="show('future',this)">⑭ 未來技術雷達</button>
   </div>
 </div>
 
@@ -1989,6 +1994,833 @@ hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
 
 </div>
 
+
+<!-- ══════════════════════════════
+     TAB ⑦：封裝與模組
+══════════════════════════════ -->
+<div id="tab-packaging" class="section">
+
+  <div class="cl cl-p">
+    <span class="cl-icon">📦</span>
+    <div class="cl-body">晶圓代工完成後，裸晶（Bare Die）只是一塊脆弱的矽晶片，無法直接使用。封裝（Packaging）是把裸晶保護起來、引出電氣接腳、整合成可裝機模組的完整工程。<strong>AI 時代的先進封裝已不只是保護殼，而是算力密度的決定因素。</strong></div>
+  </div>
+
+  <div class="subtabs">
+    <button class="subtab active" onclick="showSub('pkg-process',this)">🏭 封裝流程全解析</button>
+    <button class="subtab subtab-b" onclick="showSub('pkg-layers',this)">📐 承載層完整家族</button>
+    <button class="subtab subtab-g" onclick="showSub('pkg-logistics',this)">✈ 半導體物流全鏈</button>
+    <button class="subtab subtab-o" onclick="showSub('pkg-reserved',this)">📋 預留章節</button>
+  </div>
+
+  <!-- ── 子頁籤 1：封裝流程全解析 ── -->
+  <div id="pkg-process" class="subdiv active">
+    <h3 style="color:#534AB7;margin-top:0">從裸晶到可裝機 IC：封裝完整流程</h3>
+
+    <!-- 流程圖 SVG -->
+    <div class="svg-wrap" style="margin-bottom:16px">
+      <svg width="100%" viewBox="0 0 820 200" style="display:block;min-width:600px">
+        <!-- 步驟方塊 -->
+        <defs>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
+          </marker>
+        </defs>
+        <!-- Step 1 -->
+        <rect x="10" y="70" width="96" height="60" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+        <text x="58" y="96" text-anchor="middle" font-size="10" font-weight="700" fill="#4c1d95">裸晶</text>
+        <text x="58" y="110" text-anchor="middle" font-size="9" fill="#6d28d9">Bare Die</text>
+        <text x="58" y="122" text-anchor="middle" font-size="8.5" fill="#7c3aed">出晶圓廠</text>
+        <line x1="106" y1="100" x2="124" y2="100" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <!-- Step 2 -->
+        <rect x="124" y="70" width="96" height="60" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+        <text x="172" y="96" text-anchor="middle" font-size="10" font-weight="700" fill="#1e3a8a">植球</text>
+        <text x="172" y="110" text-anchor="middle" font-size="9" fill="#1d4ed8">Bumping</text>
+        <text x="172" y="122" text-anchor="middle" font-size="8.5" fill="#2563eb">錫球/銅柱</text>
+        <line x1="220" y1="100" x2="238" y2="100" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <!-- Step 3 -->
+        <rect x="238" y="70" width="96" height="60" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+        <text x="286" y="96" text-anchor="middle" font-size="10" font-weight="700" fill="#14532d">基板黏合</text>
+        <text x="286" y="110" text-anchor="middle" font-size="9" fill="#15803d">Substrate</text>
+        <text x="286" y="122" text-anchor="middle" font-size="8.5" fill="#16a34a">ABF/BT載板</text>
+        <line x1="334" y1="100" x2="352" y2="100" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <!-- Step 4 -->
+        <rect x="352" y="70" width="96" height="60" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+        <text x="400" y="96" text-anchor="middle" font-size="10" font-weight="700" fill="#78350f">底填</text>
+        <text x="400" y="110" text-anchor="middle" font-size="9" fill="#b45309">Underfill</text>
+        <text x="400" y="122" text-anchor="middle" font-size="8.5" fill="#d97706">環氧樹脂填充</text>
+        <line x1="448" y1="100" x2="466" y2="100" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <!-- Step 5 -->
+        <rect x="466" y="70" width="96" height="60" rx="8" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+        <text x="514" y="96" text-anchor="middle" font-size="10" font-weight="700" fill="#831843">封膠</text>
+        <text x="514" y="110" text-anchor="middle" font-size="9" fill="#9d174d">Molding</text>
+        <text x="514" y="122" text-anchor="middle" font-size="8.5" fill="#db2777">環氧樹脂保護</text>
+        <line x1="562" y1="100" x2="580" y2="100" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <!-- Step 6 -->
+        <rect x="580" y="70" width="96" height="60" rx="8" fill="#f1f5f9" stroke="#475569" stroke-width="1.5"/>
+        <text x="628" y="96" text-anchor="middle" font-size="10" font-weight="700" fill="#1e293b">切割標記</text>
+        <text x="628" y="110" text-anchor="middle" font-size="9" fill="#334155">Singulation</text>
+        <text x="628" y="122" text-anchor="middle" font-size="8.5" fill="#475569">雷射切割</text>
+        <line x1="676" y1="100" x2="694" y2="100" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr2)"/>
+        <!-- Step 7 -->
+        <rect x="694" y="70" width="116" height="60" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+        <text x="752" y="96" text-anchor="middle" font-size="10" font-weight="700" fill="#0f766e">最終測試</text>
+        <text x="752" y="110" text-anchor="middle" font-size="9" fill="#0f766e">Final Test</text>
+        <text x="752" y="122" text-anchor="middle" font-size="8.5" fill="#0d9488">功能/良率驗證</text>
+        <!-- 步驟標號 -->
+        <text x="58" y="62" text-anchor="middle" font-size="9" fill="#94a3b8">Step 1</text>
+        <text x="172" y="62" text-anchor="middle" font-size="9" fill="#94a3b8">Step 2</text>
+        <text x="286" y="62" text-anchor="middle" font-size="9" fill="#94a3b8">Step 3</text>
+        <text x="400" y="62" text-anchor="middle" font-size="9" fill="#94a3b8">Step 4</text>
+        <text x="514" y="62" text-anchor="middle" font-size="9" fill="#94a3b8">Step 5</text>
+        <text x="628" y="62" text-anchor="middle" font-size="9" fill="#94a3b8">Step 6</text>
+        <text x="752" y="62" text-anchor="middle" font-size="9" fill="#94a3b8">Step 7</text>
+      </svg>
+    </div>
+
+    <!-- 各步驟說明 -->
+    <div class="g2">
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#ede9fe">1️⃣</div><div><div class="cn">裸晶（Bare Die）</div><div class="csub">出晶圓廠後第一站</div></div></div>
+        <div class="cbody">晶圓廠完成製程後，以鑽石刀或雷射將整片晶圓切割成數百至數千顆裸晶。此時裸晶尚未有保護外殼，極度脆弱，需立即放入防靜電晶圓盒（FOUP）並充氮保護。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#dbeafe">2️⃣</div><div><div class="cn">植球（Bumping）</div><div class="csub">建立電氣接點</div></div></div>
+        <div class="cbody">在裸晶的接腳上植入錫球（Solder Bump）或銅柱（Cu Pillar），作為與基板連接的電氣接點。AI 晶片的 Bump 密度極高，H100 有超過 10 萬個 Bump，間距僅 100μm 以下。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#dcfce7">3️⃣</div><div><div class="cn">基板黏合（Die Attach）</div><div class="csub">固定到 IC 載板</div></div></div>
+        <div class="cbody">將裸晶倒裝（Flip Chip）焊接到 IC 基板（Substrate）上。基板是晶片與 PCB 之間的橋樑，負責將晶片細密的接腳重新佈線到更大間距的接點，使 PCB 可以承接。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#fef3c7">4️⃣</div><div><div class="cn">底部填充（Underfill）</div><div class="csub">強化機械連接</div></div></div>
+        <div class="cbody">用環氧樹脂填充裸晶與基板之間的空隙，防止熱脹冷縮導致錫球疲勞斷裂。AI 伺服器工作溫度劇烈變化，Underfill 是確保可靠性的關鍵步驟。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#fce7f3">5️⃣</div><div><div class="cn">封膠（Molding）</div><div class="csub">外部保護層</div></div></div>
+        <div class="cbody">用環氧樹脂模封整顆裸晶，形成我們看到的黑色 IC 外殼。保護晶片免受濕氣、灰塵、機械衝擊。先進封裝（如 CoWoS）的封膠工序更複雜，需保留 HBM 的散熱路徑。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#ccfbf1">6️⃣ → 7️⃣</div><div><div class="cn">切割 + 最終測試</div><div class="csub">品管最後防線</div></div></div>
+        <div class="cbody">雷射切割分離各顆 IC 後進行最終功能測試（FT）。AI 晶片測試時間極長，B200 GPU 單顆測試需數小時，京元電子是 NVIDIA Rubin 系列的主要測試廠。</div>
+      </div>
+    </div>
+
+    <!-- 傳統 vs 先進封裝演進 -->
+    <h3 style="color:#534AB7;margin-top:20px">封裝技術演進：從傳統到先進</h3>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table>
+        <thead><tr><th>封裝類型</th><th>維度</th><th>晶片間距</th><th>頻寬</th><th>代表產品</th><th>台廠</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Wire Bond 打線封裝</strong></td>
+            <td>2D</td>
+            <td>金屬線（mm級）</td>
+            <td>低</td>
+            <td>傳統 MCU / 記憶體</td>
+            <td>日月光</td>
+          </tr>
+          <tr>
+            <td><strong>Flip Chip（倒裝晶片）</strong></td>
+            <td>2D</td>
+            <td>Bump（100μm）</td>
+            <td>中</td>
+            <td>CPU / GPU（傳統）</td>
+            <td>日月光、京元電</td>
+          </tr>
+          <tr>
+            <td><strong>CoWoS（2.5D）</strong></td>
+            <td>2.5D</td>
+            <td>矽中介層 TSV（微米級）</td>
+            <td><span style="color:#16a34a;font-weight:700">極高</span></td>
+            <td>H100 / B200 / Rubin GPU</td>
+            <td>台積電、日月光</td>
+          </tr>
+          <tr>
+            <td><strong>SoIC（3D）</strong></td>
+            <td>3D</td>
+            <td>Hybrid Bonding（&lt;1μm）</td>
+            <td><span style="color:#7c3aed;font-weight:700">超高</span></td>
+            <td>HBM5、未來 AI 晶片</td>
+            <td>台積電</td>
+          </tr>
+          <tr>
+            <td><strong>CoPoS（2.5D 面板級）</strong></td>
+            <td>2.5D+</td>
+            <td>方形面板 TSV</td>
+            <td><span style="color:#7c3aed;font-weight:700">極高 + 低成本</span></td>
+            <td>Rubin Ultra（2028目標）</td>
+            <td>台積電 AP7廠</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- OSAT 生態 -->
+    <h3 style="color:#534AB7;margin-top:20px">OSAT 生態：誰在哪個環節</h3>
+    <div class="g2">
+      <div class="stk">
+        <div class="stk-head">
+          <span class="stk-icon">🏆</span>
+          <span class="stk-title">台積電 2330 — 先進封裝核心</span>
+          <span class="stk-phase" style="background:#ede9fe;color:#5b21b6">CoWoS / SoIC / CoPoS</span>
+        </div>
+        <div class="stk-body">台積電的先進封裝不只是「外包商」，而是整合了前段製程技術的下一代封裝平台。CoWoS 的矽中介層（Interposer）本身就需要晶圓廠製程，這是台積電的核心護城河。</div>
+      </div>
+      <div class="stk">
+        <div class="stk-head">
+          <span class="stk-icon">🔧</span>
+          <span class="stk-title">日月光 3711 — CoWoS 最大外包受益</span>
+          <span class="stk-phase" style="background:#dbeafe;color:#1e40af">Flip Chip / SiP</span>
+        </div>
+        <div class="stk-body">台積電 CoWoS 產能約 50% 外包給日月光。日月光負責 Bumping、Die Attach、Molding、最終封裝組裝等後段工序。AI 需求爆發直接帶動日月光高階封裝收入。</div>
+      </div>
+      <div class="stk">
+        <div class="stk-head">
+          <span class="stk-icon">🔬</span>
+          <span class="stk-title">京元電 2449 — AI 晶片測試專家</span>
+          <span class="stk-phase" style="background:#dcfce7;color:#166534">Final Test</span>
+        </div>
+        <div class="stk-body">NVIDIA Rubin 系列 GPU 的主要最終測試廠。AI 晶片的測試需要特殊設備與軟體，測試時間長、單價高。京元電的 AI 晶片測試收入佔比持續上升。</div>
+      </div>
+      <div class="stk">
+        <div class="stk-head">
+          <span class="stk-icon">📋</span>
+          <span class="stk-title">欣興 3037 / 南電 8046 — ABF 載板</span>
+          <span class="stk-phase" style="background:#fef3c7;color:#92400e">IC Substrate</span>
+        </div>
+        <div class="stk-body">封裝流程 Step 3 的基板供應商。AI 晶片尺寸越大，需要的 ABF 載板面積越大、線路越精細。欣興是 Intel/NVIDIA 的核心供應商，南電受惠 AI 伺服器升規需求。</div>
+      </div>
+    </div>
+  </div><!-- end pkg-process -->
+
+  <!-- ── 子頁籤 2：承載層完整家族 ── -->
+  <div id="pkg-layers" class="subdiv">
+    <h3 style="color:#185FA5;margin-top:0">半導體承載層完整家族：從奈米到毫米</h3>
+    <div class="cl cl-b" style="margin-top:0">
+      <span class="cl-icon">📐</span>
+      <div class="cl-body">晶片與最底層電路板之間，依照「線路精密程度」由上至下分為四個層次，每往下一層線路間距放大 10~100 倍，製造難度與成本也逐層降低。</div>
+    </div>
+
+    <!-- 垂直剖面 SVG -->
+    <div class="svg-wrap" style="margin:14px 0">
+      <svg width="100%" viewBox="0 0 780 340" style="display:block;min-width:560px">
+        <!-- 背景 -->
+        <rect x="0" y="0" width="780" height="340" fill="#fafafa" rx="12"/>
+
+        <!-- Layer 1: Die -->
+        <rect x="240" y="20" width="300" height="52" rx="8" fill="#4f46e5"/>
+        <text x="390" y="43" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">晶片（Die / Chip）</text>
+        <text x="390" y="60" text-anchor="middle" font-size="10" fill="#c7d2fe">線路間距：0.001 ~ 0.1 μm（奈米/原子級）</text>
+
+        <!-- Layer 2: Interposer -->
+        <rect x="170" y="90" width="440" height="52" rx="8" fill="#0d9488"/>
+        <text x="390" y="113" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">中介層（Interposer）</text>
+        <text x="390" y="130" text-anchor="middle" font-size="10" fill="#ccfbf1">矽 TSV / 玻璃 TGV — 線路間距：1 ~ 10 μm（微米級）</text>
+
+        <!-- Layer 3: Substrate -->
+        <rect x="100" y="160" width="580" height="52" rx="8" fill="#2563eb"/>
+        <text x="390" y="183" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">IC 載板（Substrate / IC Package）</text>
+        <text x="390" y="200" text-anchor="middle" font-size="10" fill="#bfdbfe">ABF / BT 有機載板 — 線路間距：10 ~ 50 μm</text>
+
+        <!-- Layer 4: PCB -->
+        <rect x="30" y="230" width="720" height="52" rx="8" fill="#374151"/>
+        <text x="390" y="253" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">系統電路板（PCB / Motherboard）</text>
+        <text x="390" y="270" text-anchor="middle" font-size="10" fill="#d1d5db">FR-4 玻璃纖維環氧樹脂 — 線路間距：50 ~ 200 μm</text>
+
+        <!-- 左側說明 -->
+        <text x="22" y="48" text-anchor="middle" font-size="9" font-weight="700" fill="#4f46e5" transform="rotate(-90,22,48)">最精密</text>
+        <text x="22" y="258" text-anchor="middle" font-size="9" font-weight="700" fill="#6b7280" transform="rotate(-90,22,258)">最粗糙</text>
+        <line x1="30" y1="20" x2="30" y2="290" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4 3"/>
+
+        <!-- 右側台廠 -->
+        <text x="760" y="48" text-anchor="end" font-size="9" fill="#4f46e5" font-weight="700">台積電</text>
+        <text x="760" y="118" text-anchor="end" font-size="9" fill="#0d9488" font-weight="700">台積電 CoWoS TSV</text>
+        <text x="760" y="188" text-anchor="end" font-size="9" fill="#2563eb" font-weight="700">欣興 3037 / 南電 8046</text>
+        <text x="760" y="258" text-anchor="end" font-size="9" fill="#374151" font-weight="700">台光電 2383 / 臻鼎 4958</text>
+      </svg>
+    </div>
+
+    <!-- 四層詳細說明 -->
+    <div class="g2" style="margin-top:4px">
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#ede9fe">🧠</div><div><div class="cn">晶片（Die）</div><div class="csub">奈米到次奈米級線路</div></div></div>
+        <div class="cbody">
+          大腦本體，所有邏輯運算在此發生。線路間距 0.001μm（1nm）到 100nm，由晶圓廠的光刻機製造。AI 時代的晶片面積越做越大（Reticle limit 858mm²），單片 Reticle 已無法容納，需要 Reticle Stitch 技術或 Chiplet 拆分。
+          <div class="tag-row" style="margin-top:6px">
+            <span class="tag tr">台積電 3nm / 2nm</span>
+            <span class="tag tr">EUV 光刻製造</span>
+          </div>
+        </div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#ccfbf1">🌉</div><div><div class="cn">中介層（Interposer）</div><div class="csub">晶片間的高速橋樑</div></div></div>
+        <div class="cbody">
+          晶片與載板之間的轉接層，用來連接多顆裸晶（如 GPU Die + HBM Die），提供比載板細 10~100 倍的佈線。目前主流是矽中介層（Silicon Interposer）搭配 TSV（矽穿孔）導電。玻璃中介層（Glass Interposer + TGV）是次世代方向，耐高溫、不翹曲、訊號損耗更低。
+          <div class="tag-row" style="margin-top:6px">
+            <span class="tag tt">CoWoS 矽 Interposer</span>
+            <span class="tag ta">TGV 玻璃版本 2027+</span>
+          </div>
+        </div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#dbeafe">📋</div><div><div class="cn">IC 載板（Substrate）</div><div class="csub">封裝的骨架</div></div></div>
+        <div class="cbody">
+          承載單顆或多顆晶片，將晶片細密接腳重新「扇出」到更大間距，讓 PCB 可以焊接。主要材料是 ABF（Ajinomoto Build-up Film，味之素薄膜）或 BT 樹脂。AI 晶片封裝面積大，對 ABF 載板的面積需求急速上升，造成 2021~2023 年的嚴重缺料。
+          <div class="tag-row" style="margin-top:6px">
+            <span class="tag ta">欣興 3037（ABF 龍頭）</span>
+            <span class="tag ta">南電 8046</span>
+            <span class="tag ta">景碩 3189</span>
+          </div>
+        </div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#f1f5f9">🖥️</div><div><div class="cn">系統電路板（PCB）</div><div class="csub">整機的大底座</div></div></div>
+        <div class="cbody">
+          連接所有元件的系統板，AI 伺服器主機板需支援 PCIe 5.0/6.0、NVLink、高速電源路徑。材料從傳統 FR-4 升級到低損耗 CCL（覆銅基板），以支援 AI 伺服器的超高頻訊號。
+          <div class="tag-row" style="margin-top:6px">
+            <span class="tag ta">台光電 2383（高頻 CCL）</span>
+            <span class="tag ta">臻鼎 4958（HDI PCB）</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cl cl-p" style="margin-top:14px">
+      <span class="cl-icon">🔑</span>
+      <div class="cl-body"><strong>為什麼 AI 時代讓「中介層」變得關鍵？</strong>過去的 CPU 一顆晶片就夠，不需要中介層。但 AI GPU 需要把多顆 HBM 緊貼 GPU Die 擺放，且每秒資料傳輸量達到 TB 級，只有矽中介層上的 TSV 能提供這樣的頻寬密度。這就是 CoWoS 的價值核心，也是台積電最難被複製的競爭優勢。</div>
+    </div>
+  </div><!-- end pkg-layers -->
+
+  <!-- ── 子頁籤 3：半導體物流全鏈 ── -->
+  <div id="pkg-logistics" class="subdiv">
+    <h3 style="color:#3B6D11;margin-top:0">半導體物流全鏈：從晶圓到成品的跨國運輸</h3>
+    <div class="cl cl-g" style="margin-top:0">
+      <span class="cl-icon">✈</span>
+      <div class="cl-body">半導體在不同製造階段有完全不同的物理形態與脆弱性，對應完全不同的物流規格。<strong>越靠近裸晶階段，物流要求越嚴苛</strong>；一次不當操作可能毀掉價值數百萬美元的晶片。</div>
+    </div>
+
+    <!-- 階段一：晶圓 -->
+    <div class="card" style="border-left:4px solid #534AB7;margin-top:14px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:1.4rem">🟣</span>
+        <div>
+          <div style="font-weight:800;font-size:.92rem;color:#3730a3">階段一：晶圓（Wafer）運輸</div>
+          <div style="font-size:.76rem;color:#6d28d9">最前段，脆而不碎的矽圓片</div>
+        </div>
+        <span class="stk-phase" style="background:#ede9fe;color:#5b21b6;margin-left:auto">⚠ 靜電 / 顆粒 / 微裂</span>
+      </div>
+      <div class="g2">
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#4c1d95;margin-bottom:6px">📦 包裝規格</div>
+          <ul style="font-size:.82rem;line-height:1.8;margin:0;padding-left:16px">
+            <li><strong>FOUP（前開式晶圓盒）</strong>：標準 25 片裝，完全密封</li>
+            <li>充 N₂（氮氣）排除氧氣與濕氣，防止表面氧化</li>
+            <li>潔淨等級 Class 1（每立方英尺僅允許 1 個 ≥0.5μm 顆粒）</li>
+            <li>防靜電材質，避免 ESD 損壞閘極氧化層</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#4c1d95;margin-bottom:6px">🚚 物流路徑</div>
+          <ul style="font-size:.82rem;line-height:1.8;margin:0;padding-left:16px">
+            <li>廠內以 AMHS（自動物料搬運系統）天車傳遞，零人工接觸</li>
+            <li>跨廠運送（如台積電新竹→日月光高雄）用專用恆溫車廂</li>
+            <li>跨國（如 Samsung 韓國→台積電封裝廠）以貨機+免震貨盤</li>
+            <li>全程震動加速度監控，超標即啟動品質確認程序</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 階段二：裸晶 -->
+    <div class="card" style="border-left:4px solid #dc2626;margin-top:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:1.4rem">🔴</span>
+        <div>
+          <div style="font-weight:800;font-size:.92rem;color:#991b1b">階段二：裸晶（Bare Die / KGD）運輸</div>
+          <div style="font-size:.76rem;color:#b91c1c">最脆弱的階段 — 以 HBM 裸晶跨國空運為極端案例</div>
+        </div>
+        <span class="stk-phase" style="background:#fee2e2;color:#991b1b;margin-left:auto">🚨 最高風險等級</span>
+      </div>
+      <div class="cl cl-r" style="margin-bottom:10px">
+        <span class="cl-icon">⚠️</span>
+        <div class="cl-body"><strong>HBM 裸晶四大禁忌：</strong>HBM 顆粒在韓國（SK Hynix / Samsung）或美國（Micron）製造後，以裸晶形式空運台灣進行 CoWoS 封裝。此階段有四個絕對禁忌：</div>
+      </div>
+      <div class="g2">
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">①</div><div><div class="cn">防微震動（應力控管）</div></div></div>
+          <div class="cbody">裸晶無任何外殼保護，TSV 柱與極薄的堆疊層在微震動下可能產生微裂。運輸箱內建三軸震動紀錄器，全程記錄 X/Y/Z 軸加速度，超過閾值即判定為異常批次，需重新驗證。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">②</div><div><div class="cn">防靜電（ESD 控管）</div></div></div>
+          <div class="cbody">裸晶的閘極氧化層厚度僅數個原子層，一次靜電放電（數百伏特）即可永久擊穿。使用導電泡棉托盤、防靜電袋雙層包裝，所有接觸人員配戴接地腕帶，操作區地板鋪設靜電耗散材料。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">③</div><div><div class="cn">充氮防氧化</div></div></div>
+          <div class="cbody">裸晶表面的金屬接腳（銅/金）暴露在空氣中會快速氧化，導致後續焊接良率下降。運輸容器充入高純度氮氣（純度 99.999%）並密封，整個運輸期間維持正壓，防止外部空氣滲入。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">④</div><div><div class="cn">潔淨度控制</div></div></div>
+          <div class="cbody">裸晶表面不能有任何顆粒（Particle），一顆 1μm 的塵埃落在接點上就會導致封裝失敗。這對未來的 Hybrid Bonding 尤其嚴苛，因為兩片晶片要直接面對面貼合，接合面潔淨度要求達到原子級。</div>
+        </div>
+      </div>
+
+      <div style="background:#fef2f2;border-radius:8px;padding:12px 14px;margin-top:10px">
+        <div style="font-weight:800;font-size:.85rem;color:#991b1b;margin-bottom:8px">🎯 KGD 測試與快速通關機制</div>
+        <div class="g2" style="margin:0">
+          <div>
+            <div style="font-weight:700;font-size:.8rem;color:#b91c1c;margin-bottom:4px">KGD（Known Good Die，已知好晶粒）</div>
+            <div style="font-size:.8rem;line-height:1.7">HBM 裸晶在出廠前必須通過完整電性測試，確認為「好晶粒」才能空運台灣。原因：若一顆有缺陷的 HBM 裸晶混入 CoWoS 封裝，整個封裝體（含 GPU + 多顆 HBM）價值逾百萬台幣，全數報廢。<strong>KGD 測試是防止「一顆壞 HBM 毀掉整顆 GPU」的第一道防線。</strong></div>
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:.8rem;color:#b91c1c;margin-bottom:4px">海關免驗快速通關</div>
+            <div style="font-size:.8rem;line-height:1.7">HBM 裸晶的海關開箱檢查會帶入顆粒污染與靜電風險。台灣海關對半導體裸晶建立了「快速通關」機制（AEO 認證廠商），採文件審核替代實體開箱，讓高風險貨物在最短時間內進入受控環境。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 階段三：封裝後 IC -->
+    <div class="card" style="border-left:4px solid #d97706;margin-top:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:1.4rem">🟡</span>
+        <div>
+          <div style="font-weight:800;font-size:.92rem;color:#92400e">階段三：封裝後 IC（Packaged IC）運輸</div>
+          <div style="font-size:.76rem;color:#b45309">有外殼保護，但仍需防靜電與濕度控管</div>
+        </div>
+        <span class="stk-phase" style="background:#fef3c7;color:#92400e;margin-left:auto">⚠ 靜電 / 濕度</span>
+      </div>
+      <div class="g2">
+        <div>
+          <div style="font-weight:700;font-size:.82rem;margin-bottom:6px">📦 包裝形式</div>
+          <ul style="font-size:.82rem;line-height:1.8;margin:0;padding-left:16px">
+            <li><strong>Tape & Reel（捲帶包裝）</strong>：SMT 散件，適合小型 IC 自動化貼片</li>
+            <li><strong>Tray（托盤）</strong>：大型 BGA 封裝 IC（如 GPU），防靜電硬托盤</li>
+            <li><strong>MSL 濕度敏感等級</strong>：大多數 IC 屬 MSL 3，需真空乾燥袋+矽膠吸濕劑</li>
+            <li>超出開封時限的 IC 需先烘烤（125°C / 24hr）再使用</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.82rem;margin-bottom:6px">🌡 溫控要求</div>
+          <ul style="font-size:.82rem;line-height:1.8;margin:0;padding-left:16px">
+            <li>儲存溫度：&lt; 30°C / 濕度 &lt; 60% RH</li>
+            <li>GPU 等大型封裝：防震托盤 + 外箱防震泡棉</li>
+            <li>高價值批次（如 B200）：恆溫貨艙，全程 GPS 追蹤</li>
+            <li>靜電防護仍需維持，外箱貼 ESD 警示標籤</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 階段四：模組/成品 -->
+    <div class="card" style="border-left:4px solid #0d9488;margin-top:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <span style="font-size:1.4rem">🟢</span>
+        <div>
+          <div style="font-weight:800;font-size:.92rem;color:#0f766e">階段四：模組 / 整機（Module / System）運輸</div>
+          <div style="font-size:.76rem;color:#0d9488">GPU 卡、HBM 模組、整機伺服器</div>
+        </div>
+        <span class="stk-phase" style="background:#ccfbf1;color:#0f766e;margin-left:auto">機械防震為主</span>
+      </div>
+      <div class="g2">
+        <div>
+          <div style="font-weight:700;font-size:.82rem;margin-bottom:6px">🖥 整機伺服器（如 GB200 NVL72 機架）</div>
+          <ul style="font-size:.82rem;line-height:1.8;margin:0;padding-left:16px">
+            <li>重量達數百公斤，需專業貨運公司與卸貨設備</li>
+            <li>防震木箱 + 氣囊緩衝，避免液冷管路破損</li>
+            <li>恆溫貨艙（0~35°C），避免 TIM（散熱膏）因冷熱失效</li>
+            <li>到貨後需在機房適溫環境靜置 24 小時再開機</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.82rem;margin-bottom:6px">💳 高價值貨物保險與追蹤</div>
+          <ul style="font-size:.82rem;line-height:1.8;margin:0;padding-left:16px">
+            <li>GB200 單機架售價 300 萬美元以上，保險金額極高</li>
+            <li>全程 IoT 震動感測器 + 即時 GPS 追蹤</li>
+            <li>大客戶（AWS / Meta / Google）多數有專用空運包艙</li>
+            <li>台廠 ODM（廣達、緯穎）負責整機組裝測試後才出貨</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="cl cl-a" style="margin-top:14px">
+      <span class="cl-icon">📌</span>
+      <div class="cl-body"><strong>物流風險小結：</strong>越早期的半導體形態（晶圓、裸晶）物流要求越嚴格、風險越高；越後期的成品物流管控標準反而接近一般精密電子產品。整個半導體物流鏈年產值估計達 200 億美元以上，台灣因地理位置和封測產業聚集，是全球最重要的半導體物流中轉樞紐。</div>
+    </div>
+  </div><!-- end pkg-logistics -->
+
+  <!-- ── 子頁籤 4：預留 ── -->
+  <div id="pkg-reserved" class="subdiv">
+    <div class="cl cl-a">
+      <span class="cl-icon">📋</span>
+      <div class="cl-body">此章節預留，後續將補充更多封裝相關技術內容。</div>
+    </div>
+  </div><!-- end pkg-reserved -->
+
+</div><!-- end tab-packaging -->
+
+
+<!-- ══════════════════════════════
+     TAB ⑧：IC設計與光電訊號
+══════════════════════════════ -->
+<div id="tab-icdesign" class="section">
+
+  <div class="cl cl-p">
+    <span class="cl-icon">⚛</span>
+    <div class="cl-body">這個章節從電子工程基礎出發，解析 IC 設計流程、底層電路物理限制，以及光電訊號轉換原理。<strong>這些是理解所有 AI 晶片設計決策的底層邏輯。</strong></div>
+  </div>
+
+  <div class="subtabs">
+    <button class="subtab active" onclick="showSub('ic-flow',this)">🔄 IC 設計流程</button>
+    <button class="subtab subtab-b" onclick="showSub('ic-physics',this)">⚛ 底層電路物理</button>
+    <button class="subtab subtab-t" onclick="showSub('ic-optoelec',this)">💡 光電訊號轉換</button>
+    <button class="subtab subtab-o" onclick="showSub('ic-reserved',this)">📋 預留章節</button>
+  </div>
+
+  <!-- ── 子頁籤 1：IC 設計流程 ── -->
+  <div id="ic-flow" class="subdiv active">
+    <h3 style="color:#534AB7;margin-top:0">從規格到光罩：IC 設計完整流程</h3>
+
+    <!-- 流程 SVG -->
+    <div class="svg-wrap" style="margin-bottom:16px">
+      <svg width="100%" viewBox="0 0 820 240" style="display:block;min-width:600px">
+        <defs>
+          <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
+          </marker>
+        </defs>
+        <!-- Step boxes -->
+        <rect x="10" y="80" width="100" height="60" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+        <text x="60" y="105" text-anchor="middle" font-size="9.5" font-weight="700" fill="#4c1d95">系統規格</text>
+        <text x="60" y="119" text-anchor="middle" font-size="8.5" fill="#6d28d9">Architecture</text>
+        <text x="60" y="131" text-anchor="middle" font-size="8" fill="#7c3aed">效能/功耗/面積</text>
+        <line x1="110" y1="110" x2="128" y2="110" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+        <rect x="128" y="80" width="100" height="60" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+        <text x="178" y="105" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1e3a8a">RTL 設計</text>
+        <text x="178" y="119" text-anchor="middle" font-size="8.5" fill="#1d4ed8">Verilog/VHDL</text>
+        <text x="178" y="131" text-anchor="middle" font-size="8" fill="#2563eb">行為級描述</text>
+        <line x1="228" y1="110" x2="246" y2="110" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+        <rect x="246" y="80" width="100" height="60" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+        <text x="296" y="105" text-anchor="middle" font-size="9.5" font-weight="700" fill="#14532d">邏輯合成</text>
+        <text x="296" y="119" text-anchor="middle" font-size="8.5" fill="#15803d">Synthesis</text>
+        <text x="296" y="131" text-anchor="middle" font-size="8" fill="#16a34a">RTL→Netlist</text>
+        <line x1="346" y1="110" x2="364" y2="110" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+        <rect x="364" y="80" width="100" height="60" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+        <text x="414" y="105" text-anchor="middle" font-size="9.5" font-weight="700" fill="#78350f">佈局規劃</text>
+        <text x="414" y="119" text-anchor="middle" font-size="8.5" fill="#b45309">Floorplan</text>
+        <text x="414" y="131" text-anchor="middle" font-size="8" fill="#d97706">各模組位置</text>
+        <line x1="464" y1="110" x2="482" y2="110" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+        <rect x="482" y="80" width="100" height="60" rx="8" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+        <text x="532" y="105" text-anchor="middle" font-size="9.5" font-weight="700" fill="#831843">繞線</text>
+        <text x="532" y="119" text-anchor="middle" font-size="8.5" fill="#9d174d">Place & Route</text>
+        <text x="532" y="131" text-anchor="middle" font-size="8" fill="#db2777">金屬走線完成</text>
+        <line x1="582" y1="110" x2="600" y2="110" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+        <rect x="600" y="80" width="100" height="60" rx="8" fill="#f1f5f9" stroke="#475569" stroke-width="1.5"/>
+        <text x="650" y="105" text-anchor="middle" font-size="9.5" font-weight="700" fill="#1e293b">驗證</text>
+        <text x="650" y="119" text-anchor="middle" font-size="8.5" fill="#334155">DRC/LVS/STA</text>
+        <text x="650" y="131" text-anchor="middle" font-size="8" fill="#475569">設計規則檢查</text>
+        <line x1="700" y1="110" x2="718" y2="110" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+        <rect x="718" y="80" width="92" height="60" rx="8" fill="#0d9488"/>
+        <text x="764" y="105" text-anchor="middle" font-size="9.5" font-weight="700" fill="#fff">Tape-out</text>
+        <text x="764" y="119" text-anchor="middle" font-size="8.5" fill="#ccfbf1">光罩製作</text>
+        <text x="764" y="131" text-anchor="middle" font-size="8" fill="#ccfbf1">送台積電量產</text>
+
+        <!-- 步驟編號 -->
+        <text x="60" y="72" text-anchor="middle" font-size="8.5" fill="#9ca3af">① 前端設計</text>
+        <text x="296" y="72" text-anchor="middle" font-size="8.5" fill="#9ca3af">② 合成</text>
+        <text x="482" y="72" text-anchor="middle" font-size="8.5" fill="#9ca3af">③ 後端設計</text>
+        <text x="650" y="72" text-anchor="middle" font-size="8.5" fill="#9ca3af">④ 驗證</text>
+        <text x="764" y="72" text-anchor="middle" font-size="8.5" fill="#0d9488" font-weight="700">⑤ 完成</text>
+
+        <!-- 時間軸 -->
+        <line x1="10" y1="200" x2="810" y2="200" stroke="#e5e7eb" stroke-width="1"/>
+        <text x="60" y="216" text-anchor="middle" font-size="8.5" fill="#9ca3af">數週</text>
+        <text x="296" y="216" text-anchor="middle" font-size="8.5" fill="#9ca3af">數天</text>
+        <text x="532" y="216" text-anchor="middle" font-size="8.5" fill="#9ca3af">數月</text>
+        <text x="650" y="216" text-anchor="middle" font-size="8.5" fill="#9ca3af">數週</text>
+        <text x="764" y="216" text-anchor="middle" font-size="8.5" fill="#0d9488">→ 量產</text>
+        <text x="390" y="232" text-anchor="middle" font-size="9" fill="#6b7280">總週期：頂級 AI 晶片（如 B200）設計週期約 2~3 年</text>
+      </svg>
+    </div>
+
+    <div class="g2">
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#ede9fe">①</div><div><div class="cn">系統規格定義（Architecture）</div></div></div>
+        <div class="cbody">決定晶片的整體架構：計算核心數、快取大小、記憶體頻寬、功耗預算（TDP）。這是最關鍵的決策，架構層的失誤無法在後段補救。NVIDIA 的 GPU 架構師在此階段決定 CUDA Core 數量、Tensor Core 比例與 NVLink 頻寬。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#dbeafe">②</div><div><div class="cn">RTL 設計（Register Transfer Level）</div></div></div>
+        <div class="cbody">用 Verilog 或 VHDL 硬體描述語言，以「暫存器間的資料搬移」方式描述電路行為。這不是軟體程式，而是描述「硬體在每個時脈週期做什麼」。現代 AI 晶片的 RTL 程式碼行數超過 1000 萬行。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#dcfce7">③</div><div><div class="cn">邏輯合成（Synthesis）</div></div></div>
+        <div class="cbody">由 EDA 工具（Synopsys Design Compiler / Cadence Genus）將 RTL 程式碼自動轉換為邏輯閘網表（Netlist），同時滿足時序（Timing）、面積（Area）、功耗（Power）三大約束。此步驟仰賴晶圓廠提供的製程設計套件（PDK）。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#fef3c7">④⑤</div><div><div class="cn">佈局規劃 + 繞線（P&R）</div></div></div>
+        <div class="cbody">後端設計的核心，決定每顆邏輯閘在晶片上的實際位置，再用金屬導線連接。AI 晶片佈局極度複雜，時脈樹（Clock Tree）需同步分配到數十億個觸發器。繞線完成後金屬層數高達 20 層以上。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#f1f5f9">⑥</div><div><div class="cn">驗證（DRC / LVS / STA）</div></div></div>
+        <div class="cbody">設計規則檢查（DRC）確保符合晶圓廠製程規則；佈局對比圖檢查（LVS）確認佈局與 Netlist 一致；靜態時序分析（STA）確保所有路徑在目標頻率下無違規。一次驗證可能花數天，錯誤需反覆修正。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#ccfbf1">⑦</div><div><div class="cn">Tape-out → 光罩製作</div></div></div>
+        <div class="cbody">設計資料（GDSII 格式）送交台積電，製作 EUV 光罩。頂級 AI 晶片一套光罩（數十片）造價超過 1 億美元，Tape-out 後無法修改，設計失誤代價極高。這也是 Chiplet 架構流行的原因之一：拆小 Die 降低 Tape-out 風險。</div>
+      </div>
+    </div>
+
+    <h3 style="color:#534AB7;margin-top:20px">現代演進：Chiplet 與異質整合</h3>
+    <div class="g2">
+      <div class="stk">
+        <div class="stk-head">
+          <span class="stk-icon">🧩</span>
+          <span class="stk-title">Chiplet 拆分設計</span>
+          <span class="stk-phase" style="background:#ede9fe;color:#5b21b6">AI 晶片主流趨勢</span>
+        </div>
+        <div class="stk-body">把一顆大晶片拆分為多個小 Chiplet，各自 Tape-out 後再封裝整合。好處：每個 Chiplet 更小，良率更高（良率與面積成反比）；不同功能的 Chiplet 可用不同製程（計算核心用 3nm，I/O 用 6nm），大幅降低成本。AMD 的 EPYC CPU、Intel 的 Meteor Lake 均採用此架構。</div>
+        <div class="stk-why">💰 成本邏輯：晶片良率 ≈ e^(-面積×缺陷密度)，面積越小良率越高，拆成 8 個小晶片的總良率遠高於一顆大晶片</div>
+      </div>
+      <div class="stk">
+        <div class="stk-head">
+          <span class="stk-icon">🔌</span>
+          <span class="stk-title">UCIe（通用 Chiplet 互連）</span>
+          <span class="stk-phase" style="background:#dbeafe;color:#1e40af">2023 標準發布</span>
+        </div>
+        <div class="stk-body">UCIe（Universal Chiplet Interconnect Express）是 Intel 主導、AMD/ARM/高通/台積電等聯合推動的 Chiplet 互連標準，讓不同廠商設計的 Chiplet 可以相互連接。目標是讓 Chiplet 生態系統像 PCIe 插槽一樣通用化，打破各廠自有封閉標準。</div>
+        <div class="stk-why">🌐 戰略意義：台積電的 CoWoS 封裝成為 UCIe 的主要物理載體，進一步強化台積電在先進封裝的戰略地位</div>
+      </div>
+    </div>
+  </div><!-- end ic-flow -->
+
+  <!-- ── 子頁籤 2：底層電路物理 ── -->
+  <div id="ic-physics" class="subdiv">
+    <h3 style="color:#185FA5;margin-top:0">底層電路物理：FET、電感、電阻的本質</h3>
+
+    <!-- FET 為什麼是一切 -->
+    <div class="card" style="border-left:4px solid #185FA5;margin-bottom:14px">
+      <div style="font-weight:800;font-size:.92rem;color:#1e3a8a;margin-bottom:10px">① FET 為什麼是現代 IC 的全部</div>
+      <div class="g2">
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#1d4ed8;margin-bottom:6px">FET（場效電晶體）vs BJT（雙極性電晶體）</div>
+          <table style="font-size:.8rem">
+            <thead><tr><th>比較</th><th>FET（MOSFET）</th><th>BJT</th></tr></thead>
+            <tbody>
+              <tr><td>控制方式</td><td>電壓控制（高阻抗）</td><td>電流控制（低阻抗）</td></tr>
+              <tr><td>靜態功耗</td><td style="color:#16a34a;font-weight:700">極低（閘極不耗電）</td><td style="color:#dc2626">高（基極需持續電流）</td></tr>
+              <tr><td>積體密度</td><td style="color:#16a34a;font-weight:700">極高（可縮小至 2nm）</td><td style="color:#dc2626">低（體積較大）</td></tr>
+              <tr><td>數位整合</td><td style="color:#16a34a;font-weight:700">完美（CMOS 邏輯）</td><td>困難</td></tr>
+              <tr><td>現代 IC 使用</td><td style="color:#16a34a;font-weight:700">99.9%</td><td>少數類比 / RF 電路</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#1d4ed8;margin-bottom:6px">HBM vs GPU 內部的 FET 分工</div>
+          <div class="cc" style="margin-bottom:8px">
+            <div class="ch"><div class="ci" style="background:#dbeafe">💾</div><div><div class="cn">HBM 記憶體內部</div></div></div>
+            <div class="cbody"><strong>1T1C 結構（一個 FET + 一個電容）</strong>重複數十億次的規律矩陣。FET 是「開關」決定讀/寫，電容是「水庫」儲存 0 或 1。電容必須每 64ms 補電一次（Refresh），因為電荷會慢慢漏失。</div>
+          </div>
+          <div class="cc">
+            <div class="ch"><div class="ci" style="background:#ede9fe">🧠</div><div><div class="cn">GPU 邏輯晶片內部</div></div></div>
+            <div class="cbody"><strong>FET 組成複雜不規則的邏輯閘</strong>（AND/OR/NOT/NAND），進行高速數學運算。B200 GPU 有超過 2000 億顆電晶體，全部是 FET。放大器退居配角，只在晶片邊緣 I/O 或記憶體讀取時擔任訊號加油站。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 為什麼不畫電感 -->
+    <div class="card" style="border-left:4px solid #854F0B;margin-bottom:14px">
+      <div style="font-weight:800;font-size:.92rem;color:#854F0B;margin-bottom:10px">② 為什麼 IC 內部幾乎不畫電感</div>
+      <div class="g2">
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#854F0B;margin-bottom:6px">三大禁忌原因</div>
+          <div class="cc" style="margin-bottom:6px">
+            <div class="ch"><div class="ci" style="background:#fef3c7">📐</div><div><div class="cn">面積代價極大</div></div></div>
+            <div class="cbody">線圈（螺旋電感）在晶片上需要數百 μm 的面積，而一顆 FET 只需 &lt;10nm。在寸土寸金的 AI 晶片上，放一顆電感等於浪費數億顆電晶體的空間，完全不符合成本效益。</div>
+          </div>
+          <div class="cc" style="margin-bottom:6px">
+            <div class="ch"><div class="ci" style="background:#fef3c7">🧲</div><div><div class="cn">磁場穿透矽底板</div></div></div>
+            <div class="cbody">矽是磁場的良好穿透介質，電感產生的磁場會穿透矽底板，在鄰近的金屬走線感應出雜訊電壓，嚴重干擾旁邊的電晶體電路，造成訊號完整性惡化。</div>
+          </div>
+          <div class="cc">
+            <div class="ch"><div class="ci" style="background:#fef3c7">📡</div><div><div class="cn">磁場洩漏干擾全局</div></div></div>
+            <div class="cbody">高頻電感產生的電磁場難以屏蔽，容易對周圍所有電路造成電磁干擾（EMI），破壞數位邏輯電路的工作穩定性。</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#854F0B;margin-bottom:6px">業界的三種妥協方案</div>
+          <div class="cc" style="margin-bottom:6px">
+            <div class="ch"><div class="ci" style="background:#fef9ec">🔲</div><div><div class="cn">外部 PCB 功率電感</div></div></div>
+            <div class="cbody">最常見做法：把電感留在 PCB 板上（SMT 功率電感），晶片只負責數位邏輯，電源轉換在外部完成。缺點是電源路徑較長，效率稍低。</div>
+          </div>
+          <div class="cc" style="margin-bottom:6px">
+            <div class="ch"><div class="ci" style="background:#fef9ec">🔀</div><div><div class="cn">主動式電感（Active Inductor）</div></div></div>
+            <div class="cbody">用幾個電晶體與電容組合電路，在特定頻率模擬出電感的阻抗特性，完全不需要實體線圈。常用於 RF 濾波電路，但頻寬窄、非線性較大。</div>
+          </div>
+          <div class="cc">
+            <div class="ch"><div class="ci" style="background:#fef9ec">🏆</div><div><div class="cn">IVR 埋入電感（頂級 AI 晶片）</div></div></div>
+            <div class="cbody"><strong>整合式電壓調節器（IVR）</strong>：只有最頂級的 AI 晶片才會不計成本在 3D 封裝底座或 ABF 載板夾層中埋入微型電感，實現晶片級別的精細電壓調控，大幅提升能效。Intel Meteor Lake 已採用此技術。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 電阻的終極意義 -->
+    <div class="card" style="border-left:4px solid #993C1D;margin-bottom:14px">
+      <div style="font-weight:800;font-size:.92rem;color:#993C1D;margin-bottom:10px">③ 電阻的終極意義：電路世界的錨點</div>
+      <div class="cl cl-r" style="margin-bottom:10px">
+        <span class="cl-icon">💡</span>
+        <div class="cl-body">電阻只會把電能轉換成熱，看似「浪費能量的廢物」，卻是數位與類比電路不可或缺的基礎元件。沒有電阻設下的限制與框架，其他元件就會「暴走」。</div>
+      </div>
+      <div class="g2">
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">⚓</div><div><div class="cn">電壓錨點（Pull-up / Pull-down）</div></div></div>
+          <div class="cbody">數位電路中，訊號線若沒有連接驅動源，電壓會「浮空」隨機跳動，電路無法判斷是 0 還是 1。上拉電阻（Pull-up）將線路拉至電源電壓 VDD，下拉電阻（Pull-down）拉至 GND，建立確定的邏輯電平，防止數位訊號浮空亂跳。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">📏</div><div><div class="cn">放大比例尺（類比電路）</div></div></div>
+          <div class="cbody">運算放大器的增益（放大倍數）由回授電路中兩個電阻的比值精確決定。兩個電阻的絕對值可能有 ±20% 誤差，但比值可以精確到 0.01%，這是類比電路設計的核心技巧。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">🛡️</div><div><div class="cn">限流安全閥</div></div></div>
+          <div class="cbody">LED 驅動、電源保護電路中，電阻限制最大電流防止元件燒毀。ESD 保護電路中，小電阻（幾歐姆）串在 I/O 腳，當靜電脈衝來臨時限制瞬間電流，保護後端的精密電路。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">⏱️</div><div><div class="cn">RC 時間控制（濾波與延遲）</div></div></div>
+          <div class="cbody">電阻與電容組合形成 RC 低通濾波器，時間常數 τ = RC 決定訊號響應速度。IC 設計中 RC 延遲是時序分析的基本單元：金屬走線電阻 × 節點電容 = 傳播延遲，這是 STA（靜態時序分析）計算所有路徑延遲的基礎。</div>
+        </div>
+      </div>
+    </div>
+  </div><!-- end ic-physics -->
+
+  <!-- ── 子頁籤 3：光電訊號轉換 ── -->
+  <div id="ic-optoelec" class="subdiv">
+    <h3 style="color:#0f766e;margin-top:0">光電訊號轉換：從物理原理到矽光子實現</h3>
+    <div class="cl cl-g" style="margin-top:0">
+      <span class="cl-icon">💡</span>
+      <div class="cl-body">光電訊號轉換是光通訊的核心：如何把「光」變成「電」（接收），以及如何把「電」變成「光」（發送）。矽光子平台用 CMOS 製程實現這些功能，是 CPO 技術的底層基礎。</div>
+    </div>
+
+    <!-- 光電效應基礎 -->
+    <div class="card" style="border-left:4px solid #0d9488;margin-top:14px;margin-bottom:14px">
+      <div style="font-weight:800;font-size:.92rem;color:#0f766e;margin-bottom:10px">① 光電效應基礎</div>
+      <div class="g2">
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#0f766e;margin-bottom:6px">光子能量與電子躍遷</div>
+          <div style="font-size:.82rem;line-height:1.8">
+            光是由光子組成的，每個光子攜帶能量 <strong>E = hν</strong>（h = 普朗克常數，ν = 光的頻率）。當光子能量大於半導體材料的帶隙（Bandgap）能量時，光子被吸收，一個電子從價帶（Valence Band）躍遷到導帶（Conduction Band），同時產生一個電洞，形成「電子-電洞對」，即可被外部電路收集為電流。這就是光偵測器的工作原理。
+          </div>
+          <div class="g2" style="margin-top:10px">
+            <div class="sc"><div class="sl">矽的帶隙能量</div><div class="sv" style="color:#534AB7">1.12 eV（對應 1100nm 光）</div></div>
+            <div class="sc"><div class="sl">通訊波長（1310/1550nm）</div><div class="sv" style="color:#dc2626">光子能量不足以激發矽</div></div>
+            <div class="sc"><div class="sl">鍺（Ge）的帶隙</div><div class="sv" style="color:#16a34a">0.67 eV（可吸收至 1850nm）</div></div>
+            <div class="sc"><div class="sl">矽光子的解法</div><div class="sv" style="color:#0d9488">用鍺做光偵測器整合在矽上</div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#0f766e;margin-bottom:6px">為什麼矽很難直接用於光通訊</div>
+          <div class="cc" style="margin-bottom:8px">
+            <div class="ch"><div class="ci" style="background:#f0fdfa">❌</div><div><div class="cn">矽是間接帶隙材料</div></div></div>
+            <div class="cbody">電子躍遷需要同時改變動量（需要聲子協助），發光效率極低，幾乎不能用矽做雷射。這是矽光子最根本的物理限制，也是為什麼 CPO 的雷射光源必須外接 InP（磷化銦）材料。</div>
+          </div>
+          <div class="cc">
+            <div class="ch"><div class="ci" style="background:#f0fdfa">✅</div><div><div class="cn">矽的折射率優勢</div></div></div>
+            <div class="cbody">矽的折射率（n ≈ 3.5）遠高於包層材料 SiO₂（n ≈ 1.45），折射率差大 → 光可以被緊緊「限制」在寬度僅 400nm 的矽波導中傳播，實現高密度光學電路佈線。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 光偵測器 -->
+    <div class="card" style="border-left:4px solid #185FA5;margin-bottom:14px">
+      <div style="font-weight:800;font-size:.92rem;color:#1e3a8a;margin-bottom:10px">② 光偵測器（Photodetector）：光 → 電</div>
+      <div class="g2">
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#1d4ed8;margin-bottom:6px">PIN 二極體（最常用）</div>
+          <div style="font-size:.82rem;line-height:1.8">結構：P 型半導體 / 本質（Intrinsic）層 / N 型半導體。光子在 I 層被吸收，產生電子-電洞對，被外加反向偏壓的電場快速掃出，形成光電流。<br><br><strong>優點：</strong>響應速度快（可達 40GHz+）、雜訊低、結構簡單<br><strong>矽光子實現：</strong>在矽波導上整合 Ge（鍺）吸收層，做成 Ge-on-Si PIN 光偵測器，可直接用 CMOS 製程製造</div>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#1d4ed8;margin-bottom:6px">APD（雪崩光偵測器）</div>
+          <div style="font-size:.82rem;line-height:1.8">在 PIN 的基礎上施加更高反向偏壓，讓初始光電子在高電場中碰撞電離（Impact Ionization），產生雪崩倍增效應，訊號增益可達 10~100 倍。<br><br><strong>優點：</strong>靈敏度極高，適用長距離低光功率接收<br><strong>缺點：</strong>雜訊也同步放大（過剩雜訊因子），需精密偏壓控制<br><strong>應用：</strong>光纖通訊長距離接收端，LiDAR 感測</div>
+          <div class="g2" style="margin-top:8px">
+            <div class="sc"><div class="sl">PIN 響應速度</div><div class="sv" style="color:#16a34a">40 GHz+</div></div>
+            <div class="sc"><div class="sl">APD 增益</div><div class="sv" style="color:#0d9488">10 ~ 100 倍</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 調變器 -->
+    <div class="card" style="border-left:4px solid #534AB7;margin-bottom:14px">
+      <div style="font-weight:800;font-size:.92rem;color:#4c1d95;margin-bottom:10px">③ 調變器（Modulator）：電 → 光訊號編碼</div>
+      <div class="cl cl-p" style="margin-bottom:10px">
+        <span class="cl-icon">💡</span>
+        <div class="cl-body">調變器的工作是把電訊號（0/1 數位資料）「寫入」光訊號。做法是改變光的強度（強度調變）或相位（相位調變），讓接收端能從光訊號中解讀出原始數據。</div>
+      </div>
+      <div class="g2">
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#4c1d95;margin-bottom:6px">MZ 干涉儀（Mach-Zehnder Modulator，MZM）</div>
+          <div style="font-size:.82rem;line-height:1.8">最主流的矽光子調變器。原理：將光束分成兩路，對其中一路施加電壓改變折射率（電光效應），使兩路光產生相位差，再合併時因干涉而改變強度（0 = 反相抵消，1 = 同相加強）。<br><br><strong>矽的電光效應（電漿色散效應）：</strong>對矽施加電場，改變載子濃度 → 折射率改變 → 相位改變。速度快，可達 100GHz+，是高速矽光子調變器的主流選擇。</div>
+          <div class="g2" style="margin-top:8px">
+            <div class="sc"><div class="sl">MZM 調變速率</div><div class="sv" style="color:#534AB7">100 GHz+</div></div>
+            <div class="sc"><div class="sl">工作電壓</div><div class="sv" style="color:#534AB7">1 ~ 3 V</div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#4c1d95;margin-bottom:6px">微環諧振器（Micro-ring Resonator，MRR）</div>
+          <div style="font-size:.82rem;line-height:1.8">微型環狀波導結構，對特定波長的光具有共振吸收效應。施加電壓改變折射率 → 共振波長偏移 → 光訊號開/關。<br><br><strong>優點：</strong>面積極小（直徑僅 5~10μm），功耗低，適合高密度波分復用（WDM）<br><strong>缺點：</strong>對溫度敏感，需要精密溫控電路，這也是 CPO 散熱設計困難的原因之一。</div>
+          <div class="g2" style="margin-top:8px">
+            <div class="sc"><div class="sl">MRR 直徑</div><div class="sv" style="color:#534AB7">5 ~ 10 μm</div></div>
+            <div class="sc"><div class="sl">溫度敏感度</div><div class="sv" style="color:#dc2626">~80 pm/°C（需溫控）</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 連結 CPO -->
+    <div class="card" style="border-left:4px solid #dc2626;margin-bottom:14px">
+      <div style="font-weight:800;font-size:.92rem;color:#991b1b;margin-bottom:10px">④ 為什麼光電轉換決定了 CPO 的良率瓶頸</div>
+      <div class="g2">
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">🔴</div><div><div class="cn">InP 雷射鍵合精度</div></div></div>
+          <div class="cbody">CPO 需要把 InP 雷射晶粒（外購）精確對準並鍵合到矽波導的耦合口，對準誤差需在 0.1μm 以內，否則雷射光無法有效耦合進波導，造成巨大插入損耗。這個異質鍵合（Heterogeneous Integration）製程良率是 CPO 目前最大的量產挑戰。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">🌡️</div><div><div class="cn">微環諧振器熱管理</div></div></div>
+          <div class="cbody">微環調變器的共振波長對溫度極敏感（~80pm/°C），當 CPO 與高功耗 ASIC 共封裝時，ASIC 散熱會造成局部溫度梯度，導致微環偏頻，需要每個微環獨立的溫控加熱器（Heater），增加功耗與電路複雜度。這是 CPO 散熱設計的核心難題。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">📡</div><div><div class="cn">光纖耦合標準化</div></div></div>
+          <div class="cbody">CPO 封裝體需要把光纖固定在晶片邊緣的耦合器（Grating Coupler 或 Edge Coupler）上。光纖陣列與晶片的對準固定（Fiber Attach）需要次微米精度，且要通過振動、熱循環等可靠性測試，這是 CPO 封裝標準化最困難的步驟之一。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">📊</div><div><div class="cn">整體良率乘積效應</div></div></div>
+          <div class="cbody">CPO 的整體良率 = 矽光子晶片良率 × InP 雷射良率 × 鍵合良率 × 光纖耦合良率。每個步驟就算各有 95% 良率，四步相乘後整體良率僅 81%。這解釋了為什麼 CPO 量產時程持續延後，比傳統電子封裝困難得多。</div>
+        </div>
+      </div>
+      <div class="cl cl-g" style="margin-top:10px">
+        <span class="cl-icon">🔗</span>
+        <div class="cl-body">詳細的 CPO delay 投資影響，請參考 <strong>⑫ 題材投資邏輯 → 光通訊空窗期</strong>；矽光子技術架構全貌，請參考 <strong>⑭ 未來技術雷達 → 焦點深探 → 矽光子 SiPh</strong>。</div>
+      </div>
+    </div>
+  </div><!-- end ic-optoelec -->
+
+  <!-- ── 子頁籤 4：預留 ── -->
+  <div id="ic-reserved" class="subdiv">
+    <div class="cl cl-a">
+      <span class="cl-icon">📋</span>
+      <div class="cl-body">此章節預留，後續將補充更多 IC 設計與訊號技術內容。</div>
+    </div>
+  </div><!-- end ic-reserved -->
+
+</div><!-- end tab-icdesign -->
+
 <!-- ══════════════════════════════
      TAB：GTC 台北 2026
 ══════════════════════════════ -->
@@ -2260,6 +3092,653 @@ hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
   </div>
 
 </div>
+<!-- ══════════════════════════════
+     TAB：馬斯克大計劃
+══════════════════════════════ -->
+<div id="tab-musk" class="section">
+
+  <!-- 頂部大標 -->
+  <div style="background:linear-gradient(135deg,#0c0a1e 0%,#1a0533 40%,#0f1729 100%);border-radius:16px;padding:28px 24px;margin-bottom:20px;color:#fff;text-align:center">
+    <div style="font-size:.78rem;letter-spacing:.15em;color:#f0abfc;margin-bottom:8px;text-transform:uppercase">The Musk Empire · 2026 年中現況</div>
+    <div style="font-size:1.5rem;font-weight:900;margin-bottom:8px">世界正被<span style="color:#f0abfc"> 兩個人 </span>重新定義</div>
+    <div style="font-size:.92rem;color:#e2e8f0;max-width:600px;margin:0 auto">黃仁勳：「算力決定一切」<br>馬斯克：「我要掌控算力、火箭、機器人、通訊，以及人類未來的去向」</div>
+    <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <span style="background:#7c3aed;border-radius:20px;padding:4px 14px;font-size:.76rem;font-weight:700">SpaceX + xAI 合併</span>
+      <span style="background:#dc2626;border-radius:20px;padding:4px 14px;font-size:.76rem;font-weight:700">Tesla Optimus 2026量產</span>
+      <span style="background:#2563eb;border-radius:20px;padding:4px 14px;font-size:.76rem;font-weight:700">Colossus 2GW 超算</span>
+      <span style="background:#059669;border-radius:20px;padding:4px 14px;font-size:.76rem;font-weight:700">Cybercab Robotaxi</span>
+      <span style="background:#0d9488;border-radius:20px;padding:4px 14px;font-size:.76rem;font-weight:700">軌道資料中心</span>
+    </div>
+  </div>
+
+  <!-- 馬斯克帝國總覽圖 -->
+  <h2>🏰 馬斯克帝國：四個圈如何互相強化</h2>
+  <div class="svg-wrap" style="background:#fff;padding:28px">
+    <svg width="100%" viewBox="0 0 1347 750" style="display:block;min-width:940px">
+
+      <!-- 白色背景 -->
+      <rect x="0" y="0" width="1250" height="852" rx="22" fill="#ffffff"></rect>
+
+      <!-- 連結線 -->
+      <line x1="611" y1="275" x2="611" y2="155" stroke="#3e434a" stroke-width="2.4" stroke-dasharray="8 5"></line>
+      <line x1="541" y1="333" x2="327" y2="300" stroke="#3e434a" stroke-width="2.4" stroke-dasharray="8 5"></line>
+      <line x1="546" y1="366" x2="327" y2="519" stroke="#3e434a" stroke-width="2.4" stroke-dasharray="8 5"></line>
+      <line x1="681" y1="316" x2="875" y2="202" stroke="#3e434a" stroke-width="2.4" stroke-dasharray="8 5"></line>
+      <line x1="679" y1="366" x2="875" y2="519" stroke="#3e434a" stroke-width="2.4" stroke-dasharray="8 5"></line>
+
+
+      <!-- 中心：馬斯克 -->
+      <circle cx="611" cy="343" r="77" fill="#1a0533" stroke="#a855f7" stroke-width="3.2"></circle>
+      <text x="611" y="337" text-anchor="middle" font-size="30" font-weight="800" fill="#f0abfc">馬斯克</text>
+      <text x="611" y="370" text-anchor="middle" font-size="25" fill="#ffffff">四帝國核心</text>
+
+      <!-- ① SpaceXAI 上方 -->
+      <rect x="391" y="30" width="399" height="140" rx="16" fill="#1a0533" stroke="#a855f7" stroke-width="2.4"></rect>
+      <text x="591" y="55" text-anchor="middle" font-size="20" font-weight="700" fill="#d8b4fe">估值 $1.25 兆</text>
+      <text x="591" y="90" text-anchor="middle" font-size="25" font-weight="800" fill="#f0abfc">SpaceXAI</text>
+      <text x="591" y="125" text-anchor="middle" font-size="18" fill="#ffffff">SpaceX + xAI 合併（2026.5）</text>
+      <text x="591" y="155" text-anchor="middle" font-size="17" fill="#e9d5ff">Starlink · Grok · 軌道資料中心 · Starship</text>
+
+      <!-- ② Tesla 左上 -->
+      <rect x="43" y="185" width="290" height="200" rx="16" fill="#1a0505" stroke="#ef4444" stroke-width="2.4"></rect>
+      <text x="188" y="222" text-anchor="middle" font-size="25" font-weight="800" fill="#f87171">Tesla</text>
+      <text x="188" y="248" text-anchor="middle" font-size="18" fill="#ffffff">FSD · Cybercab · Optimus</text>
+      <text x="188" y="273" text-anchor="middle" font-size="17" fill="#fecaca">Physical AI 核心載體</text>
+      <text x="188" y="295" text-anchor="middle" font-size="17" fill="#fecaca">AI4/5 晶片自研</text>
+      <!-- Terafab 條 -->
+      <rect x="54" y="312" width="268" height="58" rx="11" fill="#3b0a0a" stroke="#f87171" stroke-width="2.2"></rect>
+      <text x="188" y="336" text-anchor="middle" font-size="20" font-weight="800" fill="#fca5a5">🏭 Terafab</text>
+      <text x="188" y="360" text-anchor="middle" font-size="16" fill="#ffffff">終局：自建 2nm 晶圓廠</text>
+
+      <!-- ③ X + Digital Optimus 左下 -->
+      <rect x="40" y="467" width="290" height="165" rx="16" fill="#050518" stroke="#60a5fa" stroke-width="2.4"></rect>
+      <text x="188" y="503" text-anchor="middle" font-size="25" font-weight="800" fill="#93c5fd">X + Digital Optimus</text>
+      <text x="188" y="530" text-anchor="middle" font-size="18" fill="#ffffff">X 平台 · 社群數據 · 金融支付</text>
+      <text x="188" y="563" text-anchor="middle" font-size="17" fill="#bfdbfe">Digital Optimus：AI 數位員工</text>
+      <text x="188" y="585" text-anchor="middle" font-size="17" fill="#bfdbfe">Tesla+xAI 聯合（2026.9 目標）</text>
+      <text x="188" y="615" text-anchor="middle" font-size="16" fill="#93c5fd">X 數據 → 訓練 Grok</text>
+      <line x1="208" y1="467" x2="208" y2="366" stroke="#60a5fa" stroke-width="4" stroke-dasharray="4 3"></line>
+
+      <!-- ④ Grok + Colossus 右上 -->
+      <rect x="869" y="57" width="326" height="180" rx="16" fill="#0d0520" stroke="#9333ea" stroke-width="2.4"></rect>
+      <text x="1032" y="96" text-anchor="middle" font-size="25" font-weight="800" fill="#d8b4fe">Grok + Colossus</text>
+      <text x="1032" y="121" text-anchor="middle" font-size="18" fill="#ffffff">Grok AI 模型 · Memphis 超算</text>
+      <text x="1032" y="150" text-anchor="middle" font-size="17" fill="#e9d5ff">Colossus 1+2+3 → 近 2GW 算力</text>
+      <text x="1032" y="174" text-anchor="middle" font-size="17" fill="#e9d5ff">550,000+ NVIDIA GPU 目標</text>
+      <text x="1032" y="196" text-anchor="middle" font-size="17" fill="#e9d5ff">ARR $5億 · 年燒 $120億</text>
+      <text x="1032" y="225" text-anchor="middle" font-size="16" fill="#c4b5fd">Grok → 驅動 Tesla FSD / Optimus</text>
+
+      <!-- ⑤ 軌道資料中心 右下 -->
+      <rect x="869" y="467" width="326" height="180" rx="16" fill="#051a16" stroke="#0d9488" stroke-width="2.4"></rect>
+      <text x="1032" y="503" text-anchor="middle" font-size="25" font-weight="800" fill="#5eead4">軌道資料中心</text>
+      <text x="1032" y="527" text-anchor="middle" font-size="18" fill="#ffffff">Space-based AI Compute</text>
+      <text x="1032" y="560" text-anchor="middle" font-size="17" fill="#ccfbf1">太空永遠有太陽能 · 無地面限制</text>
+      <text x="1032" y="584" text-anchor="middle" font-size="17" fill="#ccfbf1">Starship → 百萬衛星星座</text>
+      <text x="1032" y="608" text-anchor="middle" font-size="17" fill="#2dd4bf">目標 100GW 軌道算力</text>
+      <text x="1032" y="635" text-anchor="middle" font-size="16" fill="#99f6e4">Starlink 連結一切</text>
+
+      <!-- 底部說明 -->
+
+      <text x="610" y="693" text-anchor="middle" font-size="20" fill="#5b21b6" font-weight="800">四個圈互相餵養</text>
+      <text x="610" y="716" text-anchor="middle" font-size="18" fill="#374151">X 的數據訓練 Grok → Grok 驅動 Tesla FSD / Optimus → Starlink 連結一切</text>
+      <text x="610" y="737" text-anchor="middle" font-size="18" fill="#374151">→ Starship 突破算力上限 → Terafab 晶片自給自足</text>
+
+    </svg>
+  </div>
+å
+  <!-- 子頁籤：四大帝國詳解 -->
+  <div class="subtabs" style="margin-top:20px">
+    <button class="subtab active" onclick="showSub('musk-spacexai',this)">🚀 SpaceXAI 合併</button>
+    <button class="subtab subtab-b" onclick="showSub('musk-tesla',this)">🤖 Tesla：Optimus + Cybercab</button>
+    <button class="subtab" onclick="showSub('musk-terafab',this)" style="border-color:#dc2626;color:#dc2626;font-weight:700">🏭 Terafab 晶圓廠</button>
+    <button class="subtab subtab-g" onclick="showSub('musk-grok',this)">🧠 Grok + Colossus 超算</button>
+    <button class="subtab subtab-o" onclick="showSub('musk-vs',this)">⚔ 黃仁勳 vs 馬斯克</button>
+  </div>
+
+  <!-- ══ SpaceXAI ══ -->
+  <div id="musk-spacexai" class="subdiv active">
+    <div class="cl cl-p" style="margin-top:4px">
+      <span class="cl-icon">📌</span>
+      <div class="cl-body">2026 年 2 月，SpaceX 宣布收購 xAI，合併估值 <strong>1.25 兆美元</strong>，一夕間成為全球最大私人科技帝國。馬斯克的邏輯：「長遠來看，太空是唯一能真正擴展 AI 算力的地方——太空永遠有太陽能。」</div>
+    </div>
+    <div class="g2">
+      <div class="card" style="border-top:3px solid #f0abfc">
+        <h3 style="color:#7c3aed;margin-bottom:12px">SpaceX + xAI 合併：為什麼？</h3>
+        <div class="flow-steps" style="margin:0">
+          <div class="flow-step">
+            <div class="fsl"><div class="fsnum" style="border-color:#f0abfc;color:#7c3aed">1</div><div class="fsline"></div></div>
+            <div class="fsr" style="padding:8px 12px">
+              <div class="fst">地面算力遇到物理極限</div>
+              <div class="fsb">電力、冷卻、土地——地球資料中心正在撞牆。SpaceX 的解法是把 AI 算力搬上太空衛星，用太陽能驅動，無限擴展。目標：100GW 軌道算力。</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="fsl"><div class="fsnum" style="border-color:#f0abfc;color:#7c3aed">2</div><div class="fsline"></div></div>
+            <div class="fsr" style="padding:8px 12px">
+              <div class="fst">Starlink 是 xAI 的分發網路</div>
+              <div class="fsb">Grok 需要全球覆蓋的低延遲連線，Starlink 正好提供。任何地方都能即時存取 AI 推理服務，包括無電網的偏遠地區和戰場。</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="fsl"><div class="fsnum" style="border-color:#f0abfc;color:#7c3aed">3</div><div class="fsline"></div></div>
+            <div class="fsr" style="padding:8px 12px">
+              <div class="fst">Starship 是軌道算力的運輸工具</div>
+              <div class="fsb">Starship V3 正在測試全快速復用、在軌加注、衛星部署能力。目標把帶有 AI 算力的衛星以低成本批量送入軌道。</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="fsl"><div class="fsnum" style="border-color:#f0abfc;color:#7c3aed">4</div></div>
+            <div class="fsr" style="padding:8px 12px;border-color:#7c3aed">
+              <div class="fst" style="color:#7c3aed">IPO 計劃：目標募資 500 億美元</div>
+              <div class="fsb">SpaceX 計劃 2026 年中 IPO，若成功將是史上最大 IPO。合併後的估值和現金流使這個計劃更有說服力。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="border-top:3px solid #0d9488;margin-bottom:12px">
+          <h3 style="color:#065f46;margin-bottom:10px">Starlink：已成形的護城河</h3>
+          <div class="g2" style="gap:6px">
+            <div class="sc"><div class="sl">在軌衛星數</div><div class="sv">7,000+ 顆（2026）</div></div>
+            <div class="sc"><div class="sl">用戶數</div><div class="sv">400 萬+ 訂閱戶</div></div>
+            <div class="sc"><div class="sl">年營收估算</div><div class="sv">80 億美元（2026）</div></div>
+            <div class="sc"><div class="sl">FCC 批准</div><div class="sv">直連手機頻譜（65MHz）</div></div>
+          </div>
+          <div class="cl cl-g" style="margin-top:10px">
+            <span class="cl-icon">📡</span>
+            <div class="cl-body">Starlink 已是 SpaceX 的現金牛，支撐整個帝國的燒錢計劃。直連手機功能 2026 年 FCC 正式批准，讓每支手機都能成為 Grok 的入口。</div>
+          </div>
+        </div>
+        <div class="card" style="border-top:3px solid #dc2626">
+          <h3 style="color:#991b1b;margin-bottom:10px">xAI 財務現況：巨額燒錢期</h3>
+          <div class="g2" style="gap:6px">
+            <div class="sc"><div class="sl">估值</div><div class="sv">2,300 億美元（2026 Q1 Series E）</div></div>
+            <div class="sc"><div class="sl">年燒錢</div><div class="sv" style="color:#dc2626">120 億美元+（每月 10 億）</div></div>
+            <div class="sc"><div class="sl">年收入 ARR</div><div class="sv">約 5 億美元</div></div>
+            <div class="sc"><div class="sl">Series E 投資人</div><div class="sv">NVIDIA · Cisco · Fidelity</div></div>
+          </div>
+          <div class="cl cl-r" style="margin-top:10px">
+            <span class="cl-icon">⚠️</span>
+            <div class="cl-body">收入 vs 燒錢比約 <strong>1:24</strong>，這是「先搶市場、商業化後補」的策略，風險極高。SpaceX 合併讓 Starlink 現金流支撐 xAI，但若 AI 商業化慢於預期，壓力仍然巨大。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Tesla ══ -->
+  <div id="musk-tesla" class="subdiv">
+    <div class="cl cl-b" style="margin-top:4px">
+      <span class="cl-icon">🤖</span>
+      <div class="cl-body">Tesla 在 2026 年同時量產三款革命性產品：<strong>Cybercab 無人計程車、Optimus Gen 3 人形機器人、Tesla Semi 重型電動卡車</strong>。馬斯克說這是「幾乎所有東西都是全新的」的 S 曲線起點——初期極慢，年底爆發。</div>
+    </div>
+    <div class="g2">
+      <div class="card" style="border-top:3px solid #ef4444">
+        <h3 style="color:#991b1b;margin-bottom:10px">🚖 Cybercab：無人計程車帝國</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:#059669;background:#059669"></div>
+            <div class="tl-year">2026 年 2 月</div>
+            <div class="tl-title">首台 Cybercab 下線</div>
+            <div class="tl-body">Giga Texas 生產出首台無方向盤、無踏板的 Cybercab，但量產到 4 月才真正開始。</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:#2563eb;background:#2563eb"></div>
+            <div class="tl-year">2026 年 4 月</div>
+            <div class="tl-title">達拉斯、休斯頓正式上線</div>
+            <div class="tl-body">無監督 Robotaxi 服務在德州兩大城市啟動（Austin 已先開）。計劃擴展至 Phoenix、Miami、Orlando、Tampa、Las Vegas 年中前完成。</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:#d97706;background:#d97706"></div>
+            <div class="tl-year">2026 年 Q4 目標</div>
+            <div class="tl-title">FSD 無監督版推送給消費者</div>
+            <div class="tl-body">馬斯克說「可能 Q4」達到無監督 FSD，但 Tesla FSD 時程一向延後——目前監督版每 57,000 英里一次事故（人類司機：229,000 英里）。</div>
+          </div>
+        </div>
+        <div class="cl cl-r" style="margin-top:8px">
+          <span class="cl-icon">⚠️</span>
+          <div class="cl-body">Cybercab 硬體已在生產，但商業化的關鍵是軟體（FSD 無監督）。Waymo 目前仍領先多年。Tesla 車輛實際安全數據明顯落後人類司機，這是最大的不確定性。</div>
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid #7c3aed">
+        <h3 style="color:#5b21b6;margin-bottom:10px">🦾 Optimus Gen 3：人形機器人</h3>
+        <div class="g2" style="gap:6px;margin-bottom:12px">
+          <div class="sc"><div class="sl">量產版本</div><div class="sv">Gen 3，首款為大規模生產設計</div></div>
+          <div class="sc"><div class="sl">試量產開始</div><div class="sv">2026 年夏季（數十到數百台）</div></div>
+          <div class="sc"><div class="sl">高量產目標</div><div class="sv">2027 年（真正放量）</div></div>
+          <div class="sc"><div class="sl">最終目標</div><div class="sv">每年 100 萬台</div></div>
+          <div class="sc"><div class="sl">晶片</div><div class="sv">Tesla AI4 推理晶片（自研）</div></div>
+          <div class="sc"><div class="sl">AI 大腦</div><div class="sv">Grok（xAI）驅動</div></div>
+        </div>
+        <div class="cl cl-g">
+          <span class="cl-icon">💡</span>
+          <div class="cl-body">馬斯克的邏輯：「人形機器人就是下一代工人」。若 Optimus 真的能做工廠工作，Tesla 自身工廠就是第一個客戶，再售給其他製造業。這個敘事是 Tesla 估值最大的想像空間，也是最難預測的部分。</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-left:4px solid #d97706;margin-top:12px">
+      <h3 style="color:#92400e;margin-bottom:10px">Digital Optimus：AI 數位員工（2026 年 3 月宣布）</h3>
+      <p>Tesla + xAI 聯合開發的「數位版 Optimus」，代號 Macrohard（諷刺微軟之名），讓停在停車場的 Tesla 車輛用 AI4 晶片處理企業工作（會計、HR、客服）。馬斯克說目標 <strong>2026 年 9 月讓用戶體驗到</strong>。</p>
+      <div class="g3" style="margin-top:10px;gap:6px">
+        <div class="sc"><div class="sl">運算平台</div><div class="sv">Tesla AI4 晶片（低成本推理）</div></div>
+        <div class="sc"><div class="sl">AI 模型</div><div class="sv">Grok（xAI）</div></div>
+        <div class="sc"><div class="sl">分發通路</div><div class="sv">停泊中的 Tesla 車輛群</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Terafab ══ -->
+  <div id="musk-terafab" class="subdiv">
+
+    <!-- 核心概念 -->
+    <div style="background:linear-gradient(135deg,#1c0a0a 0%,#3b0a0a 100%);border-radius:12px;padding:20px 22px;margin-bottom:16px;color:#fff">
+      <div style="font-size:.76rem;letter-spacing:.12em;color:#fca5a5;margin-bottom:6px">TERAFAB · GIGA TEXAS · AUSTIN</div>
+      <div style="font-size:1.3rem;font-weight:900;margin-bottom:6px">全球第一座<span style="color:#fbbf24">「設計即製造」</span>晶圓廠</div>
+      <div style="font-size:.88rem;color:#e2e8f0">若 Terafab 成功，馬斯克帝國將成為歷史上第一個「從晶片設計 → 晶片製造 → 整車/機器人 → AI 服務」全部自己掌控的私人集團</div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <span style="background:#dc2626;border-radius:20px;padding:3px 12px;font-size:.74rem;font-weight:700">投資規模 $550億~$1,190億</span>
+        <span style="background:#d97706;border-radius:20px;padding:3px 12px;font-size:.74rem;font-weight:700">目標產能 1TW AI算力/年</span>
+        <span style="background:#7c3aed;border-radius:20px;padding:3px 12px;font-size:.74rem;font-weight:700">Intel 18A 加入</span>
+        <span style="background:#059669;border-radius:20px;padding:3px 12px;font-size:.74rem;font-weight:700">2nm 製程目標</span>
+      </div>
+    </div>
+
+    <!-- 為什麼要蓋自己的晶圓廠 -->
+    <h3 style="margin-bottom:10px">為什麼馬斯克說「非蓋不可」？</h3>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#fee2e2">🔴</div><div><div class="cn">AI 晶片嚴重供不應求</div></div></div>
+        <div class="cbody">馬斯克說：「就算 TSMC 和 Samsung 給出最好情況的供貨承諾，也仍然不夠。」Optimus 機器人的量產計劃需要的晶片數量，沒有任何外部代工廠能在馬斯克的時間表內承諾。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#fee2e2">⚡</div><div><div class="cn">設計→製造一體，極速迭代</div></div></div>
+        <div class="cbody">Terafab 最大的差異化不是規模，而是<strong>設計工程師和製造工程師在同一棟樓</strong>。可以「做一顆晶片→測試→改光罩→重做」，週期大幅縮短。這是目前全球沒有任何一座晶圓廠做到的事。</div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#fee2e2">🌍</div><div><div class="cn">地緣政治對沖</div></div></div>
+        <div class="cbody">最先進晶片集中在台灣（台積電），地緣政治風險是美國的國家安全課題。Terafab 在德州 Austin 建廠，是馬斯克「讓美國不依賴台灣」戰略的核心，也讓他在與美國政府的關係上有更強的籌碼。</div>
+      </div>
+    </div>
+
+    <!-- 晶片路線圖 + Terafab 的角色 -->
+    <h3 style="margin-bottom:10px">Tesla 晶片路線圖：從外包到自製的三個階段</h3>
+    <div class="svg-wrap">
+      <svg width="100%" viewBox="0 0 820 220" style="display:block;min-width:600px">
+        <!-- 時間軸 -->
+        <line x1="60" y1="36" x2="790" y2="36" stroke="#e5e7eb" stroke-width="1.5"/>
+        <!-- 刻度 -->
+        <line x1="100" y1="32" x2="100" y2="40" stroke="#9ca3af" stroke-width="1.5"/>
+        <text x="100" y="28" text-anchor="middle" font-size="10" fill="#888">2024</text>
+        <line x1="240" y1="32" x2="240" y2="40" stroke="#9ca3af" stroke-width="1.5"/>
+        <text x="240" y="28" text-anchor="middle" font-size="10" fill="#888">2025</text>
+        <!-- 2026 現在 -->
+        <line x1="380" y1="24" x2="380" y2="40" stroke="#ef4444" stroke-width="2"/>
+        <rect x="358" y="14" width="46" height="16" rx="4" fill="#ef4444"/>
+        <text x="381" y="26" text-anchor="middle" font-size="9" fill="#fff" font-weight="800">2026</text>
+        <text x="381" y="13" text-anchor="middle" font-size="8" fill="#ef4444">▼ 現在</text>
+        <line x1="520" y1="32" x2="520" y2="40" stroke="#9ca3af" stroke-width="1.5"/>
+        <text x="520" y="28" text-anchor="middle" font-size="10" fill="#555">2027</text>
+        <line x1="660" y1="32" x2="660" y2="40" stroke="#9ca3af" stroke-width="1.5"/>
+        <text x="660" y="28" text-anchor="middle" font-size="10" fill="#555">2028</text>
+        <text x="760" y="28" text-anchor="middle" font-size="10" fill="#555">2029+</text>
+        <!-- 垂直現在線 -->
+        <line x1="380" y1="36" x2="380" y2="198" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+        <!-- AI4：2022~2026，Samsung 製造 -->
+        <rect x="60"  y="52" width="320" height="32" rx="6" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+        <text x="72"  y="70" font-size="10" font-weight="700" fill="#374151">AI4（現行）✓</text>
+        <text x="72"  y="78" font-size="8"  fill="#888">Samsung 製造 · FSD、Cybercab（過渡）用</text>
+
+        <!-- AI5：2026 Tape-out，TSMC + Samsung 製造，2027量產 -->
+        <rect x="300" y="94" width="290" height="32" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+        <text x="312" y="112" font-size="10" font-weight="700" fill="#1e40af">AI5（2026 Tape-out完成）⚡</text>
+        <text x="312" y="120" font-size="8"  fill="#2563eb">TSMC Arizona + Samsung Taylor 量產 2027</text>
+
+        <!-- AI6：2026 Q4 設計，Samsung 2nm，2027~2028 -->
+        <rect x="380" y="136" width="280" height="32" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="392" y="154" font-size="10" font-weight="700" fill="#4c1d95">AI6（2026 Q4 Tape-out目標）</text>
+        <text x="392" y="162" font-size="8"  fill="#7c3aed">Samsung 2nm Texas · $165億合約 · 2027~28量產</text>
+
+        <!-- Terafab：2027+，自製 -->
+        <rect x="500" y="178" width="280" height="32" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="2" stroke-dasharray="5 3"/>
+        <text x="512" y="196" font-size="10" font-weight="700" fill="#991b1b">Terafab 自製（AI7+）</text>
+        <text x="512" y="204" font-size="8"  fill="#dc2626">Intel 18A + 德州自建 2nm · 2027~2030 爬坡</text>
+
+        <!-- 標籤 -->
+        <text x="60" y="48" font-size="9" fill="#9ca3af" font-weight="700">▶ 完全外包期</text>
+        <text x="300" y="90" font-size="9" fill="#2563eb" font-weight="700">▶ 雙廠分散期</text>
+        <text x="500" y="174" font-size="9" fill="#dc2626" font-weight="700">▶ 自給自足期</text>
+      </svg>
+    </div>
+
+    <!-- Terafab 詳細規格 -->
+    <h3 style="margin:14px 0 10px">Terafab 已知規格與進展</h3>
+    <div class="g2">
+      <div class="card" style="border-top:3px solid #dc2626">
+        <h3 style="color:#991b1b;margin-bottom:10px">基本規格</h3>
+        <div class="g2" style="gap:6px">
+          <div class="sc"><div class="sl">地點</div><div class="sv">Giga Texas 北側校園，Austin</div></div>
+          <div class="sc"><div class="sl">初期投資</div><div class="sv">約 250 億美元（Phase 1）</div></div>
+          <div class="sc"><div class="sl">總預估投資</div><div class="sv">550~1,190 億美元（所有階段）</div></div>
+          <div class="sc"><div class="sl">目標製程</div><div class="sv">2nm（競爭台積電 N2）</div></div>
+          <div class="sc"><div class="sl">初始產能</div><div class="sv">月投片量 10 萬片</div></div>
+          <div class="sc"><div class="sl">最終目標</div><div class="sv">月投片量 100 萬片（1TW 算力/年）</div></div>
+          <div class="sc"><div class="sl">製程合作方</div><div class="sv">Intel（18A 製程技術，2026.4 加入）</div></div>
+          <div class="sc"><div class="sl">生產時程</div><div class="sv">小批量 2026 年底，量產 2027~2030</div></div>
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid #d97706">
+        <h3 style="color:#92400e;margin-bottom:10px">Terafab 的核心創新</h3>
+        <div class="flow-steps" style="margin:0">
+          <div class="flow-step">
+            <div class="fsl"><div class="fsnum" style="border-color:#dc2626;color:#dc2626;font-size:.65rem">邏輯</div><div class="fsline"></div></div>
+            <div class="fsr" style="padding:7px 10px">
+              <div class="fst" style="font-size:.8rem">設計 + 製造在同一屋簷下</div>
+              <div class="fsb">做一顆晶片 → 測試 → 修改光罩 → 重新生產，全流程不需要把晶圓寄到其他地方。這是全球目前任何一座晶圓廠都做不到的事，目的是把晶片迭代週期從 12~18 個月壓縮到更短。</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="fsl"><div class="fsnum" style="border-color:#7c3aed;color:#7c3aed;font-size:.65rem">整合</div><div class="fsline"></div></div>
+            <div class="fsr" style="padding:7px 10px">
+              <div class="fst" style="font-size:.8rem">邏輯 + 記憶體 + 封裝 + 測試全包</div>
+              <div class="fsb">傳統半導體業高度分工（台積電只做製造、Samsung 各自分開）。Terafab 要把 Logic、Memory、Advanced Packaging、Testing 整合在一起，這是半導體產業幾十年演化趨勢的逆向操作。</div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="fsl"><div class="fsnum" style="border-color:#059669;color:#059669;font-size:.65rem">太空</div></div>
+            <div class="fsr" style="padding:7px 10px;border-color:#059669">
+              <div class="fst" style="font-size:.8rem">地面晶片 + 太空晶片雙用途</div>
+              <div class="fsb">同時生產兩類晶片：地面用（FSD、Cybercab、Optimus）和太空用（抗輻射加固版，用於 Starlink 衛星和軌道資料中心）。這個組合讓 Terafab 服務馬斯克所有帝國。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intel 加入的意義 -->
+    <h3 style="margin:14px 0 10px">Intel 加入 Terafab：2026 年 4 月重大事件</h3>
+    <div class="card" style="border-left:4px solid #2563eb">
+      <div class="g2">
+        <div>
+          <p>Intel 在 2026 年 4 月 7 日宣布加入 Terafab，帶來 <strong>Intel 18A 製程技術</strong>（RibbonFET GAA 電晶體 + PowerVia 背部供電）。這對各方都有戰略意義：</p>
+          <div class="g2" style="gap:6px;margin-top:10px">
+            <div class="sc"><div class="sl">對馬斯克</div><div class="sv">多一個美國境內的先進製程合作方，降低台積電依賴</div></div>
+            <div class="sc"><div class="sl">對 Intel</div><div class="sv">馬斯克是史上最高知名度的「錨定客戶」，有助 Intel Foundry 招攬其他客戶</div></div>
+            <div class="sc"><div class="sl">對美國政府</div><div class="sv">Trump 政府用 CHIPS Act 買下 Intel 8.4% 股份，$90 億補貼，Terafab 完美符合「美國晶片自給自足」敘事</div></div>
+            <div class="sc"><div class="sl">Intel 股價反應</div><div class="sv">宣布當日漲約 4%，市場謹慎樂觀</div></div>
+          </div>
+        </div>
+        <div class="cl cl-a" style="align-self:start;margin:0">
+          <span class="cl-icon">🎯</span>
+          <div class="cl-body"><strong>台廠受衝擊評估：</strong>Terafab 若成功，是台積電最大的長期威脅之一——但「若」字很重要。傳統晶圓廠從破土到量產需 5~7 年，Terafab 說 2027 開始量產是極其激進的時程。短期（2026~2027）台積電地位完全無法撼動，中長期才需要觀察。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 風險 -->
+    <h3 style="margin:14px 0 10px">Terafab 的三大現實挑戰</h3>
+    <div class="g3">
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#fee2e2">🏗</div><div><div class="cn">時程極度激進</div></div></div>
+        <div class="cbody">傳統晶圓廠從動工到量產需要 5~7 年，台積電在美國的 Fab 21 動工到量產也花了多年。Terafab 宣稱 2026 年底小批量、2027 年量產，比任何人快兩到三倍，業界普遍持懷疑態度。</div>
+        <div class="tag-row"><span class="tag tr">風險：時程幾乎必延</span></div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#fee2e2">👨‍🔬</div><div><div class="cn">製程人才嚴重不足</div></div></div>
+        <div class="cbody">晶圓代工需要一批高度紀律化、全天候輪班運作的製程工程師，這種人才文化跟軟體或汽車產業截然不同。全球晶片工程師本就供不應求，從零建立一個穩定的製程團隊是最難的門檻。</div>
+        <div class="tag-row"><span class="tag ta">風險：人才是最大瓶頸</span></div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#fee2e2">🔗</div><div><div class="cn">仍依賴關鍵設備供應商</div></div></div>
+        <div class="cbody">就算建成，Terafab 仍需要 ASML EUV 光刻機、應用材料蝕刻機、全球化學品供應商。「自給自足」是相對的，不是絕對的。ASML 的 EUV 供貨緊缺是無法繞過的瓶頸。</div>
+        <div class="tag-row"><span class="tag ta">風險：ASML 仍是門票</span></div>
+      </div>
+    </div>
+
+    <!-- 帝國視角 -->
+    <div class="cl cl-p" style="margin-top:4px">
+      <span class="cl-icon">👑</span>
+      <div class="cl-body">如果 Terafab 真的成功：<strong>馬斯克帝國 = 自己設計晶片 + 自己製造晶片 + 自己的 AI 模型（Grok）+ 自己的機器人（Optimus）+ 自己的自駕車（Cybercab）+ 自己的衛星網路（Starlink）+ 自己的火箭（Starship）</strong>。這會是人類歷史上垂直整合程度最高的私人企業集團，沒有之一。你說的完全正確——這才是真正的「一條龍帝國」，黃仁勳的 NVIDIA 也是他的客戶之一。</div>
+    </div>
+
+    <div class="cl cl-r">
+      <span class="cl-icon">⚠️</span>
+      <div class="cl-body">Terafab 目前仍以「研究型晶圓廠」起步，AI5 的大量生產仍然依賴 TSMC 和 Samsung。Terafab 是「終局目標」，不是「現在進行式」。以上資訊僅供產業學習參考，不構成投資建議。</div>
+    </div>
+  </div>
+
+  <!-- ══ Grok + Colossus ══ -->
+  <div id="musk-grok" class="subdiv">
+    <div class="cl cl-p" style="margin-top:4px">
+      <span class="cl-icon">🧠</span>
+      <div class="cl-body">馬斯克的目標是「算力超過所有人的總和」。Colossus 超算在 Memphis 用 19 天完成建設（通常需要 4 年），現在正在擴建到 2GW。xAI 從 NVIDIA 採購了巨量 GPU，是 NVIDIA 最重要的大客戶之一。</div>
+    </div>
+    <div class="g2">
+      <div class="card" style="border-top:3px solid #7c3aed">
+        <h3 style="color:#5b21b6;margin-bottom:12px">Colossus 超算：Memphis 三棟大樓</h3>
+        <div class="g2" style="gap:6px;margin-bottom:12px">
+          <div class="sc"><div class="sl">Colossus 1</div><div class="sv">10 萬顆 NVIDIA H100</div></div>
+          <div class="sc"><div class="sl">Colossus 2（建設中）</div><div class="sv">55 萬顆 GPU 目標</div></div>
+          <div class="sc"><div class="sl">Colossus 3（最新購入）</div><div class="sv">Mississippi 廠房，名為 MACROHARD</div></div>
+          <div class="sc"><div class="sl">總算力目標</div><div class="sv" style="color:#7c3aed;font-weight:700">近 2GW</div></div>
+          <div class="sc"><div class="sl">電力方案</div><div class="sv">天然氣渦輪（460MW），爭議中</div></div>
+          <div class="sc"><div class="sl">長期電力</div><div class="sv">軌道太陽能（SpaceX 計劃）</div></div>
+        </div>
+        <div class="cl cl-a">
+          <span class="cl-icon">💸</span>
+          <div class="cl-body">Colossus 1 的混合架構後來被發現不適合訓練 Grok，反而是 Anthropic 在使用做推理。這是 xAI 早期設計的教訓——速度換來效率問題。Colossus 2 設計更謹慎。</div>
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid #059669">
+        <h3 style="color:#065f46;margin-bottom:12px">Grok vs OpenAI vs Anthropic：競爭態勢</h3>
+        <table>
+          <thead><tr><th>維度</th><th>Grok（xAI）</th><th>GPT-4o（OpenAI）</th><th>Claude（Anthropic）</th></tr></thead>
+          <tbody>
+            <tr><td>最大優勢</td><td><strong>即時 X 平台數據</strong></td><td>生態系最廣</td><td>安全性與企業信任</td></tr>
+            <tr><td>算力基礎</td><td>Colossus（自建）</td><td>Microsoft Azure</td><td>AWS + Google</td></tr>
+            <tr><td>數據護城河</td><td>X 平台社群行為</td><td>互聯網爬蟲</td><td>精選高品質語料</td></tr>
+            <tr><td>商業化程度</td><td style="color:#dc2626">初期（ARR $5億）</td><td>最成熟</td><td>快速成長</td></tr>
+            <tr><td>政府關係</td><td>特殊（DOGE）</td><td>一般</td><td>一般</td></tr>
+          </tbody>
+        </table>
+        <div class="cl cl-g" style="margin-top:10px">
+          <span class="cl-icon">🎯</span>
+          <div class="cl-body">Grok 最大的差異化在「即時性」——X 上的所有內容都是訓練材料。這讓 Grok 在突發事件、市場情緒分析、即時輿論掌握上有結構性優勢，其他模型做不到。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 黃仁勳 vs 馬斯克 ══ -->
+  <div id="musk-vs" class="subdiv">
+    <div class="cl cl-b" style="margin-top:4px">
+      <span class="cl-icon">⚔</span>
+      <div class="cl-body">黃仁勳和馬斯克表面上是合作夥伴（NVIDIA 投資 xAI、xAI 是 NVIDIA 最大客戶之一），但他們代表兩種截然不同的 AI 世界觀。理解這個分歧，是看懂未來五年科技走向的關鍵。</div>
+    </div>
+
+<div class="svg-wrap">
+  <div class="svg-wrap">
+    <svg width="100%" viewBox="0 0 902 410" style="display:block;min-width:640px">
+
+      <!-- 標題 -->
+      <text x="451" y="20" text-anchor="middle" font-size="20" font-weight="800" fill="#374151">黃仁勳的世界 vs 馬斯克的世界</text>
+
+      <!-- 左框：黃仁勳 -->
+      <rect x="8" y="36" width="413" height="335" rx="13" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.8"></rect>
+      <text x="215" y="64" text-anchor="middle" font-size="20" font-weight="800" fill="#5b21b6">黃仁勳（NVIDIA）</text>
+      <text x="205" y="90" text-anchor="middle" font-size="15" fill="#7c3aed">「我賣鏟子，不挖金礦」</text>
+
+      <text x="24" y="112" font-size="15" fill="#374151" font-weight="700">核心信念</text>
+      <text x="24" y="135" font-size="13" fill="#444">算力是新的工業基礎，誰掌握算力製造能力</text>
+      <text x="24" y="153" font-size="13" fill="#444">誰就掌握新時代的生產要素</text>
+
+      <text x="24" y="184" font-size="15" fill="#374151" font-weight="700">商業模式</text>
+      <text x="24" y="205" font-size="13" fill="#444">B2B 賣硬體平台，客戶是所有人</text>
+      <text x="24" y="223" font-size="13" fill="#444">台積電製造 → NVIDIA 設計 → 全球使用</text>
+
+      <text x="24" y="250" font-size="15" fill="#374151" font-weight="700">風險點</text>
+      <text x="24" y="270" font-size="13" fill="#dc2626">AMD 追趕、客戶自研晶片（Meta、Google）</text>
+      <text x="24" y="285" font-size="13" fill="#dc2626">出口管制、估值過高</text>
+
+      <text x="24" y="315" font-size="15" fill="#374151" font-weight="700">2026 年現況</text>
+      <text x="24" y="330" font-size="13" fill="#059669">Q1 FY2027 季收入 $816億，毛利率 ~75%</text>
+
+      <rect x="17" y="340" width="396" height="24" rx="6" fill="#7c3aed" opacity="0.14"></rect>
+      <text x="215" y="360" text-anchor="middle" font-size="16" fill="#5b21b6" font-weight="600">確定性：★★★★☆  現在進行式</text>
+
+      <!-- 右框：馬斯克 -->
+      <rect x="481" y="36" width="413" height="335" rx="13" fill="#fdf2f8" stroke="#db2777" stroke-width="1.8"></rect>
+      <text x="688" y="64" text-anchor="middle" font-size="20" font-weight="800" fill="#9d174d">馬斯克（Tesla / SpaceXAI）</text>
+      <text x="688" y="90" text-anchor="middle" font-size="15" fill="#db2777">「AI ＋ 機器人 ＋ 太空 ＋ 通訊 全控制」</text>
+
+      <text x="497" y="112" font-size="15" fill="#374151" font-weight="700">核心信念</text>
+      <text x="497" y="135" font-size="13" fill="#444">AI 必須與物理世界整合，Optimus 是</text>
+      <text x="497" y="153" font-size="13" fill="#444">具現化的 AI，比 Chatbot 更重要</text>
+
+      <text x="497" y="184" font-size="15" fill="#374151" font-weight="700">商業模式</text>
+      <text x="497" y="205" font-size="13" fill="#444">垂直整合：晶片自研（Terafab）＋ 車輛</text>
+      <text x="497" y="223" font-size="13" fill="#444">＋ 機器人 ＋ 衛星通訊 ＋ AI 模型 ＋ 社群</text>
+
+      <text x="497" y="250" font-size="15" fill="#374151" font-weight="700">風險點</text>
+      <text x="497" y="270" font-size="13" fill="#dc2626">Tesla FSD 時程一再延後、形象爭議</text>
+      <text x="497" y="285" font-size="13" fill="#dc2626">xAI 燒錢巨額、Optimus 量產挑戰</text>
+
+      <text x="497" y="315" font-size="15" fill="#374151" font-weight="700">2026 年現況</text>
+      <text x="497" y="330" font-size="13" fill="#d97706">多個計劃同時推進，Tesla 股價高波動</text>
+
+      <rect x="489" y="340" width="396" height="24" rx="6" fill="#db2777" opacity="0.12"></rect>
+      <text x="687" y="360" text-anchor="middle" font-size="16" fill="#9d174d" font-weight="600">確定性：★★☆☆☆  高想像空間</text>
+
+      <!-- VS 圓圈 -->
+      <circle cx="451" cy="200" r="30" fill="#1e293b" stroke="#94a3b8" stroke-width="1.8"></circle>
+      <text x="451" y="208" text-anchor="middle" font-size="18" font-weight="900" fill="#fff">VS</text>
+
+      <!-- 合作說明底部 -->
+      <text x="451" y="400" text-anchor="middle" font-size="15" fill="#64748b">也是合作夥伴：NVIDIA 投資 xAI · xAI 是 NVIDIA 大客戶</text>
+    </svg>
+  </div>
+
+    <h3 style="margin:16px 0 10px">投資邏輯對比：哪個更值得關注？</h3>
+    <div class="g2">
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#f5f3ff">🎯</div><div><div class="cn">黃仁勳路線：確定性高</div><div class="csub">適合現階段布局</div></div></div>
+        <div class="cbody">NVIDIA 的商業模式簡單清晰：所有人建 AI 都要買 GPU，毛利率 75%，季度收入已達 $816 億且仍在加速。台廠供應鏈的受益是訂單層面的硬事實，不是敘事。<br><br>風險：估值過高（本益比仍高），客戶開始自研晶片，AMD 追趕中。</div>
+        <div class="tag-row"><span class="tag tp">確定性：★★★★☆</span><span class="tag tg">現在進行式</span></div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div class="ci" style="background:#fdf2f8">🚀</div><div><div class="cn">馬斯克路線：想像空間大但高風險</div><div class="csub">需要更長時間驗證</div></div></div>
+        <div class="cbody">Optimus + Cybercab + 軌道算力是人類史上最大賭注。若成功，任何一個都能單獨成為最大市場。但每一個都有巨大的執行風險、時程不確定性，以及馬斯克個人形象帶來的股票波動。<br><br>Digital Optimus（2026 年 9 月）是近期最具體的催化劑。</div>
+        <div class="tag-row"><span class="tag tr">確定性：★★☆☆☆</span><span class="tag ta">高想像空間</span></div>
+      </div>
+    </div>
+
+
+  <!-- 馬斯克對台廠的影響 -->
+  <h3 style="margin:20px 0 12px">🇹🇼 馬斯克帝國對台廠的影響與受惠分析</h3>
+  <div class="cl cl-a">
+    <span class="cl-icon">📌</span>
+    <div class="cl-body">馬斯克的帝國計劃雖然大部分尚未完全落地，但<strong>已確定落地的部分已在影響台廠訂單</strong>。受惠分三個層次：直接訂單受益、間接題材受益、潛在長期受益。</div>
+  </div>
+
+  <div class="g2" style="margin-top:12px">
+
+    <!-- 已確定直接受益 -->
+    <div class="card" style="border-top:3px solid #059669">
+      <h3 style="color:#065f46;margin-bottom:12px">✅ 已確定：直接訂單受益</h3>
+      <table>
+        <thead><tr><th>來源計劃</th><th>台廠受益</th><th>代碼</th><th>具體理由</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>xAI Colossus<br><span style="font-size:.72rem;color:#888">550,000+ NVIDIA GPU</span></td>
+            <td>台積電</td>
+            <td><span class="tag tr">2330</span></td>
+            <td>NVIDIA GPU 全由台積電 3nm 製造，xAI 買愈多 GPU，台積電訂單愈大</td>
+          </tr>
+          <tr>
+            <td>Vera Rubin 供應鏈<br><span style="font-size:.72rem;color:#888">xAI 是首批客戶</span></td>
+            <td>廣達、緯穎、鴻海</td>
+            <td><span class="tag tp">2382</span><span class="tag tp">6669</span><span class="tag tp">2317</span></td>
+            <td>xAI 採購 Vera Rubin 系統，台廠 ODM 組裝受益</td>
+          </tr>
+          <tr>
+            <td>SpaceX Starlink<br><span style="font-size:.72rem;color:#888">FOPLP 衛星晶片</span></td>
+            <td>群創光電</td>
+            <td><span class="tag ta">3481</span></td>
+            <td>群創 FOPLP 已承接 SpaceX Starlink RF 晶片封裝訂單，白紙黑字量產中</td>
+          </tr>
+          <tr>
+            <td>Tesla AI5 晶片<br><span style="font-size:.72rem;color:#888">TSMC Arizona 生產</span></td>
+            <td>台積電</td>
+            <td><span class="tag tr">2330</span></td>
+            <td>Tesla AI5 由台積電亞利桑那廠（N3P/N2）生產，加深台積電與 Tesla 綁定</td>
+          </tr>
+          <tr>
+            <td>Tesla CDU 散熱<br><span style="font-size:.72rem;color:#888">Cybercab/Optimus</span></td>
+            <td>奇鋐、雙鴻</td>
+            <td><span class="tag tt">3017</span><span class="tag tt">3324</span></td>
+            <td>Tesla 伺服器與機器人的散熱需求，NVIDIA 認證的台灣液冷廠直接受益</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 題材受益 + 潛在 -->
+    <div>
+      <div class="card" style="border-top:3px solid #d97706;margin-bottom:12px">
+        <h3 style="color:#92400e;margin-bottom:10px">🟡 題材受益：間接但明確</h3>
+        <table>
+          <thead><tr><th>計劃</th><th>台廠</th><th>邏輯</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Optimus / 機器人</td>
+              <td><span class="tag tg">2395 研華</span><span class="tag tg">2359 所羅門</span></td>
+              <td>工業電腦、機器視覺平台，Optimus 量產帶動整體機器人產業鏈</td>
+            </tr>
+            <tr>
+              <td>Terafab<br><span style="font-size:.72rem;color:#888">Intel 18A 合作</span></td>
+              <td><span class="tag tb">8027 鈦昇</span><span class="tag tb">2467 志聖</span></td>
+              <td>Intel 18A 相關封裝設備需求，台廠設備商間接受益（詳見技術深探頁）</td>
+            </tr>
+            <tr>
+              <td>Cybercab<br><span style="font-size:.72rem;color:#888">AI PC 車用晶片</span></td>
+              <td><span class="tag ta">2454 聯發科</span></td>
+              <td>Tesla 車用 AI 晶片格局與聯發科 RTX Spark 的 Arm 生態相互強化</td>
+            </tr>
+            <tr>
+              <td>Digital Optimus<br><span style="font-size:.72rem;color:#888">企業 AI 應用</span></td>
+              <td><span class="tag tb">2345 智邦</span><span class="tag tb">6166 凌華</span></td>
+              <td>企業端側 AI 推理設備需求，AI 交換器與邊緣運算同步受益</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="border-top:3px solid #dc2626">
+        <h3 style="color:#991b1b;margin-bottom:10px">🔴 潛在風險：需要觀察</h3>
+        <div class="g2" style="gap:6px">
+          <div class="sc"><div class="sl">Terafab 若成功</div><div class="sv" style="font-size:.78rem;color:#dc2626">長期威脅台積電的部分訂單（但 2027 前無影響）</div></div>
+          <div class="sc"><div class="sl">Tesla 晶片自研</div><div class="sv" style="font-size:.78rem;color:#dc2626">AI4/5/6 自研程度越深，對 NVIDIA GPU 採購需求可能降低</div></div>
+          <div class="sc"><div class="sl">SpaceX 軌道算力</div><div class="sv" style="font-size:.78rem;color:#d97706">若大規模成真，部分地面資料中心需求轉移（超長期，2030+）</div></div>
+          <div class="sc"><div class="sl">馬斯克政治風險</div><div class="sv" style="font-size:.78rem;color:#d97706">DOGE 角色爭議影響 Tesla 品牌，短期已造成北美銷量下滑</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="cl cl-g" style="margin-top:10px">
+    <span class="cl-icon">💡</span>
+    <div class="cl-body"><strong>一句話總結：</strong>馬斯克帝國對台廠的影響，<strong>現在最確定的是透過 NVIDIA GPU 採購（xAI Colossus）和 SpaceX FOPLP 訂單（群創）直接拉動</strong>，Optimus/Cybercab/Terafab 的影響則是 2027 年之後才會逐漸明顯的中長期故事。</div>
+  </div>
+
+    <div class="cl cl-r" style="margin-top:14px">
+      <span class="cl-icon">⚠️</span>
+      <div class="cl-body">本頁所有內容為產業資訊整理，<strong>不構成任何投資建議</strong>。馬斯克相關公司（Tesla/SpaceX/xAI）多數尚未公開上市或估值極不透明，台股直接受惠程度有限，需謹慎評估。</div>
+    </div>
+  </div>
+
+</div>
+
 
 <div id="tab-cake" class="section">
 
@@ -2827,6 +4306,50 @@ hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
     </div>
   </div>
 
+
+  <div class="stk" style="margin-top:10px">
+    <div class="stk-head">
+      <span class="stk-icon">🔆</span>
+      <span class="stk-title">光通訊：技術空窗期的錯殺修正邏輯</span>
+      <span class="stk-phase" style="background:#ccfbf1;color:#0f766e">● CPO Delay → 舊技術壽命延長</span>
+    </div>
+    <div class="stk-body">
+      AI 算力對頻寬的需求沒有減少，但 CPO 量產時程因<strong>良率偏低、散熱設計複雜、標準未統一</strong>而明顯延後。各大雲端服務商（CSP）為了維持 AI 伺服器持續擴張，<strong>必須回頭大量拉貨現有的高階可插拔光模組（800G / 1.6T OSFP）</strong>，導致傳統光模組的生命週期被大幅延長，今年下半年需求遠比市場原先預期強勁。
+    </div>
+    <div class="stk-why">
+      💡 框架邏輯：CPO delay ≠ 光通訊利空 → 算力需求不變 → 舊技術橋接期拉長 → 高階可插拔光模組爆量 → 純 CPO 概念股估值修正 / 傳統光模組供應鏈被錯殺
+    </div>
+    <div style="margin-top:12px">
+      <table>
+        <thead><tr><th>類型</th><th>個股</th><th>市場邏輯</th><th>現況研判</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span style="background:#fef3c7;color:#92400e;font-weight:700;padding:2px 8px;border-radius:4px">⚠️ 暫時熄火</span></td>
+            <td><strong>訊芯-KY 6451</strong></td>
+            <td>股價高度綁定 Broadcom CPO 封裝想像空間，量產延後期間缺乏實質營收支撐</td>
+            <td>短期估值承壓，長線邏輯不變，等待量產確認</td>
+          </tr>
+          <tr>
+            <td><span style="background:#dcfce7;color:#166534;font-weight:700;padding:2px 8px;border-radius:4px">🔥 被錯殺</span></td>
+            <td><strong>華星光 4979</strong></td>
+            <td>替 Marvell 代工光通訊晶片（晶圓切割及相關製程），800G 拉貨潮帶動實質訂單</td>
+            <td>市場誤將光通訊股一視同仁殺跌，實質營收強勁</td>
+          </tr>
+          <tr>
+            <td><span style="background:#dcfce7;color:#166534;font-weight:700;padding:2px 8px;border-radius:4px">🔥 被錯殺</span></td>
+            <td><strong>聯亞 3081</strong></td>
+            <td>光通訊上游磊晶廠（InP / GaAs），800G 光模組晶片需求延伸至磊晶供應鏈</td>
+            <td>上游受益於需求爆量，屬於被市場誤殺的受惠股</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cl cl-r" style="margin-top:10px">
+      <span class="cl-icon">⚠️</span>
+      <div class="cl-body">以上個股分析來自市場研究觀點，<strong>不構成投資建議</strong>。光通訊板塊技術演進快、估值波動大，建議追蹤各公司實際訂單能見度、客戶結構與財報數字後再做判斷。</div>
+    </div>
+  </div>
+
   <div class="cl cl-r" style="margin-top:20px">
     <span class="cl-icon">⚠️</span>
     <div class="cl-body"><strong>免責聲明：</strong>本指南所有公司資訊、市佔率數據、財務數字僅供技術學習與產業認識之用，<strong>不構成任何投資建議</strong>。投資前請自行研究財報、產業趨勢及風險，並諮詢專業投資顧問。</div>
@@ -3241,6 +4764,10 @@ hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
       <span class="cl-icon">🇹🇼</span>
       <div class="cl-body">台積電的 COUPE 平台（3D SiPh 整合）已被 Broadcom 採用。NVIDIA GTC 2025 發布 Spectrum X Photonics 及 Quantum X Photonics 均基於 CPO，底層依賴台積電 SoIC-X 混合鍵合技術。台灣在 CPO 的封裝製程有結構性優勢。</div>
     </div>
+    <div class="cl cl-r" style="margin-top:10px">
+      <span class="cl-icon">⚠️</span>
+      <div class="cl-body"><strong>量產時程修正：</strong>市場原預期 CPO 在 2025~2026 年迅速全面普及，但因<strong>測試良率偏低、散熱設計複雜、行業標準尚未統一</strong>三大問題，實際量產時程明顯延後。「2026 關鍵年」應理解為技術驗證關鍵年，而非大規模出貨年。這個 delay 對台股光通訊板塊產生結構性的板塊消長，詳見 <strong>⑫ 題材投資邏輯 → 光通訊空窗期</strong>。</div>
+    </div>
   </div>
 
   <h2>中期（2028~2030）：潛力布局技術</h2>
@@ -3295,6 +4822,8 @@ hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
     <button class="subtab subtab-b" onclick="showSub('deep-hbm4',this)">💾 HBM4 / HBM4e</button>
     <button class="subtab subtab-g" onclick="showSub('deep-hybrid',this)">🧱 Hybrid Bonding</button>
     <button class="subtab subtab-o" onclick="showSub('deep-foplp',this)">♾ FOPLP（群創生態系）</button>
+    <button class="subtab subtab-t" onclick="showSub('deep-siph',this)">🔆 矽光子 SiPh</button>
+    <button class="subtab subtab-b" onclick="showSub('deep-tgv',this)">🔷 TGV 玻璃通孔</button>
   </div>
 
   <div id="deep-copos" class="subdiv active">
@@ -3860,6 +5389,266 @@ hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
   </div>
 
 </div><!-- end deep-foplp subdiv -->
+<div id="deep-siph" class="subdiv">
+  <div class="card" style="border-left:4px solid #0d9488;padding:0;overflow:hidden">
+    <div style="background:#f0fdfa;padding:14px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:1.3rem">🔆</span>
+      <div>
+        <div style="font-size:.95rem;font-weight:800;color:#0f766e">矽光子（Silicon Photonics，SiPh）— 光通訊的底層材料革命</div>
+        <div style="font-size:.76rem;color:#0d9488;margin-top:2px">CPO、LPO、高階可插拔光模組的共同技術底座</div>
+      </div>
+      <span class="stk-phase" style="background:#ccfbf1;color:#0f766e;margin-left:auto">🔬 量產擴張中</span>
+    </div>
+    <div style="padding:16px 18px">
+
+      <!-- 為什麼需要光傳輸 -->
+      <h3 style="margin-top:0;color:#0f766e">① 為什麼從銅訊號走向光訊號？</h3>
+      <div class="cl cl-g" style="margin-top:0">
+        <span class="cl-icon">⚡</span>
+        <div class="cl-body">AI 算力需求爆發後，GPU 叢集之間的訊號傳輸速率從 100G → 800G → 1.6T 持續翻倍。<strong>銅線傳輸的物理極限</strong>在此暴露：訊號在銅線走得越長、頻率越高，損耗（Loss）越大，且耗電量飆升。光訊號的傳輸損耗遠低於電訊號，且不受頻率干擾，是突破頻寬天花板的唯一出路。</div>
+      </div>
+
+      <div class="g2" style="margin-top:12px">
+        <div class="sc"><div class="sl">銅線 PCB 走線損耗（800G 長距）</div><div class="sv" style="color:#dc2626">高損耗，需 DSP 補償</div></div>
+        <div class="sc"><div class="sl">光纖傳輸損耗</div><div class="sv" style="color:#16a34a">極低，無需補償晶片</div></div>
+        <div class="sc"><div class="sl">光模組耗電佔 AI 機房總電力</div><div class="sv" style="color:#d97706">15 ~ 20%</div></div>
+        <div class="sc"><div class="sl">CPO 節省功耗目標</div><div class="sv" style="color:#0d9488">30%+</div></div>
+      </div>
+
+      <!-- 矽光子 vs 傳統 III-V -->
+      <h3 style="color:#0f766e;margin-top:20px">② 矽光子 vs 傳統 III-V 族材料（InP）</h3>
+      <div class="card" style="padding:0;overflow:hidden;margin-top:8px">
+        <table>
+          <thead><tr><th>比較項目</th><th>矽光子（SiPh）</th><th>傳統 III-V（InP / GaAs）</th></tr></thead>
+          <tbody>
+            <tr><td><strong>製造平台</strong></td><td>CMOS 晶圓廠（可用台積電產線）</td><td>獨立 III-V 化合物半導體廠</td></tr>
+            <tr><td><strong>與 CMOS 整合</strong></td><td style="color:#16a34a;font-weight:700">✅ 高度相容，可同廠製造</td><td style="color:#dc2626;font-weight:700">❌ 製程不相容，需異質整合</td></tr>
+            <tr><td><strong>雷射光源</strong></td><td>矽本身不能發光，需外接 InP 雷射</td><td>可直接發光，雷射效率高</td></tr>
+            <tr><td><strong>成本</strong></td><td style="color:#16a34a;font-weight:700">低（借用成熟 CMOS 製程）</td><td style="color:#d97706">高（獨立廠，產能有限）</td></tr>
+            <tr><td><strong>量產規模</strong></td><td style="color:#16a34a;font-weight:700">大（12 吋晶圓廠）</td><td>小（4~6 吋為主）</td></tr>
+            <tr><td><strong>代表廠商</strong></td><td>台積電 COUPE、Intel、Cisco</td><td>II-VI（Coherent）、Lumentum</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cl cl-g" style="margin-top:10px">
+        <span class="cl-icon">💡</span>
+        <div class="cl-body">矽光子的核心優勢是<strong>可以在現有 CMOS 晶圓廠製造</strong>，大幅降低成本並放大量產能力。台積電的 COUPE（Co-Packaged Ultra-fine-pitch Engine）平台就是把矽光子元件整合進先進封裝的核心技術，已被 Broadcom 採用於旗艦交換器晶片。</div>
+      </div>
+
+      <!-- SiPh 元件構成 -->
+      <h3 style="color:#0f766e;margin-top:20px">③ 矽光子晶片（PIC）的元件構成</h3>
+      <div class="g2" style="margin-top:8px">
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#f0fdfa">🔴</div><div><div class="cn">光源：InP 雷射（外接）</div></div></div>
+          <div class="cbody">矽本身無法發光，需從外部鍵合 InP 雷射晶粒（Laser Die）作為光源。這是矽光子最大的製程挑戰，也是量產良率的關鍵瓶頸之一。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#f0fdfa">〰️</div><div><div class="cn">調變器（Modulator）</div></div></div>
+          <div class="cbody">把電訊號調變成光訊號強弱（0/1 編碼）。矽的電光效應可實現高速調變，是矽光子最成熟的元件，100G 以上調變器已大量量產。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#f0fdfa">📡</div><div><div class="cn">波導（Waveguide）</div></div></div>
+          <div class="cbody">在晶片內部引導光訊號傳播，功能類似電路中的走線但傳的是光。矽基材料的高折射率差讓光可以被很好地「限制」在微米等級的波導內。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#f0fdfa">🎯</div><div><div class="cn">光偵測器（Photodetector）</div></div></div>
+          <div class="cbody">接收端把光訊號轉回電訊號。通常用鍺（Ge）材料製作，可直接整合在矽晶片上（Ge-on-Si），這是矽光子接收端技術最成熟的部分。</div>
+        </div>
+      </div>
+
+      <!-- 三個應用階段 -->
+      <h3 style="color:#0f766e;margin-top:20px">④ 矽光子的三個應用階段</h3>
+      <div class="card" style="padding:0;overflow:hidden;margin-top:8px">
+        <table>
+          <thead><tr><th>架構</th><th>電訊號走線距離</th><th>功耗</th><th>現況</th><th>矽光子角色</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>可插拔光模組</strong><br><small style="color:#888">OSFP 800G / 1.6T</small></td>
+              <td>晶片 → PCB → 面板<br><span style="color:#dc2626">數十公分</span></td>
+              <td style="color:#d97706">中高</td>
+              <td style="color:#16a34a;font-weight:700">✅ 量產爆發中</td>
+              <td>光模組內部的 PIC 晶片</td>
+            </tr>
+            <tr>
+              <td><strong>LPO（線性直驅）</strong><br><small style="color:#888">省去 DSP 晶片</small></td>
+              <td>縮短，但仍在板上<br><span style="color:#d97706">數公分</span></td>
+              <td style="color:#16a34a">較低（省 DSP）</td>
+              <td style="color:#16a34a;font-weight:700">✅ 新興量產</td>
+              <td>直接驅動矽光子調變器</td>
+            </tr>
+            <tr>
+              <td><strong>CPO（共封裝光學）</strong><br><small style="color:#888">光引擎與 ASIC 共封裝</small></td>
+              <td>同一載板內<br><span style="color:#16a34a">幾毫米</span></td>
+              <td style="color:#16a34a;font-weight:700">最低（省 30%+）</td>
+              <td style="color:#d97706;font-weight:700">⚠️ 試產，量產延後</td>
+              <td>光引擎核心技術平台</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cl cl-p" style="margin-top:10px">
+        <span class="cl-icon">🏭</span>
+        <div class="cl-body"><strong>台積電戰略地位：</strong>COUPE 平台讓台積電成為矽光子 CPO 的核心製造樞紐。所有需要把矽光子元件整合進先進封裝的設計，最終都必須回到台積電的 SoIC-X 或 COUPE 產線。這是台灣在光通訊下一階段的結構性優勢。</div>
+      </div>
+
+      <!-- 台股受惠 -->
+      <h3 style="color:#0f766e;margin-top:20px">⑤ 台股矽光子受惠層次</h3>
+      <div class="g2" style="margin-top:8px">
+        <div class="stk">
+          <div class="stk-head">
+            <span class="stk-icon">🏆</span>
+            <span class="stk-title">台積電 2330 — 製造平台核心</span>
+            <span class="stk-phase" style="background:#ede9fe;color:#5b21b6">★★★★★</span>
+          </div>
+          <div class="stk-body">COUPE 平台是全球矽光子 CPO 封裝的主要製造基地，Broadcom 旗艦交換器晶片已採用。NVIDIA Spectrum X Photonics 路線也依賴台積電 SoIC-X。</div>
+        </div>
+        <div class="stk">
+          <div class="stk-head">
+            <span class="stk-icon">🔬</span>
+            <span class="stk-title">聯亞 3081 — 磊晶上游供應商</span>
+            <span class="stk-phase" style="background:#ccfbf1;color:#0f766e">光模組上游</span>
+          </div>
+          <div class="stk-body">磊晶片廠，提供光通訊元件所需的 III-V 族磊晶材料（InP / GaAs）。高階 800G 光模組晶片需求帶動磊晶供應鏈，現階段受益於可插拔光模組的拉貨潮。</div>
+        </div>
+        <div class="stk">
+          <div class="stk-head">
+            <span class="stk-icon">⚙️</span>
+            <span class="stk-title">華星光 4979 — Marvell 晶圓代工</span>
+            <span class="stk-phase" style="background:#ccfbf1;color:#0f766e">代工受益</span>
+          </div>
+          <div class="stk-body">替 Marvell（美滿電子）代工光通訊晶片的晶圓切割及相關製程。在 800G 可插拔光模組需求爆量下，Marvell DSP 晶片訂單強勁，帶動代工需求。</div>
+        </div>
+        <div class="stk">
+          <div class="stk-head">
+            <span class="stk-icon">🧠</span>
+            <span class="stk-title">訊芯-KY 6451 — 純 CPO 概念</span>
+            <span class="stk-phase" style="background:#fef3c7;color:#92400e">⚠️ 時程觀察</span>
+          </div>
+          <div class="stk-body">與 Broadcom CPO 封裝高度綁定的概念股。CPO 量產時程延後期間，短期缺乏實質營收支撐，估值面臨修正壓力。長線邏輯不變，但需等待量產確認訊號。</div>
+        </div>
+      </div>
+
+      <div class="cl cl-r" style="margin-top:12px">
+        <span class="cl-icon">⚠️</span>
+        <div class="cl-body"><strong>免責聲明：</strong>以上個股資訊來自市場分析，僅供技術產業學習參考，<strong>不構成任何投資建議</strong>。請自行研究財報、訂單能見度與風險後再做判斷。</div>
+      </div>
+    </div>
+  </div>
+</div><!-- end deep-siph subdiv -->
+<div id="deep-tgv" class="subdiv">
+  <div class="card" style="border-left:4px solid #2563eb;padding:0;overflow:hidden">
+    <div style="background:#eff6ff;padding:14px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:1.3rem">🔷</span>
+      <div>
+        <div style="font-size:.95rem;font-weight:800;color:#1e3a8a">TGV（玻璃通孔，Through Glass Via）— 次世代中介層革命</div>
+        <div style="font-size:.76rem;color:#2563eb;margin-top:2px">解決 AI 晶片高溫翹曲與高頻訊號損耗的材料革命</div>
+      </div>
+      <span class="stk-phase" style="background:#dbeafe;color:#1e40af;margin-left:auto">📅 2026 ~ 2028 量產起步</span>
+    </div>
+    <div style="padding:16px 18px">
+
+      <h3 style="margin-top:0;color:#1e3a8a">① 為什麼需要玻璃基板？ABF 的翹曲痛點</h3>
+      <div class="g2">
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">⚠️</div><div><div class="cn">ABF 有機載板的致命傷：翹曲</div></div></div>
+          <div class="cbody">傳統 ABF（Ajinomoto Build-up Film）載板是有機樹脂材料，熱膨脹係數（CTE）約 17 ppm/°C，而矽晶片的 CTE 僅 2.6 ppm/°C。AI 晶片功耗動輒 700W ~ 1000W，工作時溫度劇烈變化，兩者 CTE 差距導致載板像魷魚一樣「翹曲變形」，嚴重時會拉斷內部連線或造成焊點疲勞失效。</div>
+        </div>
+        <div class="cc">
+          <div class="ch"><div class="ci" style="background:#fee2e2">📡</div><div><div class="cn">高頻訊號的介電損耗問題</div></div></div>
+          <div class="cbody">有機載板的介電材料在高頻（&gt;56GHz）下產生顯著的介電損耗（Dielectric Loss），訊號衰減嚴重。AI 伺服器的 PCIe 6.0、NVLink 4.0、UCIe 等高速介面頻率持續攀升，傳統有機材料已逼近物理極限。</div>
+        </div>
+      </div>
+
+      <div class="g2" style="margin-top:12px">
+        <div class="sc"><div class="sl">ABF 熱膨脹係數（CTE）</div><div class="sv" style="color:#dc2626">~17 ppm/°C（高）</div></div>
+        <div class="sc"><div class="sl">玻璃 CTE</div><div class="sv" style="color:#16a34a">3 ~ 6 ppm/°C（接近矽）</div></div>
+        <div class="sc"><div class="sl">矽晶片 CTE</div><div class="sv">2.6 ppm/°C</div></div>
+        <div class="sc"><div class="sl">玻璃介電損耗（56GHz）</div><div class="sv" style="color:#16a34a">比 ABF 低 3 ~ 5 倍</div></div>
+      </div>
+
+      <h3 style="color:#1e3a8a;margin-top:20px">② TGV 技術原理：雷射打孔 → 電鍍填孔</h3>
+      <div class="cl cl-b" style="margin-bottom:12px">
+        <span class="cl-icon">🔷</span>
+        <div class="cl-body">TGV 的核心工藝是在超薄玻璃基板上用<strong>超短脈衝雷射（皮秒/飛秒雷射）</strong>精確鑽出數萬至數十萬個微孔（直徑 10 ~ 50μm），再通過電鍍工藝在孔內填入銅導體，建立垂直電氣連接。</div>
+      </div>
+      <div class="g2">
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#1d4ed8;margin-bottom:6px">製程流程</div>
+          <ol style="font-size:.82rem;line-height:1.9;margin:0;padding-left:16px">
+            <li><strong>玻璃基板選擇：</strong>低 CTE 硼矽玻璃或無鹼玻璃，厚度 100 ~ 300μm</li>
+            <li><strong>雷射鑽孔（TGV 成形）：</strong>皮秒雷射精確鑽孔，孔徑精度 ±1μm</li>
+            <li><strong>濕式蝕刻整形：</strong>鹼液蝕刻讓孔壁更光滑，降低電鍍缺陷</li>
+            <li><strong>種子層濺鍍：</strong>濺鍍薄層銅作為電鍍導電基底</li>
+            <li><strong>電鍍填孔：</strong>銅電鍍填滿 TGV，建立垂直導通</li>
+            <li><strong>化學機械研磨（CMP）：</strong>平坦化表面，準備佈線層</li>
+            <li><strong>多層佈線：</strong>在玻璃兩面製作精細金屬走線層</li>
+          </ol>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:.82rem;color:#1d4ed8;margin-bottom:6px">玻璃 vs 矽中介層比較</div>
+          <table style="font-size:.8rem">
+            <thead><tr><th>比較項目</th><th>矽中介層（TSV）</th><th>玻璃中介層（TGV）</th></tr></thead>
+            <tbody>
+              <tr><td>CTE 匹配</td><td style="color:#d97706">中（矽 vs 矽）</td><td style="color:#16a34a;font-weight:700">優（玻璃≈矽）</td></tr>
+              <tr><td>高頻損耗</td><td style="color:#d97706">中（矽有導電損耗）</td><td style="color:#16a34a;font-weight:700">低（絕緣體）</td></tr>
+              <tr><td>翹曲風險</td><td style="color:#d97706">中</td><td style="color:#16a34a;font-weight:700">低</td></tr>
+              <tr><td>製造難度</td><td style="color:#16a34a">低（成熟製程）</td><td style="color:#dc2626">高（雷射鑽孔新製程）</td></tr>
+              <tr><td>成本</td><td style="color:#16a34a">低</td><td style="color:#dc2626">目前高（規模化後降低）</td></tr>
+              <tr><td>互連密度提升</td><td>基準</td><td style="color:#16a34a;font-weight:700">可提升 10 倍</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3 style="color:#1e3a8a;margin-top:20px">③ 台廠受益：設備與材料供應鏈</h3>
+      <div class="cl cl-b" style="margin-bottom:12px">
+        <span class="cl-icon">🏭</span>
+        <div class="cl-body">TGV 的雷射鑽孔、電鍍、精密檢測、自動化傳送（AMHS）等製程，直接帶動台灣半導體設備與材料廠的商機。這些設備廠是 TGV 普及的間接受益者，業務成長先於終端客戶出貨。</div>
+      </div>
+      <div class="g2">
+        <div class="stk">
+          <div class="stk-head">
+            <span class="stk-icon">🔦</span>
+            <span class="stk-title">雷射設備廠</span>
+            <span class="stk-phase" style="background:#dbeafe;color:#1e40af">TGV 鑽孔核心</span>
+          </div>
+          <div class="stk-body">皮秒/飛秒超短脈衝雷射是 TGV 成形的關鍵設備。目前主要供應商為德國 TRUMPF、日本住友重機，台廠在此領域正積極切入。台灣精密雷射加工設備廠有機會隨 TGV 需求爆發而受益。</div>
+        </div>
+        <div class="stk">
+          <div class="stk-head">
+            <span class="stk-icon">🧪</span>
+            <span class="stk-title">電鍍與化學材料</span>
+            <span class="stk-phase" style="background:#dbeafe;color:#1e40af">填孔導體</span>
+          </div>
+          <div class="stk-body">TGV 銅電鍍需要特殊的填孔電鍍液（Bottom-up Plating），確保銅從孔底均勻往上填充，避免空洞（Void）。台廠化學材料商與電鍍設備廠有機會切入此高附加值供應鏈。</div>
+        </div>
+        <div class="stk">
+          <div class="stk-head">
+            <span class="stk-icon">🔬</span>
+            <span class="stk-title">精密檢測設備</span>
+            <span class="stk-phase" style="background:#dbeafe;color:#1e40af">良率把關</span>
+          </div>
+          <div class="stk-body">TGV 的孔徑、深度、填充率需要 X 光或光學顯微鏡進行 100% 檢測。台積電、Intel 等大廠對玻璃基板採用率提升，連帶帶動精密量測設備需求，台廠如牧德（3563）等光學檢測設備廠可望受益。</div>
+        </div>
+        <div class="stk">
+          <div class="stk-head">
+            <span class="stk-icon">📅</span>
+            <span class="stk-title">量產時程預估</span>
+            <span class="stk-phase" style="background:#fef3c7;color:#92400e">2026 ~ 2028</span>
+          </div>
+          <div class="stk-body">Intel 已宣布 Glass Substrate 計畫，目標 2026 年導入部分產品；台積電與三星也在積極評估玻璃基板路線。預計 2027~2028 年 AI 高階封裝將出現第一波 TGV 量產應用，初期以 Intel 18A 封裝為主要場景。</div>
+        </div>
+      </div>
+
+      <div class="cl cl-r" style="margin-top:12px">
+        <span class="cl-icon">⚠️</span>
+        <div class="cl-body"><strong>技術風險：</strong>玻璃基板的主要挑戰是<strong>脆性</strong>（Brittleness）與<strong>切割困難</strong>，在大面積薄片（100μm 厚）的搬運與加工過程中容易破裂，目前良率仍顯著低於成熟的矽中介層製程，這是量產時程存在不確定性的主因。以上個股相關資訊不構成投資建議，請自行研究財報與風險後再做判斷。</div>
+      </div>
+    </div>
+  </div>
+</div><!-- end deep-tgv -->
+
+
 
   <h2>長遠（2030 以後）：觀察但不急著布局</h2>
   <div class="g3">

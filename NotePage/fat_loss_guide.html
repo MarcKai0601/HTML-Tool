@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>減脂工具書</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#ffffff; --bg2:#f7f7f5; --bg3:#efefec;
+  --border:#e0ded8; --border2:#c8c6be;
+  --txt:#1a1a18; --txt2:#4a4a45; --txt3:#888780;
+  --purple-bg:#EEEDFE; --purple-border:#534AB7; --purple-txt:#26215C;
+  --teal-bg:#E1F5EE; --teal-border:#1D9E75; --teal-txt:#04342C;
+  --amber-bg:#FAEEDA; --amber-border:#854F0B; --amber-txt:#412402;
+  --coral-bg:#FAECE7; --coral-border:#993C1D; --coral-txt:#4A1B0C;
+  --blue-bg:#E6F1FB; --blue-border:#185FA5; --blue-txt:#042C53;
+  --green-bg:#EAF3DE; --green-border:#3B6D11; --green-txt:#173404;
+  --gray-bg:#F1EFE8; --gray-border:#5F5E5A; --gray-txt:#2C2C2A;
+}
+body { background:var(--bg); color:var(--txt); font-family:'Noto Sans TC',sans-serif; font-size:14px; line-height:1.6; min-height:100vh; }
+#shell { max-width:960px; margin:0 auto; padding:32px 20px 80px; }
+header { margin-bottom:28px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+header h1 { font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:500; letter-spacing:.02em; margin-bottom:6px; }
+header p { font-size:13px; color:var(--txt2); }
+.meta-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+#tab-bar { display:flex; gap:4px; margin-bottom:24px; border-bottom:1px solid var(--border); overflow-x:auto; }
+.tab-btn { font-size:13px; padding:8px 16px; border:none; background:none; color:var(--txt2); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; white-space:nowrap; font-family:'IBM Plex Mono',monospace; transition:color .15s,border-color .15s; }
+.tab-btn:hover { color:var(--txt); }
+.tab-btn.active { color:#534AB7; border-bottom-color:#534AB7; font-weight:500; }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+.sec-label { font-size:11px; font-family:'IBM Plex Mono',monospace; letter-spacing:.08em; color:var(--txt3); text-transform:uppercase; margin-bottom:12px; margin-top:24px; }
+.sec-label:first-child { margin-top:0; }
+.card { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:16px 20px; margin-bottom:12px; }
+.card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:16px; }
+.metric-card { background:var(--bg2); border-radius:8px; padding:14px 16px; }
+.metric-card .lbl { font-size:11px; color:var(--txt3); margin-bottom:4px; font-family:'IBM Plex Mono',monospace; }
+.metric-card .val { font-size:24px; font-weight:500; color:var(--txt); font-family:'IBM Plex Mono',monospace; }
+.metric-card .sub { font-size:11px; color:var(--txt3); margin-top:2px; }
+.badge { display:inline-block; font-size:11px; font-weight:500; padding:2px 8px; border-radius:4px; font-family:'IBM Plex Mono',monospace; }
+.b-purple { background:var(--purple-bg); color:var(--purple-txt); }
+.b-teal   { background:var(--teal-bg);   color:var(--teal-txt); }
+.b-amber  { background:var(--amber-bg);  color:var(--amber-txt); }
+.b-coral  { background:var(--coral-bg);  color:var(--coral-txt); }
+.b-blue   { background:var(--blue-bg);   color:var(--blue-txt); }
+.b-green  { background:var(--green-bg);  color:var(--green-txt); }
+.b-gray   { background:var(--gray-bg);   color:var(--gray-txt); }
+.slider-row { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.slider-row label { font-size:13px; color:var(--txt2); width:80px; flex-shrink:0; }
+.slider-row input[type=range] { flex:1; accent-color:#534AB7; }
+.slider-row select { flex:1; font-size:13px; border:1px solid var(--border2); border-radius:6px; padding:5px 8px; background:var(--bg); color:var(--txt); font-family:'Noto Sans TC',sans-serif; }
+.slider-val { font-size:13px; font-weight:500; font-family:'IBM Plex Mono',monospace; width:68px; text-align:right; color:var(--txt); }
+.formula-box { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:12px 16px; font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.9; color:var(--txt2); margin-bottom:16px; }
+.formula-box .hi { color:#534AB7; font-weight:500; }
+.warn-box { background:var(--amber-bg); border-left:3px solid var(--amber-border); border-radius:0 8px 8px 0; padding:10px 14px; font-size:13px; color:var(--amber-txt); line-height:1.6; margin:12px 0; }
+.info-box { background:var(--blue-bg); border-left:3px solid var(--blue-border); border-radius:0 8px 8px 0; padding:10px 14px; font-size:13px; color:var(--blue-txt); line-height:1.6; margin:12px 0; }
+.succ-box { background:var(--teal-bg); border-left:3px solid var(--teal-border); border-radius:0 8px 8px 0; padding:10px 14px; font-size:13px; color:var(--teal-txt); line-height:1.6; margin:12px 0; }
+.rule-table { width:100%; border-collapse:collapse; font-size:13px; }
+.rule-table th { background:var(--bg2); font-weight:500; text-align:left; padding:8px 12px; font-size:11px; font-family:'IBM Plex Mono',monospace; color:var(--txt3); letter-spacing:.05em; text-transform:uppercase; border-bottom:1px solid var(--border); }
+.rule-table td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+.rule-table tr:last-child td { border-bottom:none; }
+.phase-row { display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid var(--border); }
+.phase-row:last-child { border-bottom:none; }
+.phase-num { width:30px; height:30px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:500; font-family:'IBM Plex Mono',monospace; }
+.phase-body { flex:1; }
+.phase-title { font-size:14px; font-weight:500; margin-bottom:4px; }
+.phase-desc { font-size:13px; color:var(--txt2); line-height:1.6; }
+/* ── CYCLE TIMELINE (original plan tab) ── */
+.cycle-item { display:flex; gap:14px; padding:14px 0; border-bottom:1px solid var(--border); }
+.cycle-item:last-child { border-bottom:none; }
+.cycle-dot-col { display:flex; flex-direction:column; align-items:center; }
+.c-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+.c-line { width:1px; flex:1; background:var(--border); margin-top:4px; min-height:20px; }
+.cycle-body { flex:1; }
+.cycle-title { font-size:14px; font-weight:500; margin-bottom:3px; }
+.cycle-desc { font-size:13px; color:var(--txt2); line-height:1.6; }
+.cycle-meta { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+/* ── CHART WRAP ── */
+.chart-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:16px 20px; margin-bottom:16px; }
+.chart-label { font-size:11px; font-family:'IBM Plex Mono',monospace; color:var(--txt3); margin-bottom:10px; letter-spacing:.06em; }
+/* ── STALL ── */
+.check-row { display:flex; align-items:flex-start; gap:10px; padding:12px; background:var(--bg2); border-radius:8px; margin-bottom:8px; cursor:pointer; transition:background .15s; }
+.check-row:hover { background:var(--bg3); }
+.check-row input[type=checkbox] { margin-top:2px; accent-color:#534AB7; flex-shrink:0; }
+.check-row.done-item .check-txt { text-decoration:line-through; color:var(--txt3); }
+.check-txt { font-size:13px; flex:1; }
+/* ── PROTEIN ── */
+.protein-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; }
+.protein-card { background:var(--bg2); border-radius:8px; padding:10px 12px; text-align:center; }
+.protein-card .food { font-size:13px; font-weight:500; margin-bottom:4px; }
+.protein-card .amount { font-size:11px; color:var(--txt3); }
+.protein-card .g { font-size:20px; font-weight:500; font-family:'IBM Plex Mono',monospace; color:#534AB7; }
+/* ── LEGEND ── */
+.legend-row { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; margin-top:12px; }
+.legend-item { display:flex; align-items:center; gap:6px; color:var(--txt2); }
+.legend-dot { width:10px; height:10px; border-radius:2px; }
+/* ── SUPPL ── */
+.suppl-block { border:1px solid var(--border); border-radius:12px; margin-bottom:12px; overflow:hidden; }
+.suppl-header { display:flex; align-items:center; gap:10px; padding:14px 16px; cursor:pointer; user-select:none; }
+.suppl-header:hover { background:var(--bg2); }
+.suppl-title { font-size:14px; font-weight:500; }
+.suppl-chevron { font-size:12px; color:var(--txt3); margin-left:auto; transition:transform .2s; }
+.suppl-block.open .suppl-chevron { transform:rotate(180deg); }
+.suppl-body { display:none; padding:14px 16px 16px; border-top:1px solid var(--border); }
+.suppl-block.open .suppl-body { display:block; }
+.suppl-row { display:flex; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.suppl-row:last-child { border-bottom:none; }
+.suppl-key { width:64px; flex-shrink:0; color:var(--txt3); font-family:'IBM Plex Mono',monospace; font-size:11px; padding-top:1px; }
+.suppl-val { flex:1; line-height:1.6; }
+
+/* ════════════════════════════════
+   TRAINING TAB — CYCLE EDITOR
+════════════════════════════════ */
+.split-btns { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+.split-btn { font-size:12px; padding:5px 12px; border:1px solid var(--border2); border-radius:6px; background:var(--bg); color:var(--txt2); cursor:pointer; font-family:'IBM Plex Mono',monospace; transition:all .15s; }
+.split-btn:hover { border-color:#534AB7; color:#534AB7; }
+.split-btn.active { background:var(--purple-bg); border-color:#534AB7; color:var(--purple-txt); font-weight:500; }
+
+.cycle-editor { }
+.cycle-day-card { border:1px solid var(--border); border-radius:12px; margin-bottom:10px; overflow:hidden; }
+.cdc-header { display:flex; align-items:center; gap:10px; padding:11px 16px; background:var(--bg2); cursor:pointer; user-select:none; }
+.cdc-header:hover { background:var(--bg3); }
+.cdc-day-num { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--txt3); width:36px; flex-shrink:0; }
+.cdc-name-input { flex:1; font-size:13px; font-weight:500; border:none; background:transparent; color:var(--txt); font-family:'Noto Sans TC',sans-serif; outline:none; cursor:text; }
+.cdc-name-input:focus { background:var(--bg); border-radius:4px; padding:0 4px; }
+.cdc-type-select { font-size:11px; border:1px solid var(--border); border-radius:4px; padding:2px 6px; background:var(--bg); color:var(--txt2); font-family:'IBM Plex Mono',monospace; cursor:pointer; }
+.cdc-chevron { font-size:11px; color:var(--txt3); transition:transform .2s; margin-left:4px; }
+.cycle-day-card.open .cdc-chevron { transform:rotate(180deg); }
+.cdc-body { display:none; padding:12px 16px; }
+.cycle-day-card.open .cdc-body { display:block; }
+
+.moves-list { margin-bottom:10px; }
+.move-item { display:flex; align-items:flex-start; gap:8px; padding:8px 0; border-bottom:1px solid var(--border); }
+.move-item:last-child { border-bottom:none; }
+.move-idx { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--txt3); width:24px; flex-shrink:0; padding-top:2px; }
+.move-fields { flex:1; display:flex; flex-direction:column; gap:4px; }
+.move-name-inp { font-size:13px; font-weight:500; border:none; border-bottom:1px solid var(--border); background:transparent; color:var(--txt); outline:none; padding:0 0 2px; width:100%; font-family:'Noto Sans TC',sans-serif; }
+.move-name-inp:focus { border-bottom-color:#534AB7; }
+.move-detail-inp { font-size:12px; border:none; background:transparent; color:var(--txt3); outline:none; padding:0; width:100%; font-family:'Noto Sans TC',sans-serif; }
+.move-detail-inp::placeholder { color:var(--border2); }
+.move-detail-inp:focus { color:var(--txt2); }
+.move-del { font-size:16px; color:var(--txt3); background:none; border:none; cursor:pointer; padding:0 4px; flex-shrink:0; line-height:1; }
+.move-del:hover { color:#993C1D; }
+.add-move-btn { font-size:12px; color:#534AB7; background:none; border:1px dashed #534AB7; border-radius:6px; padding:5px 12px; cursor:pointer; font-family:'IBM Plex Mono',monospace; width:100%; margin-top:4px; }
+.add-move-btn:hover { background:var(--purple-bg); }
+
+.cycle-controls { display:flex; gap:8px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+.cycle-controls .ctrl-btn { font-size:12px; padding:5px 12px; border:1px solid var(--border2); border-radius:6px; background:var(--bg); color:var(--txt2); cursor:pointer; font-family:'IBM Plex Mono',monospace; }
+.cycle-controls .ctrl-btn:hover { border-color:#534AB7; color:#534AB7; }
+.cycle-controls .ctrl-btn.danger:hover { border-color:#993C1D; color:#993C1D; }
+.cycle-info-box { background:var(--bg2); border-radius:8px; padding:10px 14px; font-size:12px; color:var(--txt2); margin-bottom:12px; }
+.cycle-info-box strong { color:var(--txt); }
+
+/* PR 表格 */
+.pr-table-wrap { margin-top:16px; }
+.pr-row { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.pr-row:last-child { border-bottom:none; }
+.pr-name { flex:1.5; font-weight:500; }
+.pr-inp { width:90px; font-family:'IBM Plex Mono',monospace; font-size:12px; border:1px solid var(--border); border-radius:4px; padding:3px 6px; color:var(--txt); background:var(--bg); }
+.pr-inp:focus { outline:none; border-color:#534AB7; }
+.pr-calc { font-family:'IBM Plex Mono',monospace; font-size:12px; color:#534AB7; width:70px; text-align:right; }
+.pr-pct-sl { width:80px; accent-color:#534AB7; }
+
+/* ════════════════════════════════
+   PLAN TAB ADDITIONS
+════════════════════════════════ */
+.goal-sep { border:none; border-top:2px dashed var(--border); margin:28px 0 24px; }
+
+/* Goal form */
+.goal-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+@media(max-width:560px){ .goal-form-grid { grid-template-columns:1fr; } }
+.form-group { display:flex; flex-direction:column; gap:4px; }
+.form-label { font-size:11px; font-family:'IBM Plex Mono',monospace; color:var(--txt3); letter-spacing:.05em; text-transform:uppercase; }
+.form-input { font-size:13px; border:1px solid var(--border2); border-radius:6px; padding:7px 10px; background:var(--bg); color:var(--txt); font-family:'Noto Sans TC',sans-serif; }
+.form-input:focus { outline:none; border-color:#534AB7; }
+.form-hint { font-size:11px; color:var(--txt3); margin-top:2px; }
+.form-actions { display:flex; gap:8px; margin-top:4px; }
+.btn-primary { font-size:13px; padding:7px 18px; border:none; border-radius:6px; background:#534AB7; color:#fff; cursor:pointer; font-family:'Noto Sans TC',sans-serif; font-weight:500; }
+.btn-primary:hover { background:#3C3489; }
+.btn-secondary { font-size:13px; padding:7px 14px; border:1px solid var(--border2); border-radius:6px; background:var(--bg); color:var(--txt2); cursor:pointer; font-family:'Noto Sans TC',sans-serif; }
+.btn-secondary:hover { border-color:#534AB7; color:#534AB7; }
+
+/* Goal milestones list */
+.milestone-list { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.milestone-card { border:1px solid var(--border); border-radius:10px; padding:12px 16px; display:flex; align-items:flex-start; gap:12px; }
+.milestone-card.event-card { border-color:var(--amber-border); background:var(--amber-bg); }
+.milestone-card.event-card .mc-title { color:var(--amber-txt); }
+.ms-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+.mc-body { flex:1; }
+.mc-title { font-size:13px; font-weight:500; margin-bottom:2px; }
+.mc-meta { font-size:12px; color:var(--txt3); display:flex; gap:8px; flex-wrap:wrap; }
+.mc-del { font-size:14px; color:var(--txt3); background:none; border:none; cursor:pointer; padding:0; flex-shrink:0; }
+.mc-del:hover { color:#993C1D; }
+
+/* Validation feedback */
+.val-ok  { color:#0F6E56; font-size:12px; }
+.val-err { color:#993C1D; font-size:12px; }
+.val-warn{ color:#854F0B; font-size:12px; }
+
+/* ── GOAL STEP CARDS ── */
+.goal-step-card { border:1px solid var(--border); border-radius:12px; margin-bottom:12px; overflow:hidden; }
+.gstep-header { display:flex; align-items:flex-start; gap:12px; padding:14px 18px; background:var(--bg2); }
+.gstep-num { width:28px; height:28px; border-radius:50%; background:var(--purple-bg); color:var(--purple-txt); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:500; font-family:'IBM Plex Mono',monospace; flex-shrink:0; margin-top:1px; }
+.gstep-title-col { flex:1; }
+.gstep-title { font-size:14px; font-weight:500; color:var(--txt); }
+.gstep-sub { font-size:12px; color:var(--txt3); margin-top:2px; }
+.gstep-body { padding:14px 18px; }
+.chart-view-btn { font-size:11px; padding:4px 10px; border:1px solid var(--border2); border-radius:5px; background:var(--bg); color:var(--txt2); cursor:pointer; font-family:'IBM Plex Mono',monospace; transition:all .15s; }
+.chart-view-btn:hover { border-color:#534AB7; color:#534AB7; }
+.chart-view-btn.active { background:var(--purple-bg); border-color:#534AB7; color:var(--purple-txt); font-weight:500; }
+#chart-scroll-wrap { scrollbar-width:none; -ms-overflow-style:none; }
+#chart-scroll-wrap::-webkit-scrollbar { display:none; }
+</style>
+</head>
+<body>
+<div id="shell">
+
+<header>
+  <h1>減脂工具書 · fat_loss_guide</h1>
+  <p>第一性原理框架 × 個人化計算 × 循環課表編輯器 × 補充品做法 × 全年目標規劃</p>
+  <div class="meta-row">
+    <span class="badge b-purple">體重 110 kg</span>
+    <span class="badge b-teal">目標缺口 400 kcal</span>
+    <span class="badge b-amber">維護模式 × 2次/週</span>
+    <span class="badge b-coral">7月中婚禮里程碑</span>
+  </div>
+</header>
+
+<div id="tab-bar">
+  <button class="tab-btn active" onclick="showTab('calc',this)">計算器</button>
+  <button class="tab-btn" onclick="showTab('rules',this)">核心框架</button>
+  <button class="tab-btn" onclick="showTab('training',this)">循環課表</button>
+  <button class="tab-btn" onclick="showTab('suppl',this)">補充品做法</button>
+  <button class="tab-btn" onclick="showTab('plan',this)">全年規劃</button>
+  <button class="tab-btn" onclick="showTab('stall',this)">停滯排查</button>
+</div>
+
+<!-- ══ TAB 1: 計算器 ══ -->
+<div id="tab-calc" class="tab-panel active">
+  <div class="sec-label">個人化輸入</div>
+  <div class="slider-row"><label>體重（kg）</label><input type="range" id="sl-weight" min="60" max="150" value="110" step="1" oninput="recalc()"><span class="slider-val" id="v-weight">110 kg</span></div>
+  <div class="slider-row"><label>身高（cm）</label><input type="range" id="sl-height" min="155" max="195" value="175" step="1" oninput="recalc()"><span class="slider-val" id="v-height">175 cm</span></div>
+  <div class="slider-row"><label>年齡</label><input type="range" id="sl-age" min="18" max="55" value="29" step="1" oninput="recalc()"><span class="slider-val" id="v-age">29 歲</span></div>
+  <div class="slider-row"><label>活動量</label>
+    <select id="sl-act" onchange="recalc()">
+      <option value="1.2">久坐（辦公室幾乎不動）× 1.2</option>
+      <option value="1.375" selected>輕度（每週運動 1–3 次）× 1.375</option>
+      <option value="1.55">中度（每週運動 3–5 次）× 1.55</option>
+      <option value="1.725">高度（每週運動 6–7 次）× 1.725</option>
+    </select>
+    <span class="slider-val" id="v-act">× 1.375</span>
+  </div>
+  <div class="slider-row"><label>缺口目標</label><input type="range" id="sl-deficit" min="200" max="800" value="400" step="50" oninput="recalc()"><span class="slider-val" id="v-deficit">400 kcal</span></div>
+  <div class="sec-label">計算結果</div>
+  <div class="card-grid">
+    <div class="metric-card"><div class="lbl">BMR 基礎代謝</div><div class="val" id="r-bmr">—</div><div class="sub">kcal / 天</div></div>
+    <div class="metric-card"><div class="lbl">TDEE 總消耗</div><div class="val" id="r-tdee">—</div><div class="sub">kcal / 天</div></div>
+    <div class="metric-card"><div class="lbl">目標攝入</div><div class="val" id="r-target">—</div><div class="sub">TDEE − 缺口</div></div>
+    <div class="metric-card"><div class="lbl">蛋白質目標</div><div class="val" id="r-protein">—</div><div class="sub">g / 天（× 1.8）</div></div>
+    <div class="metric-card"><div class="lbl">每月預估減脂</div><div class="val" id="r-monthly">—</div><div class="sub">公斤</div></div>
+    <div class="metric-card"><div class="lbl">距離 90 kg</div><div class="val" id="r-weeks">—</div><div class="sub">週（不含 diet break）</div></div>
+  </div>
+  <div id="warn-deficit" class="warn-box" style="display:none">⚠ 缺口超過 700 kcal，可能觸發代謝適應與肌肉流失。建議維持在 300–500 kcal。</div>
+  <div class="sec-label">公式說明</div>
+  <div class="formula-box">
+    BMR（男）= 10 × <span class="hi">體重</span> + 6.25 × <span class="hi">身高</span> − 5 × <span class="hi">年齡</span> + 5<br>
+    TDEE　　= BMR × <span class="hi">活動係數</span><br>
+    目標攝入 = TDEE − <span class="hi">缺口</span><br>
+    蛋白質　 = 體重 × <span class="hi">1.8</span> g<br>
+    每月減脂 = 缺口 × 30 ÷ <span class="hi">7700</span> kcal/kg
+  </div>
+  <div class="sec-label">蛋白質速查表</div>
+  <div class="protein-grid" id="protein-grid"></div>
+</div>
+
+<!-- ══ TAB 2: 核心框架 ══ -->
+<div id="tab-rules" class="tab-panel">
+  <div class="sec-label">第一性原理</div>
+  <div class="card">
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;"><span class="badge b-purple" style="flex-shrink:0;margin-top:2px;">事實 1</span><div><div style="font-weight:500;font-size:13px;margin-bottom:2px;">能量守恆</div><div style="font-size:13px;color:var(--txt2);">攝入 &lt; 消耗 → 燃燒脂肪。所有減脂方法都只是在操控這個等式。</div></div></div>
+      <div style="display:flex;align-items:flex-start;gap:12px;"><span class="badge b-teal" style="flex-shrink:0;margin-top:2px;">事實 2</span><div><div style="font-weight:500;font-size:13px;margin-bottom:2px;">1 kg 脂肪 ≈ 7,700 kcal</div><div style="font-size:13px;color:var(--txt2);">缺口 300 kcal/天 → 每月約 −1.2 kg｜500 kcal → −2.0 kg｜1000+ kcal → 代謝適應＋肌肉流失</div></div></div>
+      <div style="display:flex;align-items:flex-start;gap:12px;"><span class="badge b-amber" style="flex-shrink:0;margin-top:2px;">事實 3</span><div><div style="font-weight:500;font-size:13px;margin-bottom:2px;">TDEE 的四個組成</div><div style="font-size:13px;color:var(--txt2);">BMR 60–70%（肌肉量決定）／NEAT 變異最大／TEF 約 10%／EAT 運動 僅 5–10%</div></div></div>
+    </div>
+  </div>
+  <div class="sec-label">三大核心規則</div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="rule-table">
+      <thead><tr><th style="width:120px;">規則</th><th style="width:160px;">數字</th><th>原因</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge b-purple">熱量缺口</span></td><td style="font-family:'IBM Plex Mono',monospace;font-weight:500;">300–500 kcal/天</td><td style="color:var(--txt2);">穩定燃脂，不觸發代謝適應與反彈</td></tr>
+        <tr><td><span class="badge b-teal">蛋白質</span></td><td style="font-family:'IBM Plex Mono',monospace;font-weight:500;">1.6–2.2 g/kg</td><td style="color:var(--txt2);">TEF 最高、保留肌肉、增加飽足感</td></tr>
+        <tr><td><span class="badge b-amber">阻力訓練</span></td><td style="font-family:'IBM Plex Mono',monospace;font-weight:500;">每週 2–3 次</td><td style="color:var(--txt2);">給肌肉保留信號，維護 BMR</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sec-label">四階段執行路線</div>
+  <div class="card">
+    <div class="phase-row"><div class="phase-num" style="background:var(--purple-bg);color:var(--purple-txt);">1</div><div class="phase-body"><div class="phase-title">校準期（第 1–2 週）</div><div class="phase-desc">先記錄 3 天飲食，找出實際攝入基準線。找出漏算來源（醬料、食用油、含糖飲料）。</div></div><span class="badge b-purple" style="flex-shrink:0;margin-top:2px;">診斷</span></div>
+    <div class="phase-row"><div class="phase-num" style="background:var(--teal-bg);color:var(--teal-txt);">2</div><div class="phase-body"><div class="phase-title">執行期（第 3–8 週）</div><div class="phase-desc">維持 300–500 kcal 缺口。每週一次早晨空腹量體重，看 2 週趨勢而非單日波動。</div></div><span class="badge b-teal" style="flex-shrink:0;margin-top:2px;">執行</span></div>
+    <div class="phase-row"><div class="phase-num" style="background:var(--amber-bg);color:var(--amber-txt);">3</div><div class="phase-body"><div class="phase-title">檢查點（第 9–10 週）</div><div class="phase-desc">若連 2 週無變化，先查漏算，再微調缺口 +100–200 kcal。不是直接大砍熱量。</div></div><span class="badge b-amber" style="flex-shrink:0;margin-top:2px;">校正</span></div>
+    <div class="phase-row"><div class="phase-num" style="background:var(--blue-bg);color:var(--blue-txt);">4</div><div class="phase-body"><div class="phase-title">Diet Break（每 8–12 週）</div><div class="phase-desc">回到 TDEE 維持 1 週，代謝重置＋荷爾蒙恢復（Leptin 回升），之後繼續下一輪效率更高。</div></div><span class="badge b-blue" style="flex-shrink:0;margin-top:2px;">重置</span></div>
+  </div>
+  <div class="sec-label">掉肌肉的真相</div>
+  <div class="card">
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:12px;">身體預設燃脂，分解肌肉是低效的最後手段。掉肌肉是「條件」造成的，不是命運：</div>
+    <table class="rule-table">
+      <thead><tr><th>觸發條件</th><th>解法</th></tr></thead>
+      <tbody>
+        <tr><td>缺口過大（> 1000 kcal）</td><td style="color:var(--txt2);">維持 300–500 kcal 缺口</td></tr>
+        <tr><td>蛋白質不足</td><td style="color:var(--txt2);">每日 1.8 g/kg，優先確保達標</td></tr>
+        <tr><td>無阻力訓練</td><td style="color:var(--txt2);">每週 2 次維護模式訓練</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box" style="margin-top:12px;margin-bottom:0;">三個條件都避開，就不會大量掉肌肉。</div>
+  </div>
+</div>
+
+<!-- ══ TAB 3: 循環課表 ══ -->
+<div id="tab-training" class="tab-panel">
+  <div class="info-box" id="training-info-box">
+    以「循環」為單位設計課表，而非綁死每週。你的習慣：2× 三分化（Push / Pull / Legs × 2）＝ 1 個循環，共 6 天。循環結束後進入下一輪，不受日曆週限制。
+  </div>
+
+  <div class="sec-label">選擇分化方式</div>
+  <div class="split-btns" id="split-btns">
+    <button class="split-btn" onclick="setSplit(2)">2 分化</button>
+    <button class="split-btn active" onclick="setSplit(3)">3 分化（PPL）</button>
+    <button class="split-btn" onclick="setSplit(4)">4 分化</button>
+    <button class="split-btn" onclick="setSplit(5)">5 分化</button>
+    <button class="split-btn" onclick="setSplit('custom')">自定天數</button>
+  </div>
+
+  <div class="cycle-info-box" id="cycle-meta-box"></div>
+
+  <div class="sec-label">循環結構設定</div>
+  <div class="cycle-controls">
+    <span style="font-size:13px;color:var(--txt2);">每循環天數：</span>
+    <input type="number" id="cycle-days-input" min="1" max="14" value="6" style="width:56px;font-size:13px;border:1px solid var(--border2);border-radius:6px;padding:4px 8px;font-family:'IBM Plex Mono',monospace;color:var(--txt);background:var(--bg);" oninput="onCycleDaysChange()">
+    <button class="ctrl-btn" onclick="saveCycle()">💾 儲存課表</button>
+    <button class="ctrl-btn" onclick="resetCycle()">↺ 重置為預設</button>
+    <button class="ctrl-btn danger" onclick="clearAllMoves()">✕ 清空所有動作</button>
+  </div>
+
+  <div class="cycle-editor" id="cycle-editor"></div>
+
+  <div class="sec-label" style="margin-top:24px;">PR 記錄 ＆ 維護重量計算</div>
+  <div class="cycle-info-box">維護模式重量 = PR × 百分比（預設 80%），可調整。</div>
+  <div class="cycle-controls">
+    <span style="font-size:13px;color:var(--txt2);">維護百分比：</span>
+    <input type="range" id="pr-pct" min="60" max="95" value="80" step="5" style="width:120px;accent-color:#534AB7;" oninput="renderPRTable()">
+    <span id="pr-pct-val" style="font-size:13px;font-weight:500;font-family:'IBM Plex Mono',monospace;color:#534AB7;">80%</span>
+    <button class="ctrl-btn" onclick="addPRRow()">+ 新增動作</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="rule-table" id="pr-table">
+      <thead><tr><th>動作</th><th>PR 重量</th><th id="pr-th-maint">維護重量（80%）</th></tr></thead>
+      <tbody id="pr-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ TAB 4: 補充品 ══ -->
+<div id="tab-suppl" class="tab-panel">
+  <div class="sec-label">補充品與飲食策略（點擊展開）</div>
+  <div class="suppl-block open">
+    <div class="suppl-header" onclick="toggleSuppl(this.parentElement)"><span class="badge b-teal">每日必補</span><span class="suppl-title">乳清蛋白</span><span class="suppl-chevron">▾</span></div>
+    <div class="suppl-body">
+      <div class="suppl-row"><span class="suppl-key">目的</span><span class="suppl-val">補足每日蛋白質缺口。飲食難穩定達到 198 g 時使用，是最性價比的蛋白質補給方式。</span></div>
+      <div class="suppl-row"><span class="suppl-key">劑量</span><span class="suppl-val">1–2 勺（約 25–50 g 蛋白質），視當日飲食實際攝入補足。</span></div>
+      <div class="suppl-row"><span class="suppl-key">時機</span><span class="suppl-val">訓練後 30 分鐘內 ／ 早餐混入燕麥 ／ 睡前（搭配希臘優格）。重要的是「總量達標」而非「時機」。</span></div>
+      <div class="suppl-row"><span class="suppl-key">最佳早餐</span><span class="suppl-val">希臘優格 170g ＋ 乳清 1 勺 ＋ 燕麥 40g → 約 50 g 蛋白質，同時刺激 GLP-1 分泌。</span></div>
+      <div class="suppl-row"><span class="suppl-key">選購</span><span class="suppl-val">每勺 ≥ 20 g 蛋白質、碳水 &lt; 5 g 的 WPI 或 WPC。一線品牌即可，不需高價。</span></div>
+    </div>
+  </div>
+  <div class="suppl-block">
+    <div class="suppl-header" onclick="toggleSuppl(this.parentElement)"><span class="badge b-purple">已決定補充</span><span class="suppl-title">一水肌酸（Creatine Monohydrate）</span><span class="suppl-chevron">▾</span></div>
+    <div class="suppl-body">
+      <div class="suppl-row"><span class="suppl-key">目的</span><span class="suppl-val">增加磷酸肌酸儲量，短暫高強度輸出提升 5–10%，維護期保力效果最明顯。</span></div>
+      <div class="suppl-row"><span class="suppl-key">劑量</span><span class="suppl-val">5 g / 天，無需飽和期（長期效果相同）。</span></div>
+      <div class="suppl-row"><span class="suppl-key">時機</span><span class="suppl-val">任何時間皆可，混水或蛋白質飲料一起喝最方便。</span></div>
+      <div class="suppl-row"><span class="suppl-key">預期效果</span><span class="suppl-val">開始後 2–4 週生效。體重可能微升 1–2 kg（肌肉儲水），不是脂肪，不要恐慌。</span></div>
+      <div class="suppl-row"><span class="suppl-key">注意</span><span class="suppl-val">只買「一水肌酸（Creatine Monohydrate）」，其他形式研究支持度不如它。</span></div>
+    </div>
+  </div>
+  <div class="suppl-block">
+    <div class="suppl-header" onclick="toggleSuppl(this.parentElement)"><span class="badge b-green">飲食介入</span><span class="suppl-title">GLP-1 自然啟動策略</span><span class="suppl-chevron">▾</span></div>
+    <div class="suppl-body">
+      <div class="suppl-row"><span class="suppl-key">原理</span><span class="suppl-val">GLP-1 是腸道自然分泌的飽足荷爾蒙，可透過飲食模式強化分泌，降低食慾、穩定血糖。</span></div>
+      <div class="suppl-row"><span class="suppl-key">早餐</span><span class="suppl-val">希臘優格 170g ＋ 乳清 1 勺 ＋ 燕麥 40g ＋ 奇亞籽 10g（選配）。高蛋白＋高纖維，最強 GLP-1 組合。</span></div>
+      <div class="suppl-row"><span class="suppl-key">飯後散步</span><span class="suppl-val">飯後 10–15 分鐘慢走，穩定血糖、延長飽足感。</span></div>
+      <div class="suppl-row"><span class="suppl-key">衝刺間歇</span><span class="suppl-val">每週 1–2 次，30 秒全力 / 90 秒輕鬆 × 6–8 組。結束後 GLP-1 釋放顯著上升（約 30–60 分鐘）。</span></div>
+      <div class="suppl-row"><span class="suppl-key">冷飯技巧</span><span class="suppl-val">白飯 / 地瓜冷藏後再加熱，抗性澱粉提升，GI 降低約 25–30%。</span></div>
+      <div class="suppl-row"><span class="suppl-key">睡前 321</span><span class="suppl-val">睡前 3h 不進食 ／ 2h 不喝水 ／ 1h 不看螢幕。穩定 Leptin / Ghrelin 荷爾蒙。</span></div>
+    </div>
+  </div>
+  <div class="suppl-block">
+    <div class="suppl-header" onclick="toggleSuppl(this.parentElement)"><span class="badge b-coral">CNS 管理</span><span class="suppl-title">皮質醇管理 ＆ 到家緩衝協議</span><span class="suppl-chevron">▾</span></div>
+    <div class="suppl-body">
+      <div class="suppl-row"><span class="suppl-key">根本原因</span><span class="suppl-val">通勤高警覺（騎車 30–45 分鐘）＋ 工作 ＋ 轉職焦慮 ＋ AI 學習，到家皮質醇持續偏高。</span></div>
+      <div class="suppl-row"><span class="suppl-key">問題</span><span class="suppl-val">到家後滑手機看 AI 資料，沒有真正關機。高皮質醇 → 肌肉分解加速、脂肪儲存傾向增加。</span></div>
+      <div class="suppl-row"><span class="suppl-key">緩衝協議</span><span class="suppl-val">到家後第一件事：手機翻面朝下 20 分鐘。讓皮質醇開始下降後再吃飯訓練。</span></div>
+      <div class="suppl-row"><span class="suppl-key">替代活動</span><span class="suppl-val">慢走 15 分鐘、洗澡、拉伸。任何不涉及螢幕的活動都有助於皮質醇下降。</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TAB 5: 全年規劃 ══ -->
+<div id="tab-plan" class="tab-panel">
+
+  <!-- ── 原有內容（不動）── -->
+  <div class="sec-label">全年 Diet Break 循環（2025）</div>
+  <div style="font-size:13px;color:var(--txt2);margin-bottom:16px;line-height:1.6;">以 8–12 週為一個執行循環，中間插入 1 週 Diet Break（回到 TDEE 維持）。7 月中婚禮自然落在第一個 Diet Break，壓力最小化。</div>
+  <div class="card">
+    <div class="cycle-item"><div class="cycle-dot-col"><div class="c-dot" style="background:#534AB7;"></div><div class="c-line"></div></div><div class="cycle-body"><div class="cycle-title">循環 1 — 啟動＆校準</div><div class="cycle-desc">建立飲食記錄習慣，找出漏算來源。缺口 300–400 kcal，維護模式課表 2x/週。</div><div class="cycle-meta"><span class="badge b-purple">6 月初 → 7 月中（約 6 週）</span><span class="badge b-gray">目標 −2 to −3 kg</span></div></div></div>
+    <div class="cycle-item"><div class="cycle-dot-col"><div class="c-dot" style="background:#854F0B;"></div><div class="c-line"></div></div><div class="cycle-body"><div class="cycle-title">⭐ Diet Break 1 — 婚禮週</div><div class="cycle-desc">回到 TDEE 維持，婚禮期間自然落在休息週。代謝重置＋心理放鬆。</div><div class="cycle-meta"><span class="badge b-amber">7 月中（1 週）</span></div></div></div>
+    <div class="cycle-item"><div class="cycle-dot-col"><div class="c-dot" style="background:#0F6E56;"></div><div class="c-line"></div></div><div class="cycle-body"><div class="cycle-title">循環 2 — 穩定執行</div><div class="cycle-desc">每月穩定 1.5–2 kg。若轉職面試密集，課表可降至 1x/週保守版。</div><div class="cycle-meta"><span class="badge b-teal">7 月底 → 10 月初（約 10 週）</span><span class="badge b-gray">107 → 102 kg</span></div></div></div>
+    <div class="cycle-item"><div class="cycle-dot-col"><div class="c-dot" style="background:#854F0B;"></div><div class="c-line"></div></div><div class="cycle-body"><div class="cycle-title">Diet Break 2</div><div class="cycle-desc">代謝重置＋心理放鬆。</div><div class="cycle-meta"><span class="badge b-amber">10 月初（1 週）</span></div></div></div>
+    <div class="cycle-item"><div class="cycle-dot-col"><div class="c-dot" style="background:#534AB7;"></div><div class="c-line"></div></div><div class="cycle-body"><div class="cycle-title">循環 3 — 深入執行</div><div class="cycle-desc">若新工作已確定，CNS 負荷降低，考慮恢復 3x/週 PPL。</div><div class="cycle-meta"><span class="badge b-purple">10 月中 → 12 月底（約 10 週）</span><span class="badge b-gray">102 → 97 kg</span></div></div></div>
+    <div class="cycle-item"><div class="cycle-dot-col"><div class="c-dot" style="background:#185FA5;"></div></div><div class="cycle-body"><div class="cycle-title">年末檢視</div><div class="cycle-desc">預估年底體重 95–100 kg，全年減少 10–15 kg。評估進入增肌期時機。</div><div class="cycle-meta"><span class="badge b-blue">12 月底</span><span class="badge b-gray">評估增肌期</span></div></div></div>
+  </div>
+
+  <div class="sec-label">體重軌跡預估圖（原始）</div>
+  <div class="chart-wrap">
+    <div class="chart-label">ESTIMATED WEIGHT TRAJECTORY — 2025 (BASELINE)</div>
+    <div style="position:relative;width:100%;height:240px;">
+      <canvas id="weightChart" role="img" aria-label="全年體重下降基線軌跡">基線軌跡</canvas>
+    </div>
+    <div class="legend-row">
+      <div class="legend-item"><div class="legend-dot" style="background:#534AB7;"></div>預估體重（kg）</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#854F0B;border-radius:50%;"></div>Diet Break</div>
+    </div>
+  </div>
+  <div class="warn-box">⚠ 預估為 400 kcal 缺口、不含 Diet Break 週的理想狀況。單週體重波動 ±1–2 kg 屬正常，看 2 週趨勢。</div>
+
+  <!-- ── 分隔線 ── -->
+  <hr class="goal-sep">
+
+  <!-- ══ 目標設定區 ══ -->
+  <div class="sec-label">目標設定器</div>
+
+  <!-- STEP 1 -->
+  <div class="goal-step-card">
+    <div class="gstep-header">
+      <span class="gstep-num">1</span>
+      <div class="gstep-title-col">
+        <div class="gstep-title">我目前的狀況是？</div>
+        <div class="gstep-sub">先告訴系統你的起點</div>
+      </div>
+    </div>
+    <div class="gstep-body">
+      <div class="goal-form-grid">
+        <div class="form-group">
+          <label class="form-label">目前體重（kg）</label>
+          <input class="form-input" type="number" id="g-cur-weight" value="110" min="40" max="300" step="0.1" oninput="onGoalInput()">
+          <span class="form-hint" id="g-curw-hint"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">從什麼時候開始</label>
+          <input class="form-input" type="date" id="g-start-date" oninput="onGoalInput()">
+          <span class="form-hint">不填則從今天算起</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="goal-step-card">
+    <div class="gstep-header">
+      <span class="gstep-num">2</span>
+      <div class="gstep-title-col">
+        <div class="gstep-title">我想減到幾公斤？</div>
+        <div class="gstep-sub">設定目標體重，可搭配截止日期讓系統評估是否可行</div>
+      </div>
+    </div>
+    <div class="gstep-body">
+      <div class="goal-form-grid">
+        <div class="form-group">
+          <label class="form-label">目標體重（kg）</label>
+          <input class="form-input" type="number" id="g-goal-weight" value="90" min="30" max="300" step="0.1" oninput="onGoalInput()">
+          <span class="form-hint" id="g-goalw-hint"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">希望什麼時候達到？（選填）</label>
+          <input class="form-input" type="date" id="g-goal-date" oninput="onGoalInput()">
+          <span class="form-hint">填入後系統會判斷時間是否夠用</span>
+        </div>
+      </div>
+      <div id="goal-weight-feedback" style="margin-top:4px;font-size:13px;line-height:1.7;"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: 進階設定（收合） -->
+  <div class="goal-step-card">
+    <div class="gstep-header" style="cursor:pointer;" onclick="toggleAdvanced()">
+      <span class="gstep-num" style="background:var(--gray-bg);color:var(--gray-txt);">3</span>
+      <div class="gstep-title-col">
+        <div class="gstep-title">進階設定 <span style="font-size:11px;font-weight:400;color:var(--txt3);">（選填）</span></div>
+        <div class="gstep-sub">調整每日缺口速度、設定代謝休息週</div>
+      </div>
+      <span id="adv-chevron" style="font-size:12px;color:var(--txt3);margin-left:auto;transition:transform .2s;">▾</span>
+    </div>
+    <div id="adv-body" style="display:none;padding:14px 18px;border-top:1px solid var(--border);">
+      <div class="goal-form-grid">
+        <div class="form-group">
+          <label class="form-label">每日熱量缺口（kcal）</label>
+          <input class="form-input" type="number" id="g-deficit" value="400" min="100" max="900" step="50" oninput="onGoalInput()">
+          <span class="form-hint" id="g-deficit-hint"></span>
+          <span class="form-hint" style="margin-top:2px;color:var(--txt3);">建議 300–500 kcal。這個數字越大，減得越快，但也越容易掉肌肉、觸發身體節能。</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">代謝休息週</label>
+          <select class="form-input" id="g-db-freq" onchange="onGoalInput()">
+            <option value="0">不安排</option>
+            <option value="8">每 8 週一次</option>
+            <option value="10" selected>每 10 週一次（建議）</option>
+            <option value="12">每 12 週一次</option>
+          </select>
+          <span class="form-hint" id="g-db-hint" style="line-height:1.6;margin-top:3px;"></span>
+        </div>
+      </div>
+      <div id="db-explain-box" style="display:none;background:var(--amber-bg);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--amber-txt);line-height:1.75;margin-top:8px;">
+        <strong>什麼是代謝休息週？</strong><br>
+        長期吃少，身體會慢慢「降低消耗」來對抗你的缺口——這叫代謝適應，是身體的自我保護機制。代謝休息週就是每隔一段時間，故意回到「剛好維持體重」的熱量吃一週，讓身體以為飢荒結束了，把代謝速率重設回來。<br><br>
+        <strong>怎麼執行：</strong>去「計算器」頁查你的 TDEE（每日總消耗），那一週就吃那個數字——不刻意少吃，也不刻意多吃，照樣訓練。<br><br>
+        <strong>會發生什麼：</strong>體重當週可能微升 0.5–1 kg（這是水分，不是脂肪）。Leptin（飽足荷爾蒙）回升、心理壓力解除，接下來的執行效率更高。整體算下來，有安排休息週通常比沒安排減得更多。
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: 重要事件 -->
+  <div class="goal-step-card">
+    <div class="gstep-header">
+      <span class="gstep-num" style="background:var(--teal-bg);color:var(--teal-txt);">4</span>
+      <div class="gstep-title-col">
+        <div class="gstep-title">有需要特別準備的日子嗎？</div>
+        <div class="gstep-sub">婚禮、旅遊、聚會、面試⋯系統幫你算屆時大概幾公斤</div>
+      </div>
+    </div>
+    <div class="gstep-body">
+      <div class="goal-form-grid">
+        <div class="form-group">
+          <label class="form-label">事件名稱</label>
+          <input class="form-input" type="text" id="ms-name" placeholder="例：婚禮、出國旅遊、公司尾牙">
+        </div>
+        <div class="form-group">
+          <label class="form-label">事件日期</label>
+          <input class="form-input" type="date" id="ms-date" oninput="validateEventInput()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">希望當天體重（選填，kg）</label>
+          <input class="form-input" type="number" id="ms-weight" min="30" max="300" step="0.1" placeholder="不填則只標記在圖上" oninput="validateEventInput()">
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-end;">
+          <button class="btn-primary" onclick="addMilestone()" style="width:100%;">＋ 加入事件</button>
+        </div>
+      </div>
+      <div id="ms-validation" style="font-size:12px;margin-top:6px;line-height:1.6;"></div>
+    </div>
+  </div>
+
+  <!-- 事件清單 -->
+  <div id="milestone-list-wrap" style="display:none;margin-bottom:4px;">
+    <div class="sec-label">已加入的事件</div>
+    <div class="milestone-list" id="milestone-list"></div>
+  </div>
+
+  <!-- 圖表 -->
+  <div class="sec-label">體重軌跡預測圖</div>
+  <div class="chart-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+      <span class="chart-label" id="goal-chart-label" style="margin:0;">GOAL TRAJECTORY</span>
+      <div style="display:flex;gap:4px;">
+        <button class="chart-view-btn" id="cvb-week"  onclick="setChartView('week',this)">週圖</button>
+        <button class="chart-view-btn active" id="cvb-month" onclick="setChartView('month',this)">月圖</button>
+        <button class="chart-view-btn" id="cvb-year"  onclick="setChartView('year',this)">年圖</button>
+      </div>
+    </div>
+    <div style="position:relative;height:260px;width:100%;">
+      <canvas id="goalChart" role="img" aria-label="目標體重軌跡圖" style="width:100%;height:260px;">目標軌跡</canvas>
+    </div>
+    <!-- range selector — shown for week/year view -->
+    <div id="chart-pan-wrap" style="display:none;padding:8px 0 2px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span style="font-size:10px;color:var(--txt3);width:16px;flex-shrink:0;">起</span>
+        <input type="range" id="chart-range-start" min="0" max="100" value="0" step="1"
+               style="flex:1;accent-color:#534AB7;" oninput="onChartRangeChange()">
+        <span id="pan-label-start" style="font-size:10px;color:var(--txt3);width:38px;text-align:right;flex-shrink:0;"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:10px;color:var(--txt3);width:16px;flex-shrink:0;">迄</span>
+        <input type="range" id="chart-range-end" min="0" max="100" value="100" step="1"
+               style="flex:1;accent-color:#534AB7;" oninput="onChartRangeChange()">
+        <span id="pan-label-end" style="font-size:10px;color:var(--txt3);width:38px;text-align:right;flex-shrink:0;"></span>
+      </div>
+      <div style="text-align:center;font-size:10px;color:var(--txt3);margin-top:4px;">拖移選擇要顯示的時間區間</div>
+    </div>
+    <div class="legend-row" style="margin-top:8px;">
+      <div class="legend-item"><div class="legend-dot" style="background:#534AB7;"></div>預測軌跡</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75;border-radius:50%;"></div>重要事件</div>
+      <div class="legend-item" style="color:var(--txt3);font-size:11px;">紅虛線 = 目標日期 ／ 目標體重</div>
+    </div>
+  </div>
+
+  <!-- 摘要 -->
+  <div id="goal-summary" style="display:none;">
+    <div class="sec-label">規劃摘要 ＆ 建議</div>
+    <div class="card-grid" id="goal-metrics" style="margin-bottom:12px;"></div>
+    <div id="goal-advice"></div>
+  </div>
+</div>
+<div id="tab-stall" class="tab-panel">
+  <div class="sec-label">停滯檢查清單（2 週體重無變化時使用）</div>
+  <div style="font-size:13px;color:var(--txt2);margin-bottom:16px;line-height:1.6;">依序排查。體重停滯 90% 的情況是「漏算」而非「代謝適應」。先查這個清單，再考慮調整缺口。</div>
+  <div id="stall-checklist"></div>
+  <div style="margin-top:16px;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:13px;color:var(--txt2);">已排查</span>
+    <div style="flex:1;background:var(--bg3);border-radius:99px;height:6px;"><div id="stall-progress" style="height:6px;border-radius:99px;background:#534AB7;transition:width .3s;width:0%;"></div></div>
+    <span id="stall-count" style="font-size:13px;font-family:'IBM Plex Mono',monospace;color:var(--txt3);">0 / 0</span>
+  </div>
+  <div class="sec-label" style="margin-top:24px;">真正需要調整缺口的條件</div>
+  <div class="card">
+    <div style="font-size:13px;color:var(--txt2);line-height:1.8;">以下<strong>三個條件全部成立</strong>才考慮擴大缺口 100–200 kcal：<br>1. 已排查所有常見漏算來源，確認飲食記錄完整。<br>2. 連續 3 週（不只 2 週）體重趨勢無下降。<br>3. 每週蛋白質達標（≥ 1.8 g/kg），訓練維持正常。</div>
+  </div>
+  <div class="sec-label">常見漏算來源速查</div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="rule-table">
+      <thead><tr><th>來源</th><th>典型低估量</th><th>對策</th></tr></thead>
+      <tbody>
+        <tr><td>炒菜用油</td><td style="font-family:'IBM Plex Mono',monospace;color:#993C1D;">+100–200 kcal/餐</td><td style="color:var(--txt2);">每道菜預設加 1 湯匙油（約 120 kcal）計入</td></tr>
+        <tr><td>醬料（沙茶/醬油膏）</td><td style="font-family:'IBM Plex Mono',monospace;color:#993C1D;">+50–150 kcal</td><td style="color:var(--txt2);">用量秤記，不要目測</td></tr>
+        <tr><td>手搖飲料</td><td style="font-family:'IBM Plex Mono',monospace;color:#993C1D;">+200–500 kcal</td><td style="color:var(--txt2);">改無糖、不喝就不算</td></tr>
+        <tr><td>白飯份量</td><td style="font-family:'IBM Plex Mono',monospace;color:#993C1D;">+50–100 kcal</td><td style="color:var(--txt2);">用電子秤量，1 碗熟飯 ≈ 200–250g</td></tr>
+        <tr><td>外食夾太多菜</td><td style="font-family:'IBM Plex Mono',monospace;color:#993C1D;">+100–300 kcal</td><td style="color:var(--txt2);">拍照記錄份量</td></tr>
+        <tr><td>零食不記錄</td><td style="font-family:'IBM Plex Mono',monospace;color:#993C1D;">+100–400 kcal</td><td style="color:var(--txt2);">吃之前就先記，不是吃完才記</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /#shell -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+<script>
+// ═══════════════════════════════════════════
+//  DATA DEFAULTS
+// ═══════════════════════════════════════════
+const PROTEIN_SOURCES = [
+  {food:'雞胸肉',amount:'100 g',g:31},{food:'雞蛋',amount:'1 顆',g:7},
+  {food:'乳清蛋白',amount:'1 勺（30g）',g:25},{food:'希臘優格',amount:'170 g',g:17},
+  {food:'豆腐',amount:'100 g',g:8},{food:'鮪魚罐',amount:'170 g',g:40},
+  {food:'豬里肌',amount:'100 g',g:22},{food:'毛豆',amount:'100 g',g:11}
+];
+
+const STALL_ITEMS = [
+  {id:'s1',txt:'FatSecret 是否每天記錄，沒有跳過任何一餐？'},
+  {id:'s2',txt:'炒菜用油是否有計入？（每道菜預設 1 湯匙）'},
+  {id:'s3',txt:'醬料（沙茶醬、醬油膏、美乃滋）是否有量秤記錄？'},
+  {id:'s4',txt:'飲料是否全部記錄？包含手搖、牛奶、豆漿、果汁？'},
+  {id:'s5',txt:'白飯份量是否用電子秤量？還是目測估算？'},
+  {id:'s6',txt:'外食是否有估算夾菜份量？'},
+  {id:'s7',txt:'零食（餅乾、堅果、水果）是否在吃之前就記錄？'},
+  {id:'s8',txt:'近兩週睡眠是否充足（7h+）？睡眠不足會導致水分滯留。'},
+  {id:'s9',txt:'體重是否在同一個時間點量測？（早晨空腹、如廁後）'},
+  {id:'s10',txt:'是否剛開始補充肌酸？（可能有 1–2 kg 水分增加，正常現象）'}
+];
+
+// DEFAULT SPLIT PRESETS
+const SPLIT_PRESETS = {
+  2: { name:'2 分化', cycleDays:4, info:'2 分化：上半身 ＋ 下半身，每 4 天一循環。',
+    days:[
+      {name:'上半身',type:'strength',moves:[{n:'槓鈴臥推',d:'3 × 6–8'},{n:'高位下拉',d:'3 × 10–12'},{n:'器械夾胸',d:'2 × 10–12'},{n:'Cable 划船',d:'2 × 10'}]},
+      {name:'下半身',type:'strength',moves:[{n:'倒蹬機',d:'3 × 10'},{n:'RDL',d:'3 × 8–10'},{n:'腿彎舉',d:'2 × 12'},{n:'臀推',d:'3 × 12'}]},
+      {name:'休息日',type:'rest',moves:[]},
+      {name:'休息日',type:'rest',moves:[]}
+    ]
+  },
+  3: { name:'3 分化（PPL）', cycleDays:6, info:'3 分化（PPL）× 2 = 1 循環，共 6 天。Push→Pull→Legs→Push→Pull→Legs。',
+    days:[
+      {name:'Push（胸 / 肩 / 三頭）',type:'strength',moves:[{n:'槓鈴臥推',d:'3 × 6–8'},{n:'器械夾胸',d:'2 × 10–12'},{n:'肩推',d:'3 × 10'},{n:'三頭繩索下壓',d:'2 × 12'}]},
+      {name:'Pull（背 / 二頭）',type:'strength',moves:[{n:'高位下拉',d:'3 × 10–12'},{n:'Cable 划船',d:'3 × 10–12'},{n:'面拉',d:'2 × 15'},{n:'二頭彎舉',d:'2 × 12'}]},
+      {name:'Legs（腿 / 臀）',type:'strength',moves:[{n:'倒蹬機',d:'3 × 10'},{n:'RDL',d:'3 × 8–10'},{n:'臀推',d:'3 × 12'},{n:'腿彎舉',d:'2 × 12'}]},
+      {name:'Push（胸 / 肩 / 三頭）',type:'strength',moves:[{n:'槓鈴臥推',d:'3 × 6–8'},{n:'器械夾胸',d:'2 × 10–12'},{n:'肩推',d:'3 × 10'},{n:'三頭繩索下壓',d:'2 × 12'}]},
+      {name:'Pull（背 / 二頭）',type:'strength',moves:[{n:'高位下拉',d:'3 × 10–12'},{n:'Cable 划船',d:'3 × 10–12'},{n:'面拉',d:'2 × 15'},{n:'二頭彎舉',d:'2 × 12'}]},
+      {name:'Legs（腿 / 臀）',type:'strength',moves:[{n:'倒蹬機',d:'3 × 10'},{n:'RDL',d:'3 × 8–10'},{n:'臀推',d:'3 × 12'},{n:'腿彎舉',d:'2 × 12'}]}
+    ]
+  },
+  4: { name:'4 分化', cycleDays:5, info:'4 分化：胸 / 背 / 肩 / 腿，第 5 天休息。',
+    days:[
+      {name:'胸',type:'strength',moves:[{n:'槓鈴臥推',d:'4 × 6–8'},{n:'上斜啞鈴推',d:'3 × 10'},{n:'器械夾胸',d:'3 × 12'},{n:'三頭繩索下壓',d:'2 × 12'}]},
+      {name:'背',type:'strength',moves:[{n:'引體向上',d:'3 × max'},{n:'Cable 划船',d:'3 × 10'},{n:'高位下拉',d:'3 × 12'},{n:'面拉',d:'2 × 15'}]},
+      {name:'肩',type:'strength',moves:[{n:'槓鈴肩推',d:'3 × 10'},{n:'側平舉',d:'3 × 15'},{n:'後三角飛鳥',d:'3 × 15'},{n:'二頭彎舉',d:'2 × 12'}]},
+      {name:'腿',type:'strength',moves:[{n:'深蹲',d:'4 × 6–8'},{n:'RDL',d:'3 × 8–10'},{n:'臀推',d:'3 × 12'},{n:'腿彎舉',d:'2 × 12'}]},
+      {name:'休息日',type:'rest',moves:[]}
+    ]
+  },
+  5: { name:'5 分化', cycleDays:6, info:'5 分化：胸 / 背 / 肩 / 腿 / 手臂，第 6 天休息。',
+    days:[
+      {name:'胸',type:'strength',moves:[{n:'槓鈴臥推',d:'4 × 6–8'},{n:'上斜啞鈴推',d:'3 × 10'},{n:'器械夾胸',d:'3 × 12'}]},
+      {name:'背',type:'strength',moves:[{n:'引體向上',d:'3 × max'},{n:'Cable 划船',d:'4 × 10'},{n:'高位下拉',d:'3 × 12'}]},
+      {name:'肩',type:'strength',moves:[{n:'槓鈴肩推',d:'4 × 10'},{n:'側平舉',d:'3 × 15'},{n:'後三角飛鳥',d:'3 × 15'}]},
+      {name:'腿',type:'strength',moves:[{n:'深蹲',d:'4 × 6–8'},{n:'RDL',d:'3 × 8–10'},{n:'臀推',d:'3 × 12'},{n:'腿彎舉',d:'2 × 12'}]},
+      {name:'手臂',type:'strength',moves:[{n:'二頭槓鈴彎舉',d:'3 × 10'},{n:'鎚式彎舉',d:'2 × 12'},{n:'三頭繩索下壓',d:'3 × 12'},{n:'過頭三頭伸展',d:'2 × 12'}]},
+      {name:'休息日',type:'rest',moves:[]}
+    ]
+  }
+};
+
+const DEFAULT_PR = [
+  {name:'槓鈴臥推',val:'60 kg × 5'},
+  {name:'器械夾胸',val:'59 kg × 4'},
+  {name:'高位下拉',val:'52 kg × 12'},
+  {name:'Cable 划船',val:'52 kg × 10'},
+  {name:'倒蹬機',val:'130 kg × 10'}
+];
+
+// ═══════════════════════════════════════════
+//  STATE (localStorage backed)
+// ═══════════════════════════════════════════
+function ls(k,def){ try{ var v=localStorage.getItem(k); return v!==null?JSON.parse(v):def; }catch(e){ return def; } }
+function lsSave(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+
+var stallDone = ls('stallDone',{});
+var cycleData = ls('cycleData', SPLIT_PRESETS[3].days.map(function(d){ return JSON.parse(JSON.stringify(d)); }));
+var cycleDays = ls('cycleDays', 6);
+var prData    = ls('prData', DEFAULT_PR.map(function(p){ return JSON.parse(JSON.stringify(p)); }));
+var milestones = ls('milestones', [
+  {id:'m0', type:'event', date:'2025-07-15', name:'婚禮', weight:null}
+]);
+var goalBase = ls('goalBase', {curWeight:110, deficit:400, startDate:'', dbFreq:10});
+
+// ═══════════════════════════════════════════
+//  TAB
+// ═══════════════════════════════════════════
+function showTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='plan'){ renderBaselineChart(); renderGoalChart(); renderMilestones(); renderGoalSummary(); }
+  if(id==='calc'){ buildProteinGrid(); }
+  if(id==='training'){ renderCycleEditor(); renderPRTable(); }
+}
+function toggleSuppl(el){ el.classList.toggle('open'); }
+
+// ═══════════════════════════════════════════
+//  CALC TAB
+// ═══════════════════════════════════════════
+function recalc(){
+  var w=+document.getElementById('sl-weight').value;
+  var h=+document.getElementById('sl-height').value;
+  var a=+document.getElementById('sl-age').value;
+  var act=+document.getElementById('sl-act').value;
+  var deficit=+document.getElementById('sl-deficit').value;
+  document.getElementById('v-weight').textContent=w+' kg';
+  document.getElementById('v-height').textContent=h+' cm';
+  document.getElementById('v-age').textContent=a+' 歲';
+  document.getElementById('v-act').textContent='× '+act;
+  document.getElementById('v-deficit').textContent=deficit+' kcal';
+  var bmr=Math.round(10*w+6.25*h-5*a+5);
+  var tdee=Math.round(bmr*act);
+  var target=tdee-deficit;
+  var protein=Math.round(w*1.8);
+  var monthly=(deficit*30/7700).toFixed(1);
+  var weeks=w>90?Math.round((w-90)*7700/(deficit*7)):'已達標';
+  document.getElementById('r-bmr').textContent=bmr.toLocaleString();
+  document.getElementById('r-tdee').textContent=tdee.toLocaleString();
+  document.getElementById('r-target').textContent=target.toLocaleString();
+  document.getElementById('r-protein').textContent=protein;
+  document.getElementById('r-monthly').textContent=monthly;
+  document.getElementById('r-weeks').textContent=typeof weeks==='number'?weeks+' 週':weeks;
+  document.getElementById('warn-deficit').style.display=deficit>700?'block':'none';
+  buildProteinGrid(w);
+}
+function buildProteinGrid(w){
+  w=w||+document.getElementById('sl-weight').value;
+  var html='';
+  PROTEIN_SOURCES.forEach(function(s){
+    html+='<div class="protein-card"><div class="food">'+s.food+'</div><div class="amount">'+s.amount+'</div><div class="g">'+s.g+' g</div></div>';
+  });
+  document.getElementById('protein-grid').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════
+//  TRAINING TAB — CYCLE EDITOR
+// ═══════════════════════════════════════════
+var currentSplit = ls('currentSplit', 3);
+
+function setSplit(s){
+  document.querySelectorAll('.split-btn').forEach(function(b){ b.classList.remove('active'); });
+  event.currentTarget.classList.add('active');
+  if(s==='custom'){
+    currentSplit='custom';
+  } else {
+    currentSplit=s;
+    var preset = SPLIT_PRESETS[s];
+    cycleDays = preset.cycleDays;
+    cycleData = preset.days.map(function(d){ return JSON.parse(JSON.stringify(d)); });
+    document.getElementById('cycle-days-input').value = cycleDays;
+    document.getElementById('training-info-box').textContent = preset.info;
+    lsSave('currentSplit', currentSplit);
+    saveCycle();
+  }
+  renderCycleEditor();
+}
+
+function onCycleDaysChange(){
+  var val = parseInt(document.getElementById('cycle-days-input').value)||6;
+  val = Math.max(1,Math.min(14,val));
+  if(val > cycleData.length){
+    while(cycleData.length < val){
+      cycleData.push({name:'Day '+cycleData.length,type:'strength',moves:[]});
+    }
+  } else {
+    cycleData = cycleData.slice(0,val);
+  }
+  cycleDays = val;
+  renderCycleEditor();
+}
+
+function renderCycleEditor(){
+  var el = document.getElementById('cycle-editor');
+  var html='';
+  for(var i=0;i<cycleData.length;i++){
+    var day=cycleData[i];
+    var badgeCls = day.type==='rest'?'b-gray':day.type==='cardio'?'b-teal':'b-purple';
+    var typeLabel = day.type==='rest'?'休息':day.type==='cardio'?'有氧':'力量';
+    html += '<div class="cycle-day-card" id="cdc-'+i+'">';
+    html += '<div class="cdc-header" onclick="toggleCDC('+i+')">';
+    html += '<span class="cdc-day-num">Day '+(i+1)+'</span>';
+    html += '<input class="cdc-name-input" value="'+esc(day.name)+'" onclick="event.stopPropagation()" oninput="updateDayName('+i+',this.value)" placeholder="訓練日名稱">';
+    html += '<select class="cdc-type-select" onclick="event.stopPropagation()" onchange="updateDayType('+i+',this.value)">';
+    html += '<option value="strength"'+(day.type==='strength'?' selected':'')+'>力量</option>';
+    html += '<option value="cardio"'+(day.type==='cardio'?' selected':'')+'>有氧</option>';
+    html += '<option value="rest"'+(day.type==='rest'?' selected':'')+'>休息</option>';
+    html += '</select>';
+    html += '<span class="badge '+badgeCls+'" style="flex-shrink:0;">'+typeLabel+'</span>';
+    html += '<span class="cdc-chevron">▾</span>';
+    html += '</div>';
+    html += '<div class="cdc-body">';
+    if(day.type==='rest'){
+      html += '<div style="font-size:13px;color:var(--txt3);padding:8px 0;">休息日 — 可散步、伸展、有氧恢復。</div>';
+    } else {
+      html += '<div class="moves-list" id="moves-'+i+'">';
+      for(var j=0;j<day.moves.length;j++){
+        html += renderMoveItem(i,j,day.moves[j]);
+      }
+      html += '</div>';
+      html += '<button class="add-move-btn" onclick="addMove('+i+')">＋ 新增動作</button>';
+    }
+    html += '</div></div>';
+  }
+  el.innerHTML = html;
+  updateCycleMetaBox();
+}
+
+function renderMoveItem(dayIdx,moveIdx,move){
+  return '<div class="move-item" id="mi-'+dayIdx+'-'+moveIdx+'">'
+    +'<span class="move-idx">'+(moveIdx+1)+'.</span>'
+    +'<div class="move-fields">'
+    +'<input class="move-name-inp" value="'+esc(move.n)+'" placeholder="動作名稱" oninput="updateMove('+dayIdx+','+moveIdx+',\'n\',this.value)">'
+    +'<input class="move-detail-inp" value="'+esc(move.d||'')+'" placeholder="組數 × 次數 / 說明" oninput="updateMove('+dayIdx+','+moveIdx+',\'d\',this.value)">'
+    +'</div>'
+    +'<button class="move-del" onclick="deleteMove('+dayIdx+','+moveIdx+')">×</button>'
+    +'</div>';
+}
+
+function toggleCDC(i){
+  var card=document.getElementById('cdc-'+i);
+  card.classList.toggle('open');
+}
+function updateDayName(i,v){ cycleData[i].name=v; }
+function updateDayType(i,v){
+  cycleData[i].type=v;
+  if(v==='rest') cycleData[i].moves=[];
+  renderCycleEditor();
+}
+function updateMove(dayIdx,moveIdx,field,val){ cycleData[dayIdx].moves[moveIdx][field]=val; }
+function addMove(dayIdx){
+  cycleData[dayIdx].moves.push({n:'',d:''});
+  var list=document.getElementById('moves-'+dayIdx);
+  var j=cycleData[dayIdx].moves.length-1;
+  var temp=document.createElement('div');
+  temp.innerHTML=renderMoveItem(dayIdx,j,cycleData[dayIdx].moves[j]);
+  list.appendChild(temp.firstChild);
+  updateCycleMetaBox();
+}
+function deleteMove(dayIdx,moveIdx){
+  cycleData[dayIdx].moves.splice(moveIdx,1);
+  renderCycleEditor();
+}
+function updateCycleMetaBox(){
+  var total=0, restDays=0;
+  cycleData.forEach(function(d){ if(d.type==='rest') restDays++; else total++; });
+  document.getElementById('cycle-meta-box').innerHTML=
+    '循環長度 <strong>'+cycleData.length+' 天</strong>，訓練日 <strong>'+total+' 天</strong>，休息日 <strong>'+restDays+' 天</strong>。'
+    +'每個循環結束後直接開始下一輪，不受日曆週影響。';
+}
+function saveCycle(){
+  lsSave('cycleData',cycleData);
+  lsSave('cycleDays',cycleDays);
+  lsSave('currentSplit',currentSplit);
+  var box = document.getElementById('cycle-meta-box');
+  var orig = box.innerHTML;
+  box.innerHTML = '<span style="color:#0F6E56;font-weight:500;">✓ 已儲存</span> — '+orig;
+  setTimeout(function(){ box.innerHTML=orig; }, 1800);
+}
+function resetCycle(){
+  if(!confirm('確定要重置為 3 分化 PPL 預設嗎？')) return;
+  currentSplit=3;
+  cycleData=SPLIT_PRESETS[3].days.map(function(d){ return JSON.parse(JSON.stringify(d)); });
+  cycleDays=6;
+  document.getElementById('cycle-days-input').value=6;
+  document.querySelectorAll('.split-btn').forEach(function(b,i){ b.classList.toggle('active',i===1); });
+  document.getElementById('training-info-box').textContent=SPLIT_PRESETS[3].info;
+  saveCycle();
+  renderCycleEditor();
+}
+function clearAllMoves(){
+  if(!confirm('確定要清空所有動作嗎？（天數和名稱保留）')) return;
+  cycleData.forEach(function(d){ d.moves=[]; });
+  renderCycleEditor();
+}
+function esc(s){ return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── PR TABLE ──
+function renderPRTable(){
+  var pct = parseInt(document.getElementById('pr-pct').value)||80;
+  document.getElementById('pr-pct-val').textContent=pct+'%';
+  document.getElementById('pr-th-maint').textContent='維護重量（'+pct+'%）';
+  var html='';
+  prData.forEach(function(r,i){
+    var maintVal='—';
+    var m=r.val.match(/(\d+(?:\.\d+)?)\s*kg/i);
+    if(m){ var raw=parseFloat(m[1]); maintVal=Math.round(raw*pct/10)*10/10+' kg'; }
+    html+='<tr>'
+      +'<td><input style="border:none;background:transparent;font-size:13px;width:100%;font-family:\'Noto Sans TC\',sans-serif;color:var(--txt);outline:none;" value="'+esc(r.name)+'" oninput="prData['+i+'].name=this.value" placeholder="動作名稱"></td>'
+      +'<td><input class="pr-inp" value="'+esc(r.val)+'" oninput="prData['+i+'].val=this.value;renderPRTable()" placeholder="60 kg × 5"></td>'
+      +'<td style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;color:#534AB7;">'+maintVal+'<button onclick="deletePR('+i+')" style="margin-left:8px;font-size:12px;color:var(--txt3);background:none;border:none;cursor:pointer;" title="刪除">×</button></td>'
+      +'</tr>';
+  });
+  document.getElementById('pr-tbody').innerHTML=html;
+  lsSave('prData',prData);
+}
+function addPRRow(){ prData.push({name:'',val:''}); renderPRTable(); }
+function deletePR(i){ prData.splice(i,1); renderPRTable(); }
+
+// ═══════════════════════════════════════════
+//  PLAN TAB — BASELINE CHART
+// ═══════════════════════════════════════════
+var baselineChartInst=null;
+function renderBaselineChart(){
+  if(baselineChartInst) return;
+  baselineChartInst=new Chart(document.getElementById('weightChart'),{
+    type:'line',
+    data:{
+      labels:['6月初','6月底','7月初','DB1\n7月中','7月底','8月','9月','10月初','DB2\n10月','10月底','11月','12月'],
+      datasets:[
+        {label:'預估體重(kg)',data:[110,108.5,107,108,107,105.5,104,102.5,103.5,102,100.5,99],borderColor:'#534AB7',backgroundColor:'rgba(83,74,183,0.07)',pointBackgroundColor:'#534AB7',pointRadius:4,tension:0.35,fill:true},
+        {label:'Diet Break',data:[null,null,null,108,null,null,null,null,103.5,null,null,null],borderColor:'#854F0B',backgroundColor:'#854F0B',pointStyle:'triangle',pointRadius:8,showLine:false}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+      y:{min:96,max:112,ticks:{font:{size:11},callback:function(v){return v+' kg';}},grid:{color:'rgba(128,128,128,0.1)'}},
+      x:{ticks:{font:{size:11},autoSkip:false,maxRotation:45},grid:{display:false}}
+    }}
+  });
+}
+
+// ═══════════════════════════════════════════
+//  PLAN TAB — GOAL SETTINGS (redesigned)
+// ═══════════════════════════════════════════
+var goalChartInst=null;
+var goalChartView='month';
+var advOpen=false;
+
+(function(){
+  var today=new Date().toISOString().slice(0,10);
+  document.getElementById('g-start-date').value=goalBase.startDate||today;
+  document.getElementById('g-cur-weight').value=goalBase.curWeight||110;
+  document.getElementById('g-deficit').value=goalBase.deficit||400;
+  document.getElementById('g-db-freq').value=String(goalBase.dbFreq!=null?goalBase.dbFreq:10);
+  if(goalBase.goalWeight) document.getElementById('g-goal-weight').value=goalBase.goalWeight;
+  if(goalBase.goalDate)   document.getElementById('g-goal-date').value=goalBase.goalDate;
+})();
+
+function toggleAdvanced(){
+  advOpen=!advOpen;
+  document.getElementById('adv-body').style.display=advOpen?'block':'none';
+  document.getElementById('adv-chevron').style.transform=advOpen?'rotate(180deg)':'';
+  updateDBHint();
+}
+
+function updateDBHint(){
+  var freq=parseInt(document.getElementById('g-db-freq').value)||0;
+  var hint=document.getElementById('g-db-hint');
+  var box=document.getElementById('db-explain-box');
+  if(freq===0){
+    hint.textContent='不安排。適合短期衝刺計畫（建議不超過 8 週）。';
+    box.style.display='none';
+  } else {
+    hint.innerHTML='每執行 '+freq+' 週後安排 1 週代謝休息，讓身體重設代謝速率。<br>'
+    hint.innerHTML='每執行 '+freq+' 週後安排 1 週代謝休息，讓身體重設代謝速率。<br><span style="color:#534AB7;cursor:pointer;" onclick="toggleDBExplain()">▸ 什麼是代謝休息週？（點擊展開）</span>';
+    box.style.display='none';
+  }
+}
+
+function toggleDBExplain(){
+  var b=document.getElementById('db-explain-box');
+  b.style.display=b.style.display==='none'?'block':'none';
+}
+
+function onGoalInput(){
+  var curW=parseFloat(document.getElementById('g-cur-weight').value);
+  var goalW=parseFloat(document.getElementById('g-goal-weight').value);
+  var startStr=document.getElementById('g-start-date').value||new Date().toISOString().slice(0,10);
+  var goalDateStr=document.getElementById('g-goal-date').value;
+  var def=parseInt(document.getElementById('g-deficit').value)||400;
+  var dbFreq=parseInt(document.getElementById('g-db-freq').value)||0;
+
+  // curW validation
+  if(isNaN(curW)||curW<40||curW>300){
+    document.getElementById('g-curw-hint').innerHTML='<span class="val-err">❌ 請輸入合理體重（40–300 kg）</span>';
+  } else {
+    document.getElementById('g-curw-hint').innerHTML='';
+  }
+
+  // deficit validation
+  var dHint='';
+  if(def<200) dHint='<span class="val-err">❌ 缺口過小（< 200 kcal），幾乎無法減脂</span>';
+  else if(def<=500) dHint='<span class="val-ok">✓ 理想範圍（200–500 kcal）</span>';
+  else if(def<=700) dHint='<span class="val-warn">⚠ 偏大，建議 ≤ 500 kcal</span>';
+  else dHint='<span class="val-err">❌ 超過 700 kcal，高風險掉肌肉</span>';
+  document.getElementById('g-deficit-hint').innerHTML=dHint;
+  updateDBHint();
+
+  // main feedback block
+  var fb='';
+  if(!isNaN(curW)&&curW>=40&&!isNaN(goalW)&&goalW>=30){
+    if(goalW>=curW){
+      fb='<div class="warn-box" style="margin:0;">❌ 目標體重需低於目前體重（這是減脂計畫）</div>';
+    } else {
+      var diff=curW-goalW;
+      // Safety: warn if goal is extremely aggressive
+      if(diff>30){
+        fb+='<div class="warn-box" style="margin:0 0 8px;">⚠ 目標減去 '+diff.toFixed(1)+' kg，建議分階段設定（例如先設 '+(Math.round((curW-20)*2)/2)+' kg），再規劃下一階段。一次設定過大的目標容易因遙遠感而放棄。</div>';
+      } else if(diff>20){
+        fb+='<div class="warn-box" style="margin:0 0 8px;">⚠ 目標差距 '+diff.toFixed(1)+' kg 偏大，一年安全減脂上限約 20 kg。若有截止日期請確認時間是否充裕。</div>';
+      }
+      var daysNeeded=Math.ceil(diff*7700/def);
+      var dbWeeks=dbFreq>0?Math.floor(daysNeeded/7/dbFreq):0;
+      var totalDays=daysNeeded+dbWeeks*7;
+      var estDate=new Date(startStr); estDate.setDate(estDate.getDate()+totalDays);
+      var estStr=(estDate.getMonth()+1)+'/'+estDate.getDate()+'/'+estDate.getFullYear();
+      fb+='<div style="background:var(--bg2);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.9;">'
+        +'需減去 <strong>'+diff.toFixed(1)+' kg</strong>，以缺口 <strong>'+def+' kcal/天</strong><br>'
+        +'純執行天數 ≈ <strong>'+daysNeeded+' 天</strong>（'+Math.ceil(daysNeeded/7)+' 週）'
+        +(dbFreq>0?'，加入每 '+dbFreq+' 週休息一週後，總時間約 <strong>'+Math.ceil(totalDays/7)+' 週</strong>':'')+'<br>'
+        +'預計達標日期：<strong>'+estStr+'</strong>';
+      if(goalDateStr){
+        var gDate=new Date(goalDateStr);
+        var sDate=new Date(startStr);
+        var availDays=Math.round((gDate-sDate)/(1000*60*60*24));
+        if(availDays<=0){
+          fb+='<br><span class="val-err">❌ 截止日期不能早於開始日期</span>';
+        } else {
+          var slack=availDays-totalDays;
+          var neededDeficit=Math.ceil(diff*7700/availDays);
+          if(availDays<daysNeeded-14){
+            fb+='<br><span class="val-err">❌ 截止日前只有 '+availDays+' 天，達到此目標至少需要缺口 '+neededDeficit+' kcal（超過安全範圍）。建議延後截止日期，或把目標體重設高一點。</span>';
+          } else if(slack<0){
+            fb+='<br><span class="val-warn">⚠ 時間略緊，需要把缺口拉到約 '+neededDeficit+' kcal/天 才能準時'+(neededDeficit>600?' （此缺口偏高，注意保肌）':'')+'。</span>';
+          } else {
+            fb+='<br><span class="val-ok">✓ 截止日可行，還有 '+slack+' 天緩衝。</span>';
+          }
+        }
+      }
+      fb+='</div>';
+    }
+  }
+  document.getElementById('goal-weight-feedback').innerHTML=fb;
+
+  goalBase={curWeight:curW,deficit:def,startDate:startStr,dbFreq:dbFreq,goalWeight:goalW,goalDate:goalDateStr};
+  lsSave('goalBase',goalBase);
+  renderGoalChart();
+  renderGoalSummary();
+}
+
+function validateEventInput(){
+  var dateVal=document.getElementById('ms-date').value;
+  var wtVal=parseFloat(document.getElementById('ms-weight').value);
+  var startStr=document.getElementById('g-start-date').value||new Date().toISOString().slice(0,10);
+  var curW=parseFloat(document.getElementById('g-cur-weight').value)||110;
+  var def=parseInt(document.getElementById('g-deficit').value)||400;
+  var msg='';
+  if(!dateVal){ document.getElementById('ms-validation').innerHTML=''; return; }
+  if(dateVal<=startStr){ msg='<span class="val-err">❌ 日期需在開始日期之後</span>'; }
+  else {
+    var start=new Date(startStr);
+    var mDate=new Date(dateVal);
+    var weeksAway=Math.max(0,Math.round((mDate-start)/(1000*60*60*24*7)));
+    var projW=Math.max(40,Math.round((curW - def*7/7700*weeksAway)*10)/10);
+    msg='<span style="color:var(--txt2);">依目前設定，此日期前後預計體重約 <strong>'+projW+' kg</strong>（不含代謝休息週微調）。</span>';
+    if(!isNaN(wtVal)&&wtVal>0){
+      if(wtVal>=curW){
+        msg='<span class="val-err">❌ 事件目標體重需低於目前體重</span>';
+      } else {
+        var gap=Math.round((projW-wtVal)*10)/10;
+        if(gap>4) msg+='<br><span class="val-err">❌ 希望 '+wtVal+' kg，但預估 '+projW+' kg，差距 '+gap+' kg，此目標在截止日前幾乎無法達成。</span>';
+        else if(gap>1.5) msg+='<br><span class="val-warn">⚠ 希望 '+wtVal+' kg，差距 '+gap+' kg，目標偏緊，需一切順利。建議適度調整截止日期或放寬目標。</span>';
+        else if(gap>0) msg+='<br><span class="val-warn">⚠ 差距 '+gap+' kg，略緊，在誤差範圍內。</span>';
+        else msg+='<br><span class="val-ok">✓ 目標 '+wtVal+' kg 可達（預計提前達標）。</span>';
+      }
+    }
+  }
+  document.getElementById('ms-validation').innerHTML=msg;
+}
+
+function addMilestone(){
+  var dateVal=document.getElementById('ms-date').value;
+  var name=document.getElementById('ms-name').value.trim();
+  var wtVal=parseFloat(document.getElementById('ms-weight').value);
+  var curW=parseFloat(document.getElementById('g-cur-weight').value)||110;
+  if(!name){ alert('請填入事件名稱'); return; }
+  if(!dateVal){ alert('請選擇事件日期'); return; }
+  if(!isNaN(wtVal)&&wtVal>0&&wtVal>=curW){ alert('事件目標體重需低於目前體重'); return; }
+  if(milestones.length>=20){ alert('事件上限 20 個'); return; }
+  var ms={id:'m'+Date.now(),type:'event',date:dateVal,name:name,weight:(!isNaN(wtVal)&&wtVal>0?wtVal:null)};
+  milestones.push(ms);
+  milestones.sort(function(a,b){ return a.date.localeCompare(b.date); });
+  lsSave('milestones',milestones);
+  document.getElementById('ms-date').value='';
+  document.getElementById('ms-weight').value='';
+  document.getElementById('ms-name').value='';
+  document.getElementById('ms-validation').innerHTML='';
+  renderMilestones();
+  renderGoalChart();
+  renderGoalSummary();
+}
+
+function deleteMilestone(id){
+  milestones=milestones.filter(function(m){ return m.id!==id; });
+  lsSave('milestones',milestones);
+  renderMilestones();
+  renderGoalChart();
+  renderGoalSummary();
+}
+
+function renderMilestones(){
+  var list=document.getElementById('milestone-list');
+  var wrap=document.getElementById('milestone-list-wrap');
+  if(!milestones.length){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  var html='';
+  milestones.forEach(function(m){
+    html+='<div class="milestone-card event-card">'
+      +'<div class="ms-dot" style="background:#1D9E75;"></div>'
+      +'<div class="mc-body">'
+      +'<div class="mc-title">'+esc(m.name)+(m.weight?' — 目標 '+m.weight+' kg':'')+'</div>'
+      +'<div class="mc-meta"><span class="badge b-teal">重要事件</span><span>'+m.date+'</span></div>'
+      +'</div>'
+      +'<button class="mc-del" onclick="deleteMilestone(\'' +m.id+ '\')">×</button>'
+      +'</div>';
+  });
+  list.innerHTML=html;
+}
+
+
+function pad2(n){return n<10?'0'+n:String(n);}
+
+function buildGoalProjection(){
+  var curW=parseFloat(document.getElementById('g-cur-weight').value)||110;
+  var def=parseInt(document.getElementById('g-deficit').value)||400;
+  var startStr=document.getElementById('g-start-date').value||new Date().toISOString().slice(0,10);
+  var goalDateStr=document.getElementById('g-goal-date').value;
+  var goalW=parseFloat(document.getElementById('g-goal-weight').value);
+  var dbFreq=parseInt(document.getElementById('g-db-freq').value)||0;
+  var start=new Date(startStr+'T00:00:00');
+
+  // Build enough days to cover: 1 year from start + goalDate + all events
+  var yearEnd=new Date(start); yearEnd.setDate(yearEnd.getDate()+365);
+  var endDate=new Date(yearEnd);
+  if(goalDateStr){
+    var gd=new Date(goalDateStr+'T00:00:00');
+    if(gd>endDate) endDate=new Date(gd);
+    endDate.setDate(endDate.getDate()+7);
+  }
+  milestones.forEach(function(m){
+    var md=new Date(m.date+'T00:00:00');
+    if(md>endDate){endDate=new Date(md);endDate.setDate(endDate.getDate()+7);}
+  });
+
+  var totalDays=Math.max(Math.round((endDate-start)/(1000*60*60*24)),56);
+  var evtByDate={};
+  milestones.forEach(function(m){evtByDate[m.date]=m;});
+
+  var daily=[];
+  var dbWeeksAccum=0;
+  for(var day=0;day<=totalDays;day++){
+    var d=new Date(start); d.setDate(d.getDate()+day);
+    var dateStr=d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+    var week=Math.floor(day/7);
+    var isDBStart=(dbFreq>0&&day>0&&day%7===0&&(week-dbWeeksAccum)%dbFreq===0);
+    if(isDBStart) dbWeeksAccum++;
+    var execDays=day-dbWeeksAccum*7;
+    var wt=Math.max(30,Math.round((curW-(def/7700)*Math.max(0,execDays))*10)/10);
+    daily.push({date:d,dateStr:dateStr,day:day,wt:wt,evt:evtByDate[dateStr]||null});
+  }
+
+  var goalDateDayIdx=-1;
+  if(goalDateStr){
+    goalDateDayIdx=Math.round((new Date(goalDateStr+'T00:00:00')-start)/(1000*60*60*24));
+    if(goalDateDayIdx<0||goalDateDayIdx>totalDays) goalDateDayIdx=-1;
+  }
+  var yearEndDayIdx=Math.min(365,totalDays);
+
+  return {daily,start,startStr,goalDateStr,goalDateDayIdx,yearEndDayIdx,curW,goalW,def,dbFreq,totalDays};
+}
+
+// Month: last data point of each calendar month (avoids diet-break bumps at month start)
+function sampleMonthly(daily,limitDay){
+  var byMonth={};
+  daily.forEach(function(pt){
+    if(limitDay!=null&&pt.day>limitDay) return;
+    var key=pt.date.getFullYear()+'-'+pad2(pt.date.getMonth()+1);
+    byMonth[key]=pt;
+  });
+  return Object.keys(byMonth).sort().map(function(k){return byMonth[k];});
+}
+// Week: every 7 days, limited to limitDay
+function sampleWeekly(daily,limitDay){
+  return daily.filter(function(pt){
+    return pt.day%7===0&&(limitDay==null||pt.day<=limitDay);
+  });
+}
+// Year: weekly, exactly 365 days from start
+function sampleYearly(daily,yearEndDayIdx){
+  return daily.filter(function(pt){return pt.day%7===0&&pt.day<=yearEndDayIdx;});
+}
+
+function closestPtIdx(pts,targetDate){
+  var best=0,bestDiff=Infinity;
+  pts.forEach(function(pt,i){
+    var diff=Math.abs(pt.date-targetDate);
+    if(diff<bestDiff){bestDiff=diff;best=i;}
+  });
+  return best;
+}
+
+var chartRangeStartPct=0;   // 0–100
+var chartRangeEndPct=100;   // 0–100
+
+function setChartView(v,btn){
+  goalChartView=v;
+  document.querySelectorAll('.chart-view-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderGoalChart();
+}
+
+function onChartRangeChange(){
+  var sEl=document.getElementById('chart-range-start');
+  var eEl=document.getElementById('chart-range-end');
+  var sv=parseInt(sEl.value), ev=parseInt(eEl.value);
+  if(ev<=sv+4){
+    if(event.target.id==='chart-range-start'){ sv=Math.max(0,ev-5); sEl.value=sv; }
+    else{ ev=Math.min(100,sv+5); eEl.value=ev; }
+  }
+  chartRangeStartPct=sv;
+  chartRangeEndPct=ev;
+  var proj=buildGoalProjection();
+  var limitDay=proj.goalDateDayIdx>=0?proj.goalDateDayIdx+7:null;
+  var allPts;
+  if(goalChartView==='month')     allPts=sampleMonthly(proj.daily,limitDay);
+  else if(goalChartView==='week') allPts=sampleWeekly(proj.daily,limitDay);
+  else                            allPts=sampleWeekly(proj.daily,proj.yearEndDayIdx);
+  renderGoalChartFromProj(proj,allPts);
+}
+
+function renderGoalChart(){
+  var proj=buildGoalProjection();
+  var limitDay=proj.goalDateDayIdx>=0?proj.goalDateDayIdx+7:null;
+  var allPts;
+  if(goalChartView==='month')     allPts=sampleMonthly(proj.daily,limitDay);
+  else if(goalChartView==='week') allPts=sampleWeekly(proj.daily,limitDay);
+  else                            allPts=sampleWeekly(proj.daily,proj.yearEndDayIdx);
+  // Reset range defaults per view: week shows ~13 weeks, year/month shows all
+  chartRangeStartPct=0;
+  if(goalChartView==='week'&&allPts.length>13){
+    chartRangeEndPct=Math.min(100,Math.round(12/(allPts.length-1)*100));
+  } else {
+    chartRangeEndPct=100;
+  }
+  document.getElementById('chart-range-start').value=chartRangeStartPct;
+  document.getElementById('chart-range-end').value=chartRangeEndPct;
+  renderGoalChartFromProj(proj,allPts);
+}
+
+function renderGoalChartFromProj(proj,allPts){
+  var n=allPts.length;
+  var startIdx=Math.round(chartRangeStartPct/100*(n-1));
+  var endIdx=Math.round(chartRangeEndPct/100*(n-1));
+  endIdx=Math.max(startIdx+2,endIdx);
+  endIdx=Math.min(n-1,endIdx);
+  var pts=allPts.slice(startIdx,endIdx+1);
+
+  var showSlider=goalChartView!=='month';
+  var panWrap=document.getElementById('chart-pan-wrap');
+  panWrap.style.display=showSlider?'block':'none';
+  if(showSlider){
+    var s0=allPts[startIdx], s1=allPts[endIdx];
+    document.getElementById('pan-label-start').textContent=
+      (s0.date.getMonth()+1)+'/'+(s0.date.getDate());
+    document.getElementById('pan-label-end').textContent=
+      (s1.date.getMonth()+1)+'/'+(s1.date.getDate());
+  }
+
+  // Labels: month view shows "M月", week/year shows "M/D"
+  var labels=pts.map(function(pt){
+    var d=pt.date;
+    return goalChartView==='month'?(d.getMonth()+1)+'月':(d.getMonth()+1)+'/'+(d.getDate());
+  });
+
+  var weights=pts.map(function(pt){return pt.wt;});
+
+  // Event dots: mark the visible pt closest to each event date
+  var eventData=pts.map(function(){return null;});
+  milestones.forEach(function(m){
+    var idx=closestPtIdx(pts,new Date(m.date+'T00:00:00'));
+    // Only mark if the event date is actually within this view's range
+    var evtDay=Math.round((new Date(m.date+'T00:00:00')-proj.start)/(1000*60*60*24));
+    var firstDay=pts[0].day, lastDay=pts[pts.length-1].day;
+    if(evtDay>=firstDay-3&&evtDay<=lastDay+3){
+      if(eventData[idx]===null) eventData[idx]=pts[idx].wt;
+    }
+  });
+
+  var yMin=Math.floor(Math.min.apply(null,weights))-3;
+  var yMax=Math.ceil(proj.curW)+3;
+  if(!isNaN(proj.goalW)&&proj.goalW>0) yMin=Math.min(yMin,proj.goalW-3);
+
+  // Annotations — only show if the annotated index is within current visible pts
+  var annotations={};
+  if(proj.goalDateDayIdx>=0){
+    var evtDay=proj.goalDateDayIdx;
+    var firstDay=pts[0].day, lastDay=pts[pts.length-1].day;
+    if(evtDay>=firstDay-3&&evtDay<=lastDay+3){
+      var gi=closestPtIdx(pts,new Date(proj.goalDateStr+'T00:00:00'));
+      annotations.goalVLine={type:'line',xMin:gi,xMax:gi,
+        borderColor:'rgba(153,60,29,0.65)',borderWidth:1.5,borderDash:[5,4],
+        label:{content:proj.goalDateStr,display:true,position:'end',
+               font:{size:10},color:'#993C1D',backgroundColor:'rgba(250,236,231,0.92)',padding:3}};
+    }
+  }
+  if(!isNaN(proj.goalW)&&proj.goalW>0&&proj.goalW<proj.curW){
+    annotations.goalHLine={type:'line',yMin:proj.goalW,yMax:proj.goalW,
+      borderColor:'rgba(153,60,29,0.38)',borderWidth:1,borderDash:[4,4],
+      label:{content:proj.goalW+' kg',display:true,position:'end',
+             font:{size:10},color:'#993C1D',backgroundColor:'rgba(250,236,231,0.92)',padding:3}};
+  }
+  milestones.forEach(function(m,idx){
+    var evtDay=Math.round((new Date(m.date+'T00:00:00')-proj.start)/(1000*60*60*24));
+    var firstDay=pts[0].day, lastDay=pts[pts.length-1].day;
+    if(evtDay>=firstDay-3&&evtDay<=lastDay+3){
+      var mi=closestPtIdx(pts,new Date(m.date+'T00:00:00'));
+      annotations['evtV'+idx]={type:'line',xMin:mi,xMax:mi,
+        borderColor:'rgba(29,158,117,0.55)',borderWidth:1.5,borderDash:[5,4],
+        label:{content:m.name+(m.weight?' '+m.weight+'kg':''),display:true,position:'start',
+               font:{size:10},color:'#0F6E56',backgroundColor:'rgba(225,245,238,0.92)',
+               padding:3,yAdjust:idx*(-20)}};
+    }
+  });
+
+  if(goalChartInst){goalChartInst.destroy();goalChartInst=null;}
+  var canvas=document.getElementById('goalChart');
+  goalChartInst=new Chart(canvas,{
+    type:'line',
+    data:{labels:labels,datasets:[
+      {label:'預測體重',data:weights,borderColor:'#534AB7',
+       backgroundColor:'rgba(83,74,183,0.06)',
+       pointRadius:goalChartView==='month'?4:2,
+       pointBackgroundColor:'#534AB7',
+       tension:0.3,fill:true,borderWidth:2},
+      {label:'重要事件',data:eventData,borderColor:'#1D9E75',
+       backgroundColor:'#1D9E75',pointStyle:'circle',pointRadius:8,borderWidth:0,showLine:false}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        annotation:{annotations:annotations},
+        tooltip:{callbacks:{
+          title:function(items){
+            var pt=pts[items[0].dataIndex];
+            return pt?pt.date.toLocaleDateString('zh-TW'):'';
+          },
+          label:function(c){
+            if(c.datasetIndex===0) return '預測：'+c.parsed.y+' kg';
+            if(c.datasetIndex===1){
+              var names=[];
+              milestones.forEach(function(m){
+                var evtDay=Math.round((new Date(m.date+'T00:00:00')-proj.start)/(1000*60*60*24));
+                var firstDay=pts[0].day,lastDay=pts[pts.length-1].day;
+                if(evtDay>=firstDay-3&&evtDay<=lastDay+3){
+                  if(closestPtIdx(pts,new Date(m.date+'T00:00:00'))===c.dataIndex)
+                    names.push(m.name+(m.weight?' (目標'+m.weight+'kg)':''));
+                }
+              });
+              return names.length?names.join(' / '):'事件';
+            }
+            return '';
+          }
+        }}
+      },
+      scales:{
+        y:{min:yMin,max:yMax,
+           ticks:{font:{size:11},callback:function(v){return v+' kg';}},
+           grid:{color:'rgba(128,128,128,0.08)'}},
+        x:{ticks:{font:{size:10},maxRotation:goalChartView==='month'?0:45,autoSkip:true,maxTicksLimit:13},grid:{display:false}}
+      }
+    }
+  });
+
+  // Chart label
+  var yrEnd=new Date(proj.start); yrEnd.setDate(yrEnd.getDate()+365);
+  var endLabel=goalChartView==='year'
+    ?(yrEnd.getFullYear()+'/'+pad2(yrEnd.getMonth()+1)+'/'+pad2(yrEnd.getDate()))
+    :(proj.goalDateStr||'');
+  var lbl='WEIGHT TRAJECTORY  '+proj.startStr+(endLabel?' → '+endLabel:'');
+  document.getElementById('goal-chart-label').textContent=lbl;
+}
+
+
+
+function renderGoalSummary(){
+  var curW=parseFloat(document.getElementById('g-cur-weight').value)||110;
+  var def=parseInt(document.getElementById('g-deficit').value)||400;
+  var proj=buildGoalProjection();
+  var wts=proj.daily.map(function(pt){return pt.wt;});
+  var w52idx=Math.min(52*7, wts.length-1);
+  var w52=wts[w52idx];
+  var totalLoss=Math.round((curW-w52)*10)/10;
+  var monthly=(def*30/7700).toFixed(1);
+  var wksTo90=curW>90?Math.round((curW-90)*7700/(def*7)):0;
+
+  document.getElementById('goal-summary').style.display='block';
+  document.getElementById('goal-metrics').innerHTML=
+    '<div class="metric-card"><div class="lbl">52 週後預估</div><div class="val">'+w52+' kg</div><div class="sub">從 '+curW+' kg 出發</div></div>'
+    +'<div class="metric-card"><div class="lbl">全年總減脂</div><div class="val">'+totalLoss+' kg</div><div class="sub">（理想狀況）</div></div>'
+    +'<div class="metric-card"><div class="lbl">每月預估</div><div class="val">'+monthly+' kg</div><div class="sub">缺口 '+def+' kcal</div></div>'
+    +'<div class="metric-card"><div class="lbl">達到 90 kg</div><div class="val">'+(curW>90?wksTo90+' 週':'已達標')+'</div><div class="sub">不含代謝休息週</div></div>';
+
+  var advHtml='';
+  if(def>700) advHtml+='<div class="warn-box">⚠ 缺口 '+def+' kcal 偏高，建議降至 500 kcal 以內，避免觸發代謝適應。</div>';
+  if(totalLoss>25) advHtml+='<div class="warn-box">⚠ 全年預估減脂 '+totalLoss+' kg，超過安全範圍（建議全年不超過 20–22 kg）。建議安排更多代謝休息週或降低缺口。</div>';
+  milestones.forEach(function(m){
+    var startStr=proj.startStr;
+    var start=new Date(startStr);
+    var mDate=new Date(m.date);
+    var daysToMs=Math.round((mDate-start)/(1000*60*60*24));
+    if(daysToMs<0||daysToMs>=proj.daily.length) return;
+    var projW=proj.daily[daysToMs].wt;
+    if(m.weight){
+      var gap=Math.round((projW-m.weight)*10)/10;
+      if(gap>2) advHtml+='<div class="warn-box">⚠ 事件「'+esc(m.name)+'」（'+m.date+'）：預計屆時體重約 '+projW+' kg，距目標 '+m.weight+' kg 還差 '+gap+' kg。</div>';
+      else if(gap<=0) advHtml+='<div class="succ-box">✓ 事件「'+esc(m.name)+'」：預計可提前達到 '+m.weight+' kg，進度良好。</div>';
+      else advHtml+='<div class="succ-box">✓ 事件「'+esc(m.name)+'」：預計屆時約 '+projW+' kg，差距 '+gap+' kg，目標可達。</div>';
+    } else {
+      advHtml+='<div class="info-box">📅 事件「'+esc(m.name)+'」（'+m.date+'）：預計當天體重約 <strong>'+projW+' kg</strong>。'+(m.type==='event'?'如為重要場合，建議前一週安排代謝休息週，讓體重穩定。':'')+'</div>';
+    }
+  });
+  if(!advHtml) advHtml='<div class="succ-box">✓ 目前設定合理，繼續按計劃執行。</div>';
+  document.getElementById('goal-advice').innerHTML=advHtml;
+}
+
+
+// ═══════════════════════════════════════════
+//  STALL TAB
+// ═══════════════════════════════════════════
+function buildStallList(){
+  var html='';
+  STALL_ITEMS.forEach(function(item){
+    var done=stallDone[item.id]||false;
+    html+='<div class="check-row'+(done?' done-item':'')+'" onclick="toggleCheck(\''+item.id+'\',this)">'
+      +'<input type="checkbox"'+(done?' checked':'')+' onclick="event.stopPropagation();toggleCheck(\''+item.id+'\',this.closest(\'.check-row\'))">'
+      +'<span class="check-txt">'+item.txt+'</span>'
+      +'</div>';
+  });
+  document.getElementById('stall-checklist').innerHTML=html;
+  updateStallProgress();
+}
+function toggleCheck(id,row){
+  stallDone[id]=!stallDone[id];
+  lsSave('stallDone',stallDone);
+  row.classList.toggle('done-item',stallDone[id]);
+  var cb=row.querySelector('input[type=checkbox]');
+  if(cb) cb.checked=stallDone[id];
+  updateStallProgress();
+}
+function updateStallProgress(){
+  var total=STALL_ITEMS.length;
+  var done=STALL_ITEMS.filter(function(i){ return stallDone[i.id]; }).length;
+  var pct=total?Math.round(done/total*100):0;
+  document.getElementById('stall-progress').style.width=pct+'%';
+  document.getElementById('stall-count').textContent=done+' / '+total;
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+recalc();
+buildStallList();
+// Set active split button
+(function(){
+  var btns=document.querySelectorAll('.split-btn');
+  var splitMap={2:0,3:1,4:2,5:3,'custom':4};
+  var idx=splitMap[currentSplit]||1;
+  btns.forEach(function(b,i){ b.classList.toggle('active',i===idx); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微服務架構深度指南</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--bg2:#f8f8f6;--bg3:#f0efe9;
+  --border:#e2e0d8;--border2:#c8c6bc;
+  --txt:#1a1a18;--txt2:#555550;--txt3:#999990;
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-txt:#085041;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-txt:#633806;
+  --coral:#993C1D;--coral-bg:#FAECE7;--coral-txt:#712B13;
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-txt:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-txt:#27500A;
+  --gray:#5F5E5A;--gray-bg:#F1EFE8;--gray-txt:#444441;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Noto Sans TC',sans-serif;font-size:14px;line-height:1.6}
+#shell{max-width:960px;margin:0 auto;padding:36px 20px 80px}
+
+/* nav */
+#nav{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:32px;overflow-x:auto}
+.ntab{padding:10px 20px;font-size:13px;font-weight:500;color:var(--txt3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Noto Sans TC',sans-serif}
+.ntab:hover{color:var(--txt2)}.ntab.active{color:var(--purple);border-bottom-color:var(--purple)}
+.page-title{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:500;color:var(--txt);margin-bottom:6px}
+.page-sub{font-size:13px;color:var(--txt2);margin-bottom:20px}
+.section{display:none}.section.active{display:block}
+.intro{font-size:13px;color:var(--txt2);line-height:1.7;padding:12px 16px;background:var(--bg2);border-radius:8px;border-left:3px solid var(--border2);margin-bottom:20px}
+.intro strong{color:var(--txt)}
+
+/* overview cards */
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:24px}
+.ov-card{border:1px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--bg2)}
+.ov-card-title{font-size:13px;font-weight:700;margin-bottom:6px}
+.ov-card-body{font-size:12px;color:var(--txt2);line-height:1.6}
+.ov-card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{font-size:11px;padding:2px 8px;border-radius:8px;font-family:'IBM Plex Mono',monospace}
+
+/* topic accordion (same as main) */
+.topic-group{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.topic-group:hover{border-color:var(--border2)}
+.tg-head{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;background:var(--bg2);user-select:none;transition:background .15s}
+.tg-head:hover{background:var(--bg3)}
+.tg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tg-name{font-size:13px;font-weight:500;color:var(--txt);flex:1}
+.tg-sub{font-size:11px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+.tg-chev{font-size:12px;color:var(--txt3);transition:transform .2s}
+.topic-group.open .tg-chev{transform:rotate(180deg)}
+.tg-body{display:none;padding:14px 16px 16px;border-top:1px solid var(--border);background:var(--bg)}
+.topic-group.open .tg-body{display:block}
+
+.concepts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:8px}
+.cc{border-radius:8px;border:1px solid var(--border);padding:10px 12px;cursor:pointer;background:var(--bg2);transition:all .15s}
+.cc:hover{border-color:var(--border2);background:var(--bg3)}
+.cc.sel{border-color:var(--purple)!important;background:var(--purple-bg)}
+.cc-name{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:3px}
+.cc.sel .cc-name{color:var(--purple-txt)}
+.cc-prob{font-size:11px;color:var(--txt2);line-height:1.4}
+.cc.sel .cc-prob{color:#5a52b8}
+
+.detail{display:none;margin-top:10px;border:1px solid var(--border2);border-radius:10px;padding:16px 18px;background:var(--bg2);animation:fadeIn .15s ease}
+.detail.open{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.detail-title{font-size:15px;font-weight:700;color:var(--txt);margin-bottom:12px;font-family:'IBM Plex Mono',monospace}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
+@media(max-width:600px){.detail-grid{grid-template-columns:1fr}}
+.dsec label{display:block;font-size:10px;font-family:'IBM Plex Mono',monospace;letter-spacing:.08em;color:var(--txt3);margin-bottom:4px;text-transform:uppercase}
+.dsec p{font-size:13px;color:var(--txt2);line-height:1.55}
+.tools-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.tool{font-size:11px;padding:3px 9px;border-radius:12px;border:1px solid var(--border2);color:var(--txt2);background:var(--bg);font-family:'IBM Plex Mono',monospace}
+.tool.hl{border-color:var(--amber);color:var(--amber-txt);background:var(--amber-bg)}
+.ext-label{font-size:10px;font-family:'IBM Plex Mono',monospace;letter-spacing:.08em;color:var(--txt3);text-transform:uppercase;margin-bottom:5px}
+.ext-row{display:flex;flex-wrap:wrap;gap:5px}
+.ext-link{font-size:12px;padding:4px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--border2);color:var(--blue-txt);cursor:pointer;transition:all .12s;font-family:'IBM Plex Mono',monospace}
+.ext-link:hover{border-color:var(--blue);background:var(--blue-bg)}
+
+/* comparison table */
+.cmp-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+.cmp-table th{padding:9px 14px;text-align:left;font-size:12px;font-weight:700;border-bottom:2px solid var(--border);background:var(--bg2)}
+.cmp-table td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5;color:var(--txt2)}
+.cmp-table tr:last-child td{border-bottom:none}
+.cmp-table tr:hover td{background:var(--bg2)}
+.cmp-table td:first-child{font-weight:500;color:var(--txt);font-family:'IBM Plex Mono',monospace;font-size:12px}
+.pill{display:inline-block;font-size:11px;padding:2px 7px;border-radius:6px;font-weight:500}
+.p-pro{background:var(--teal-bg);color:var(--teal-txt)}
+.p-con{background:var(--coral-bg);color:var(--coral-txt)}
+.p-use{background:var(--blue-bg);color:var(--blue-txt)}
+
+/* flow diagram */
+.flow{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.flow-row{display:flex;align-items:stretch;gap:6px}
+.flow-node{flex:1;border:1px solid var(--border);border-radius:8px;padding:10px 14px;background:var(--bg2);font-size:12px}
+.flow-node-title{font-weight:700;margin-bottom:4px}
+.flow-node-body{color:var(--txt2);font-size:11px;line-height:1.5}
+.flow-arrow{display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--txt3);padding:0 2px}
+.flow-label{font-size:11px;color:var(--txt3);text-align:center;font-family:'IBM Plex Mono',monospace;padding:2px 0}
+</style>
+</head>
+<body>
+<div id="shell">
+<div style="margin-bottom:24px">
+  <div class="page-title">微服務架構深度指南</div>
+  <div class="page-sub">從設計原則到實作模式 · 通訊、資料、可靠性、觀測性全覆蓋</div>
+</div>
+<div id="nav">
+  <button class="ntab active" data-sec="overview">① 設計原則</button>
+  <button class="ntab" data-sec="comm">② 服務通訊</button>
+  <button class="ntab" data-sec="data">③ 資料一致性</button>
+  <button class="ntab" data-sec="reliability">④ 可靠性模式</button>
+  <button class="ntab" data-sec="vs">⑤ Monolith vs 微服務</button>
+</div>
+
+<!-- ① Overview -->
+<div class="section active" id="sec-overview">
+  <div class="page-title">微服務設計原則</div>
+  <p class="page-sub">每個原則都對應一個現實問題——理解問題才能理解為什麼這樣設計</p>
+  <div class="intro"><strong>什麼是微服務？</strong>把一個大應用拆成多個小服務，每個服務專注單一業務能力、獨立部署、各自擁有資料庫。核心代價是引入了分散式系統的複雜性——網路不可靠、資料不一致、故障難追蹤。理解微服務就是理解「如何在接受這些代價的前提下，讓拆分帶來的好處最大化」。</div>
+  <div class="ov-grid">
+    <div class="ov-card" style="border-top:3px solid var(--purple)">
+      <div class="ov-card-title" style="color:var(--purple-txt)">Single Responsibility</div>
+      <div class="ov-card-body">一個服務只負責一個業務能力（User、Order、Payment 各自獨立）。邊界清晰才能獨立部署、獨立擴展。Conway's Law：你的架構會反映你的團隊結構。</div>
+      <div class="ov-card-tags"><span class="tag" style="background:var(--purple-bg);color:var(--purple-txt)">DDD Bounded Context</span><span class="tag" style="background:var(--gray-bg);color:var(--gray-txt)">Conway's Law</span></div>
+    </div>
+    <div class="ov-card" style="border-top:3px solid var(--teal)">
+      <div class="ov-card-title" style="color:var(--teal-txt)">Database per Service</div>
+      <div class="ov-card-body">每個服務擁有自己的 DB，不共享。強制服務間只能透過 API 溝通，避免資料庫層的耦合。代價：跨服務 join 很難，分散式交易需要 Saga pattern。</div>
+      <div class="ov-card-tags"><span class="tag" style="background:var(--teal-bg);color:var(--teal-txt)">服務自治</span><span class="tag" style="background:var(--amber-bg);color:var(--amber-txt)">Saga pattern 必要</span></div>
+    </div>
+    <div class="ov-card" style="border-top:3px solid var(--blue)">
+      <div class="ov-card-title" style="color:var(--blue-txt)">API First</div>
+      <div class="ov-card-body">服務之間的介面是唯一契約，先定義 API spec（OpenAPI / Protobuf）再實作。讓不同團隊可以平行開發，也讓前端能提早 mock 資料。</div>
+      <div class="ov-card-tags"><span class="tag" style="background:var(--blue-bg);color:var(--blue-txt)">OpenAPI / Protobuf</span><span class="tag" style="background:var(--gray-bg);color:var(--gray-txt)">Contract testing</span></div>
+    </div>
+    <div class="ov-card" style="border-top:3px solid var(--amber)">
+      <div class="ov-card-title" style="color:var(--amber-txt)">Decentralized Governance</div>
+      <div class="ov-card-body">各服務可以選擇不同的語言和技術棧——只要 API 契約不變。Order service 可以用 Java，Notification service 可以用 Node.js。</div>
+      <div class="ov-card-tags"><span class="tag" style="background:var(--amber-bg);color:var(--amber-txt)">Polyglot persistence</span><span class="tag" style="background:var(--gray-bg);color:var(--gray-txt)">技術選型自治</span></div>
+    </div>
+    <div class="ov-card" style="border-top:3px solid var(--coral)">
+      <div class="ov-card-title" style="color:var(--coral-txt)">Design for Failure</div>
+      <div class="ov-card-body">在分散式系統中，任何服務隨時可能掛掉。設計時必須假設依賴的服務不可用：Circuit Breaker、Retry with backoff、Fallback、Timeout 都是必要的。</div>
+      <div class="ov-card-tags"><span class="tag" style="background:var(--coral-bg);color:var(--coral-txt)">Circuit Breaker</span><span class="tag" style="background:var(--coral-bg);color:var(--coral-txt)">Bulkhead</span></div>
+    </div>
+    <div class="ov-card" style="border-top:3px solid var(--green)">
+      <div class="ov-card-title" style="color:var(--green-txt)">Observability First</div>
+      <div class="ov-card-body">微服務讓 debug 變得極其困難——一個請求可能跨越 10 個服務。Distributed Tracing、集中化 Logging、Metrics 不是選配，是微服務的基礎設施。</div>
+      <div class="ov-card-tags"><span class="tag" style="background:var(--green-bg);color:var(--green-txt)">OpenTelemetry</span><span class="tag" style="background:var(--green-bg);color:var(--green-txt)">Structured logging</span></div>
+    </div>
+  </div>
+
+  <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden">
+    <div style="padding:12px 16px;background:var(--bg2);font-size:13px;font-weight:500;color:var(--txt)">典型微服務架構：一個訂單從 Client 到各服務的流程</div>
+    <div style="padding:14px 16px;background:var(--bg)">
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-node" style="border-top:2px solid var(--gray);max-width:200px">
+            <div class="flow-node-title">Client</div>
+            <div class="flow-node-body">Web / Mobile App</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="border-top:2px solid var(--teal)">
+            <div class="flow-node-title" style="color:var(--teal-txt)">API Gateway</div>
+            <div class="flow-node-body">Auth 驗證 · Rate Limit · 路由到對應服務</div>
+          </div>
+        </div>
+        <div class="flow-label">↓ 路由到 Order Service</div>
+        <div class="flow-row">
+          <div class="flow-node" style="border-top:2px solid var(--purple)">
+            <div class="flow-node-title" style="color:var(--purple-txt)">Order Service</div>
+            <div class="flow-node-body">建立訂單 → 寫入 Order DB → 發布 OrderCreated 事件</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="border-top:2px solid var(--purple)">
+            <div class="flow-node-title" style="color:var(--purple-txt)">Order DB</div>
+            <div class="flow-node-body">PostgreSQL（只屬於 Order Service）</div>
+          </div>
+        </div>
+        <div class="flow-label">↓ 非同步事件</div>
+        <div class="flow-row">
+          <div class="flow-node" style="border-top:2px solid var(--amber)">
+            <div class="flow-node-title" style="color:var(--amber-txt)">Message Broker (Kafka)</div>
+            <div class="flow-node-body">OrderCreated topic · 讓多個 consumer 獨立消費</div>
+          </div>
+        </div>
+        <div class="flow-label">↓ Payment / Notification 各自消費</div>
+        <div class="flow-row">
+          <div class="flow-node" style="border-top:2px solid var(--coral)">
+            <div class="flow-node-title" style="color:var(--coral-txt)">Payment Service</div>
+            <div class="flow-node-body">扣款 → 發布 PaymentCompleted 事件</div>
+          </div>
+          <div style="width:20px"></div>
+          <div class="flow-node" style="border-top:2px solid var(--green)">
+            <div class="flow-node-title" style="color:var(--green-txt)">Notification Service</div>
+            <div class="flow-node-body">發送訂單確認 Email / SMS</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--txt3);margin-top:8px;font-family:'IBM Plex Mono',monospace">同步（→）= HTTP / gRPC · 非同步（↓事件）= Kafka</div>
+    </div>
+  </div>
+</div>
+
+<!-- ② Communication -->
+<div class="section" id="sec-comm">
+  <div class="page-title">服務通訊模式</div>
+  <p class="page-sub">同步 vs 非同步的選擇是微服務設計中最重要的決策之一</p>
+
+  <div id="comm-groups"></div>
+</div>
+
+<!-- ③ Data -->
+<div class="section" id="sec-data">
+  <div class="page-title">資料一致性</div>
+  <p class="page-sub">Database per Service 讓服務自治，但讓跨服務的資料一致性成為難題</p>
+
+  <div id="data-groups"></div>
+</div>
+
+<!-- ④ Reliability -->
+<div class="section" id="sec-reliability">
+  <div class="page-title">可靠性模式</div>
+  <p class="page-sub">分散式系統的故障是常態，不是例外。這些模式是讓系統優雅降級的工具</p>
+
+  <div id="reliability-groups"></div>
+</div>
+
+<!-- ⑤ vs -->
+<div class="section" id="sec-vs">
+  <div class="page-title">Monolith vs 微服務</div>
+  <p class="page-sub">微服務不是「更好」，而是「在特定條件下更合適」</p>
+
+  <div class="intro"><strong>最常見的錯誤：</strong>一開始就用微服務。微服務的前提是你已經理解業務邊界。Netflix、Amazon 都是先有 Monolith，等業務邊界清晰、團隊夠大之後才拆分。</div>
+
+  <div style="overflow-x:auto;margin-bottom:20px">
+  <table class="cmp-table">
+    <thead>
+      <tr>
+        <th>維度</th>
+        <th style="color:var(--teal-txt)">Monolith</th>
+        <th style="color:var(--purple-txt)">Microservices</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>部署複雜度</td>
+        <td><span class="pill p-pro">低</span> 一次部署全部，簡單直觀</td>
+        <td><span class="pill p-con">高</span> 各服務獨立部署，需要 K8s / CI/CD 支撐</td>
+      </tr>
+      <tr>
+        <td>橫向擴展</td>
+        <td><span class="pill p-con">受限</span> 只能整體 scale，浪費資源</td>
+        <td><span class="pill p-pro">精準</span> 按服務獨立 scale，Payment 忙就只擴 Payment</td>
+      </tr>
+      <tr>
+        <td>故障隔離</td>
+        <td><span class="pill p-con">差</span> 一個模組 bug 導致整個應用掛掉</td>
+        <td><span class="pill p-pro">佳</span> Payment 掛掉不影響 Browse / Cart</td>
+      </tr>
+      <tr>
+        <td>開發速度（小團隊）</td>
+        <td><span class="pill p-pro">快</span> 無網路呼叫、直接 function call、易 debug</td>
+        <td><span class="pill p-con">慢</span> 服務間介面、mock、環境建置複雜</td>
+      </tr>
+      <tr>
+        <td>開發速度（大團隊）</td>
+        <td><span class="pill p-con">慢</span> merge conflict 多、互相阻塞</td>
+        <td><span class="pill p-pro">快</span> 各團隊自治，互不阻塞</td>
+      </tr>
+      <tr>
+        <td>資料一致性</td>
+        <td><span class="pill p-pro">強一致</span> 同一 DB，一個 transaction 搞定</td>
+        <td><span class="pill p-con">最終一致</span> 跨 DB 需要 Saga，複雜度大幅上升</td>
+      </tr>
+      <tr>
+        <td>可觀測性</td>
+        <td><span class="pill p-pro">簡單</span> 一個 log file，stack trace 完整</td>
+        <td><span class="pill p-con">複雜</span> 需要 Distributed Tracing，Trace ID 串接</td>
+      </tr>
+      <tr>
+        <td>技術選型</td>
+        <td><span class="pill p-con">統一</span> 整個應用用同一語言 / 框架</td>
+        <td><span class="pill p-pro">自由</span> 各服務可選最適合的技術棧</td>
+      </tr>
+      <tr>
+        <td>網路延遲</td>
+        <td><span class="pill p-pro">無</span> function call 在 memory 內</td>
+        <td><span class="pill p-con">有</span> 每次服務間呼叫都是網路 I/O，需 timeout / retry</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
+    <div style="border:1px solid var(--teal);border-radius:10px;padding:14px 16px;background:var(--teal-bg)">
+      <div style="font-size:13px;font-weight:700;color:var(--teal-txt);margin-bottom:8px">什麼時候選 Monolith</div>
+      <ul style="font-size:13px;color:var(--teal-txt);padding-left:16px;line-height:2">
+        <li>團隊少於 10 人</li>
+        <li>業務邊界還不清晰（Startup 初期）</li>
+        <li>需要快速驗證 MVP</li>
+        <li>沒有足夠的 DevOps 能力維運分散式系統</li>
+        <li>資料一致性要求極高（金融核心系統）</li>
+      </ul>
+    </div>
+    <div style="border:1px solid var(--purple);border-radius:10px;padding:14px 16px;background:var(--purple-bg)">
+      <div style="font-size:13px;font-weight:700;color:var(--purple-txt);margin-bottom:8px">什麼時候選微服務</div>
+      <ul style="font-size:13px;color:var(--purple-txt);padding-left:16px;line-height:2">
+        <li>團隊超過 20 人，多個 squad 並行開發</li>
+        <li>業務邊界清晰，可以定義 Bounded Context</li>
+        <li>不同模組有極不同的 scaling 需求</li>
+        <li>有成熟的 CI/CD 和 K8s 維運能力</li>
+        <li>可以接受 Eventual consistency</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="border:1px solid var(--amber);border-radius:10px;padding:14px 16px;background:var(--amber-bg)">
+    <div style="font-size:13px;font-weight:700;color:var(--amber-txt);margin-bottom:6px">Modular Monolith：兩全其美的中間路線</div>
+    <div style="font-size:13px;color:var(--amber-txt);line-height:1.7">在 Monolith 裡把程式碼按 module 嚴格隔離（各自的 package、各自的 DB schema），不共享直接的程式碼依賴，只透過 interface 溝通。等業務穩定後，可以輕鬆拆成真正的微服務。這是現在許多工程師推薦的起點策略。</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+document.querySelectorAll('.ntab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.ntab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('sec-'+t.dataset.sec).classList.add('active');
+  });
+});
+
+const COMM_DATA=[
+  {id:'sync',name:'同步通訊',dot:'#534AB7',sub:'HTTP · REST · gRPC · 直接呼叫',concepts:[
+    {id:'rest_sync',name:'REST / HTTP',problem:'需要立即回應的場景（查詢、建立資源）',why:'無狀態請求讓 LB 可以路由到任意節點；每次請求帶完整狀態讓服務 stateless 可水平擴展。',tools:['Spring MVC','Feign Client','OpenFeign','RestTemplate'],hl:'Feign Client',vs:'REST 語意清晰易 debug；但服務掛掉時呼叫端會等待 timeout，需要 Circuit Breaker 保護。',extend:['Feign 超時設定','Retry with backoff','API Gateway 整合']},
+    {id:'grpc_sync',name:'gRPC（內部服務）',problem:'服務間呼叫追求低延遲、強型別、高效能',why:'Protobuf 二進位序列化比 JSON 小 5–10x；HTTP/2 multiplexing 讓多個 RPC 共用一個 TCP 連線；強型別 schema 讓兩端契約在 compile time 確認。',tools:['Protobuf','gRPC-Java','grpc-spring-boot-starter','buf'],hl:'Protobuf',vs:'gRPC 效能好但 debug 難；適合內部服務間通訊；對外 API 通常還是 REST 或 GraphQL。',extend:['Protobuf schema evolution','Streaming RPC','gRPC load balancing']},
+    {id:'sync_tradeoff',name:'同步通訊的問題',problem:'當 Service B 掛掉，呼叫它的 Service A 怎麼辦？',why:'同步呼叫讓服務之間強耦合；若 Service C 依賴 B，B 依賴 A，A 掛掉會 cascading 讓整條鏈崩潰。這就是為什麼需要 Circuit Breaker 和 Timeout。',tools:['Resilience4j','Sentinel','Hystrix'],hl:'Resilience4j',vs:'Circuit Breaker Open 狀態：快速失敗回傳 fallback，保護呼叫端不被拖垮；Half-open：定期試探是否恢復。',extend:['Circuit Breaker 三種狀態','Timeout 設定策略','Fallback 設計']}
+  ]},
+  {id:'async',name:'非同步通訊',dot:'#854F0B',sub:'Kafka · RabbitMQ · Event-driven · Pub/Sub',concepts:[
+    {id:'event_driven',name:'Event-driven 架構',problem:'服務間如何解耦？讓 Order Service 不需要知道 Notification Service 的存在',why:'Producer 只發布事件到 Broker，不需知道有哪些 Consumer；Consumer 自己訂閱感興趣的事件。兩者可以獨立部署、獨立 scale、獨立失敗。',tools:['Apache Kafka','RabbitMQ','AWS SQS / SNS','Redis Pub/Sub'],hl:'Apache Kafka',vs:'Kafka：高吞吐、持久化、可重放，適合事件串流；RabbitMQ：靈活路由、低延遲，適合任務佇列；SQS：全托管，適合 AWS 生態。',extend:['Kafka partition 設計','Consumer group 概念','Dead letter queue']},
+    {id:'at_least_once',name:'At-least-once delivery',problem:'網路問題導致 Broker 沒收到 ACK，事件可能被重送，Consumer 該怎麼處理？',why:'分散式系統無法保證 exactly-once（不重不漏），現實中選 at-least-once（可能重複但不遺失）+ Consumer 端冪等性處理重複。',tools:['Kafka acks=all','Redis SET NX','DB unique constraint'],hl:'Redis SET NX',vs:'At-least-once + 冪等性是業界實踐；Kafka Transactions 可以做到 Exactly-once 但性能有代價；選擇取決於業務容忍度。',extend:['Idempotency key','Kafka Transactions','Outbox pattern']},
+    {id:'choreography',name:'Choreography vs Orchestration',problem:'多個服務需要協調完成一個流程，誰來指揮？',why:'Choreography：各服務監聽事件自行決定下一步，去中心化但難追蹤全貌；Orchestration：一個 Orchestrator 明確指揮每一步，易追蹤但成為單點。',tools:['Temporal','Axon Framework','AWS Step Functions','Eventuate Tram'],hl:'Temporal',vs:'小型流程用 Choreography 簡單；複雜業務流程（多步驟、有補償）用 Orchestration 更易維護和可視化。',extend:['Saga pattern','Temporal workflow 設計','Compensating transaction']}
+  ]}
+];
+
+const DATA_DATA=[
+  {id:'saga_group',name:'Saga Pattern',dot:'#993C1D',sub:'分散式交易 · Compensating transaction · 最終一致性',concepts:[
+    {id:'saga_why',name:'為什麼需要 Saga？',problem:'下單 → 扣庫存 → 扣款 涉及 3 個 DB，傳統 2PC 不可行',why:'2PC（兩階段提交）需要所有服務同步鎖定，在微服務高並發下造成嚴重效能問題，且引入分散式鎖的複雜性。Saga 用「最終一致性」替代「強一致性」。',tools:['Temporal','Axon','Eventuate Tram'],hl:'Temporal',vs:'Saga 放棄強一致性，換取更高可用性和性能；適合可接受短暫不一致的業務（大部分電商場景）；金融核心對帳不適合。',extend:['BASE vs ACID','Eventual consistency','Saga rollback 策略']},
+    {id:'saga_choreography',name:'Saga - Choreography',problem:'讓各服務自己監聽事件決定下一步，不需要中央協調',why:'Order Service 建立訂單並發布事件 → Payment Service 監聽並扣款，再發布事件 → Inventory 監聽並扣庫存。失敗時各服務發布補償事件讓上游回滾。',tools:['Kafka','Spring Kafka','Axon EventStore'],hl:'Kafka',vs:'優點：無單點、服務自治；缺點：流程分散在各服務難以追蹤全貌，debug 困難，需要良好的分散式追蹤支撐。',extend:['Distributed Tracing 必要性','Event sourcing','Outbox pattern']},
+    {id:'saga_orchestration',name:'Saga - Orchestration',problem:'用一個中央協調者明確指揮每個步驟，讓流程可視化',why:'Order Saga Orchestrator 明確呼叫 Payment Service → Inventory Service → Shipping Service，每步失敗時呼叫補償操作。流程邏輯集中在 Orchestrator 中，易追蹤易維護。',tools:['Temporal','AWS Step Functions','Axon Saga','Camunda'],hl:'Temporal',vs:'優點：流程清晰，易 debug，補償邏輯集中；缺點：Orchestrator 成為單點，需要高可用。Temporal 解決了 Orchestrator 的持久化和高可用問題。',extend:['Temporal workflow','Saga state machine','Idempotency 在 Saga 中']}
+  ]},
+  {id:'outbox_group',name:'Outbox & Event Sourcing',dot:'#185FA5',sub:'Outbox pattern · Event sourcing · CQRS',concepts:[
+    {id:'outbox',name:'Outbox Pattern',problem:'如何確保「寫入 DB」和「發布 Kafka 事件」這兩個操作原子完成？',why:'直接組合 DB 寫入 + Kafka 發布，其中一個失敗會造成資料不一致（DB 有記錄但沒事件，或有事件但 DB 沒記錄）。Outbox 把事件也寫進同一個 DB transaction，再用 CDC 或 polling 把事件發出去。',tools:['Debezium (CDC)','Kafka Connect','Transactional Outbox'],hl:'Debezium (CDC)',vs:'Outbox + CDC 是業界最可靠的解法；Polling 方式簡單但有延遲；Debezium 監聽 DB binlog，近乎即時且不影響業務程式碼。',extend:['Debezium 設定','CDC 原理','Transactional messaging']},
+    {id:'cqrs',name:'CQRS 模式',problem:'讀和寫的模型完全不同，為什麼要用同一個資料結構？',why:'Command（寫）優化寫入效能和資料完整性；Query（讀）優化查詢效能和靈活性。分開讓讀寫可以獨立擴展，Read Model 可以是完全不同的 DB（如 Elasticsearch）。',tools:['Axon Framework','EventStoreDB','Elasticsearch (Read)','Redis (Read)'],hl:'Axon Framework',vs:'CQRS 適合讀寫比例差異大的系統；缺點是引入最終一致性（Write → Event → Read Model 更新有延遲）；簡單 CRUD 場景過度設計。',extend:['Event sourcing','Read model 設計','Eventual consistency in CQRS']}
+  ]}
+];
+
+const RELIABILITY_DATA=[
+  {id:'cb_group',name:'Circuit Breaker & Bulkhead',dot:'#993C1D',sub:'Cascading failure 防護',concepts:[
+    {id:'cb_detail',name:'Circuit Breaker',problem:'下游服務變慢，呼叫端所有 thread 都在等待，最終把自己也打垮',why:'斷路器三種狀態：Closed（正常轉發）→ 失敗率超過閾值 → Open（快速失敗回傳 fallback）→ 半開（試探恢復）。核心思想：在資源被耗盡前主動斷路。',tools:['Resilience4j','Sentinel','Hystrix (deprecated)'],hl:'Resilience4j',vs:'Resilience4j 是 Hystrix 的現代替代，基於函數式 API 更乾淨；Sentinel 是阿里系，有更豐富的流控策略（慢請求、異常比例、異常數）；兩者都支援 Java Spring Boot。',extend:['Resilience4j 設定','Half-open 狀態','Fallback 實作']},
+    {id:'bulkhead',name:'Bulkhead Pattern',problem:'一個慢的下游服務佔用所有 thread pool，導致其他正常服務也無法服務',why:'把對不同服務的呼叫隔離在不同的 thread pool（或 semaphore）中。呼叫 Payment Service 的 thread pool 滿了，不影響呼叫 Inventory Service 的 thread pool。',tools:['Resilience4j Bulkhead','ThreadPoolBulkhead','SemaphoreBulkhead'],hl:'Resilience4j Bulkhead',vs:'Thread pool bulkhead：完全隔離但 context switch 有成本；Semaphore bulkhead：無額外 thread 但阻塞主 thread；根據服務重要性分配不同大小的 pool。',extend:['Thread pool 大小設定','Resilience4j 組合使用','服務優先級設計']}
+  ]},
+  {id:'retry_group',name:'Retry & Timeout',dot:'#3B6D11',sub:'網路不穩定的應對策略',concepts:[
+    {id:'retry',name:'Retry with Exponential Backoff',problem:'網路抖動導致偶發失敗，立即重試可能讓問題更嚴重（雪崩）',why:'指數退避：第 1 次失敗等 1s，第 2 次等 2s，第 3 次等 4s... 加上 jitter（隨機偏移）避免所有 retry 在同一時刻湧入。對非冪等操作（如扣款）不能直接 retry，需要先確認冪等性。',tools:['Resilience4j Retry','Spring Retry','Feign Retry'],hl:'Resilience4j Retry',vs:'Retry 只適合暫時性失敗（網路抖動）；對於 4xx 錯誤（業務錯誤）不應 retry；需要配合 Circuit Breaker，避免 retry 把斷路器觸發。',extend:['Idempotency + Retry','Jitter 算法','Retry budget']},
+    {id:'timeout',name:'Timeout 設計',problem:'沒有設 timeout 的呼叫可能永遠等待，耗盡 thread pool',why:'每個跨服務呼叫必須設置合理的 timeout。Timeout 太短：正常慢請求被誤判失敗；太長：資源被長期佔用。一般基於 P99 latency 乘以 1.5–2 倍作為 timeout 值。',tools:['Feign timeout','Resilience4j TimeLimiter','RestTemplate timeout'],hl:'Resilience4j TimeLimiter',vs:'Connect timeout（建立連線最長等多久）和 Read timeout（收到回應最長等多久）需分別設定；gRPC 有原生的 deadline 機制，比 HTTP timeout 更精確。',extend:['P99 latency 測量','Deadline propagation','Context cancellation']}
+  ]},
+  {id:'obs_group',name:'Observability in 微服務',dot:'#854F0B',sub:'沒有 Observability 的微服務是災難',concepts:[
+    {id:'tracing_ms',name:'Distributed Tracing',problem:'一個請求跨越 10 個服務，如何找到哪個服務出了問題？',why:'每個請求產生唯一 Trace ID，透過 HTTP Header（W3C Trace Context）或 Kafka Header 傳遞。每個服務建立 Span 記錄自己的耗時。最終在 Jaeger 看到完整的 Waterfall 圖。',tools:['OpenTelemetry','Jaeger','Zipkin','Tempo + Grafana'],hl:'OpenTelemetry',vs:'OpenTelemetry 是廠商中立的標準 SDK，避免鎖定；Jaeger 和 Zipkin 是 Trace backend storage；Datadog APM 是 SaaS 一體化方案。',extend:['OpenTelemetry Java Agent','Trace sampling','Exemplars']},
+    {id:'logging_ms',name:'Structured Logging + Correlation ID',problem:'散落在各個服務的 log，如何快速找到同一個請求的全部 log？',why:'每條 log 必須包含 Trace ID / Correlation ID，讓 Loki / Elasticsearch 可以用 trace id 過濾出一個請求的完整軌跡。Structured JSON log 讓 log aggregator 可以機器解析、建立索引。',tools:['SLF4J + Logback','Loki + Grafana','ELK Stack','MDC (Mapped Diagnostic Context)'],hl:'Loki + Grafana',vs:'ELK 功能強但資源消耗高；Loki 輕量適合已有 Prometheus + Grafana 的環境；MDC 讓 Trace ID 自動帶入每條 log。',extend:['MDC 設定','Log correlation','Loki LogQL']}
+  ]}
+];
+
+function renderGroups(containerId, groupData){
+  const wrap=document.getElementById(containerId);
+  wrap.innerHTML='';
+  let openGroup=null, openConcept=null;
+  function render(){
+    wrap.innerHTML='';
+    groupData.forEach(group=>{
+      const el=document.createElement('div');
+      el.className='topic-group'+(openGroup===group.id?' open':'');
+      el.innerHTML=`<div class="tg-head" data-gid="${group.id}"><span class="tg-dot" style="background:${group.dot}"></span><span class="tg-name">${group.name}</span><span class="tg-sub">${group.sub}</span><span class="tg-chev">▾</span></div><div class="tg-body"><div class="concepts-grid">${group.concepts.map(c=>{const sel=openConcept===group.id+':'+c.id;return`<div class="cc${sel?' sel':''}" data-cid="${group.id}:${c.id}"><div class="cc-name">${c.name}</div><div class="cc-prob">${c.problem}</div></div>`;}).join('')}</div>${openConcept&&openConcept.startsWith(group.id+':')?renderConceptDetail(group):''}</div>`;
+      wrap.appendChild(el);
+    });
+    wrap.querySelectorAll('.tg-head').forEach(h=>{h.addEventListener('click',()=>{const gid=h.dataset.gid;openGroup=openGroup===gid?null:gid;if(openGroup!==gid)openConcept=null;render();});});
+    wrap.querySelectorAll('.cc').forEach(c=>{c.addEventListener('click',e=>{e.stopPropagation();const cid=c.dataset.cid,gid=cid.split(':')[0];openGroup=gid;openConcept=openConcept===cid?null:cid;render();});});
+  }
+  function renderConceptDetail(group){
+    if(!openConcept)return'';
+    const cid=openConcept.split(':')[1],c=group.concepts.find(x=>x.id===cid);
+    if(!c)return'';
+    return`<div class="detail open"><div class="detail-title">${c.name}</div><div class="detail-grid"><div class="dsec"><label>解決的問題</label><p>${c.problem}</p></div><div class="dsec"><label>為什麼這樣設計（因果）</label><p>${c.why}</p></div><div class="dsec"><label>工具比較</label><p>${c.vs}</p></div><div class="dsec"><label>常用工具</label><div class="tools-row">${c.tools.map(x=>`<span class="tool${x===c.hl?' hl':''}">${x}</span>`).join('')}</div></div></div><div class="ext-label">延伸學習</div><div class="ext-row">${c.extend.map(e=>`<span class="ext-link" onclick="ask('${e.replace(/'/g,"\\'")}'">${e} →</span>`).join('')}</div></div>`;
+  }
+  render();
+}
+
+function ask(topic){
+  const q=`深入說明 ${topic}：原理是什麼、為什麼重要、面試考點有哪些`;
+  if(typeof sendPrompt==='function'){sendPrompt(q);}else{window.prompt('複製這個問題到 Claude：',q);}
+}
+
+renderGroups('comm-groups', COMM_DATA);
+renderGroups('data-groups', DATA_DATA);
+renderGroups('reliability-groups', RELIABILITY_DATA);
+</script>
+</body>
+</html>

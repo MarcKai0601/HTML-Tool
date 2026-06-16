@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#ffffff;--bg2:#f7f7f5;--bg3:#efefec;
+  --border:#e0ded8;--border2:#c8c6be;
+  --txt:#1a1a18;--txt2:#4a4a45;--txt3:#888780;
+  --purple-bg:#EEEDFE;--purple-border:#534AB7;--purple-txt:#26215C;
+  --teal-bg:#E1F5EE;--teal-border:#1D9E75;--teal-txt:#04342C;
+  --amber-bg:#FAEEDA;--amber-border:#854F0B;--amber-txt:#412402;
+  --coral-bg:#FAECE7;--coral-border:#993C1D;--coral-txt:#4A1B0C;
+  --blue-bg:#E6F1FB;--blue-border:#185FA5;--blue-txt:#042C53;
+  --green-bg:#EAF3DE;--green-border:#3B6D11;--green-txt:#173404;
+}
+body{background:var(--bg);color:var(--txt);font-family:'Noto Sans TC',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
+#shell{max-width:960px;margin:0 auto;padding:32px 20px 60px;}
+header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+header h1{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;letter-spacing:.02em;margin-bottom:6px;}
+header p{font-size:13px;color:var(--txt2);}
+.ptag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-family:'IBM Plex Mono',monospace;padding:3px 9px;border-radius:10px;background:var(--teal-bg);color:var(--teal-txt);border:1px solid var(--teal-border);margin-top:8px;}
+#tab-bar{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--border);overflow-x:auto;padding-bottom:0;}
+.tab-btn{font-size:13px;padding:8px 14px;border:none;background:none;color:var(--txt2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-family:'IBM Plex Mono',monospace;transition:color .15s,border-color .15s;}
+.tab-btn:hover{color:var(--txt);}
+.tab-btn.active{color:#534AB7;border-bottom-color:#534AB7;font-weight:500;}
+.tab-panel{display:none;}.tab-panel.active{display:block;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
+.card-title{font-size:10px;font-family:'IBM Plex Mono',monospace;letter-spacing:.08em;color:var(--txt3);text-transform:uppercase;margin-bottom:14px;}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px;}
+.metric{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px;}
+.metric-label{font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;}
+.metric-value{font-size:19px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.metric-sub{font-size:11px;color:var(--txt2);margin-top:3px;}
+.c-purple{color:var(--purple-border)!important;}.c-teal{color:var(--teal-border)!important;}.c-amber{color:var(--amber-border)!important;}.c-coral{color:var(--coral-border)!important;}.c-blue{color:var(--blue-border)!important;}
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.input-group{display:flex;flex-direction:column;gap:4px;}
+.input-label{font-size:12px;color:var(--txt2);}
+.input-hint{font-size:11px;color:var(--txt3);}
+.input-wrap{display:flex;align-items:center;gap:6px;}
+.input-prefix{font-size:13px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;}
+input[type=number],input[type=text],textarea{background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--txt);font-size:13px;padding:7px 10px;width:100%;font-family:'IBM Plex Mono',monospace;transition:border-color .15s;}
+input:focus,textarea:focus{outline:none;border-color:#534AB7;}
+textarea{resize:vertical;font-family:'Noto Sans TC',sans-serif;font-size:13px;min-height:70px;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg2);color:var(--txt2);transition:all .15s;font-family:'Noto Sans TC',sans-serif;}
+.btn:hover{background:var(--bg3);color:var(--txt);}
+.btn-primary{background:var(--purple-bg);border-color:var(--purple-border);color:var(--purple-txt);}
+.btn-primary:hover{background:#e3e1fc;}
+.btn-sm{padding:4px 10px;font-size:12px;}
+.btn-del{background:var(--coral-bg);border-color:var(--coral-border);color:var(--coral-txt);}
+.rbox{border-radius:10px;padding:12px 16px;font-size:13px;line-height:1.6;margin-bottom:10px;}
+.r-teal{background:var(--teal-bg);border:1px solid var(--teal-border);color:var(--teal-txt);}
+.r-amber{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber-txt);}
+.r-coral{background:var(--coral-bg);border:1px solid var(--coral-border);color:var(--coral-txt);}
+.r-blue{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue-txt);}
+.r-purple{background:var(--purple-bg);border:1px solid var(--purple-border);color:var(--purple-txt);}
+.rnum{font-size:19px;font-weight:700;font-family:'IBM Plex Mono',monospace;display:block;margin-bottom:3px;}
+.alloc-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.alloc-label{font-size:12px;color:var(--txt2);min-width:90px;}
+.alloc-track{flex:1;background:var(--bg3);border-radius:3px;height:6px;overflow:hidden;}
+.alloc-fill{height:100%;border-radius:3px;}
+.alloc-val{font-size:12px;font-family:'IBM Plex Mono',monospace;min-width:75px;text-align:right;}
+.layer{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:border-color .15s;}
+.layer:hover{border-color:var(--border2);}
+.layer-head{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;background:var(--bg2);user-select:none;transition:background .15s;}
+.layer-head:hover{background:var(--bg3);}
+.layer-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.layer-name{font-size:13px;font-weight:500;color:var(--txt);flex:1;}
+.layer-sub{font-size:11px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;}
+.layer-chevron{font-size:12px;color:var(--txt3);transition:transform .2s;margin-left:8px;}
+.layer.open .layer-chevron{transform:rotate(180deg);}
+.layer-body{display:none;padding:14px 16px 16px;border-top:1px solid var(--border);background:var(--bg);font-size:13px;color:var(--txt2);line-height:1.6;}
+.layer.open .layer-body{display:block;}
+.wiki-block{border-left:3px solid var(--border2);padding:10px 14px;margin-bottom:10px;border-radius:0 8px 8px 0;background:var(--bg2);}
+.wiki-block.purple{border-left-color:var(--purple-border);background:var(--purple-bg);}
+.wiki-block.teal{border-left-color:var(--teal-border);background:var(--teal-bg);}
+.wiki-block.amber{border-left-color:var(--amber-border);background:var(--amber-bg);}
+.wiki-block.coral{border-left-color:var(--coral-border);background:var(--coral-bg);}
+.wiki-block.blue{border-left-color:var(--blue-border);background:var(--blue-bg);}
+.wiki-title{font-size:12px;font-weight:700;color:var(--txt);margin-bottom:3px;}
+.wiki-body{font-size:12px;color:var(--txt2);line-height:1.6;}
+.badge{display:inline-flex;font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;font-family:'IBM Plex Mono',monospace;}
+.b-now{background:var(--purple-bg);color:var(--purple-txt);border:1px solid var(--purple-border);}
+.b-soon{background:var(--amber-bg);color:var(--amber-txt);border:1px solid var(--amber-border);}
+.b-later{background:var(--teal-bg);color:var(--teal-txt);border:1px solid var(--teal-border);}
+.strat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.strat-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.strat-head{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.strat-items{list-style:none;}
+.strat-items li{font-size:12px;color:var(--txt2);padding:2px 0;display:flex;gap:6px;}
+.strat-items li::before{content:'→';color:var(--txt3);flex-shrink:0;}
+.report-table{width:100%;border-collapse:collapse;font-size:13px;}
+.report-table th{text-align:left;font-size:10px;font-weight:500;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;padding:7px 10px;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;}
+.report-table td{padding:9px 10px;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;color:var(--txt2);}
+.report-table tr:hover td{background:var(--bg2);}
+.chart-wrap{position:relative;height:200px;margin:14px 0;}
+.rm-item{display:flex;gap:14px;margin-bottom:0;}
+.rm-line{display:flex;flex-direction:column;align-items:center;}
+.rm-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.rm-conn{width:1px;flex:1;background:var(--border);margin:4px 0;min-height:24px;}
+.rm-body{padding-bottom:18px;flex:1;}
+.rm-year{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--txt3);margin-bottom:3px;letter-spacing:.04em;text-transform:uppercase;}
+.rm-title{font-size:14px;font-weight:700;color:var(--txt);margin-bottom:3px;}
+.rm-desc{font-size:12px;color:var(--txt2);line-height:1.6;}
+.habit-row{display:flex;align-items:flex-start;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);}
+.habit-row:last-child{border-bottom:none;}
+.hcheck{width:17px;height:17px;border:1.5px solid var(--border2);border-radius:4px;flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s;}
+.hcheck.done{background:var(--teal-bg);border-color:var(--teal-border);color:var(--teal-txt);}
+.htitle{font-size:13px;color:var(--txt);margin-bottom:2px;}
+.hdesc{font-size:12px;color:var(--txt2);}
+.tool{font-size:11px;padding:3px 9px;border-radius:12px;border:1px solid var(--border2);color:var(--txt2);background:var(--bg3);font-family:'IBM Plex Mono',monospace;display:inline-block;margin:2px 2px 2px 0;}
+.tool.hl{border-color:var(--teal-border);color:var(--teal-txt);background:var(--teal-bg);}
+@media(max-width:600px){.input-grid,.strat-grid{grid-template-columns:1fr;}.metric-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div id="shell">
+<header>
+  <h1>Financial OS</h1>
+  <p>個人財務系統 · 評估現況 → 設定目標 → 分析差距 → 開源節流 → 投資配置 → 持續追蹤</p>
+  <div class="ptag">🔒 所有資料存在本機 localStorage，不上傳任何伺服器</div>
+</header>
+
+<div id="tab-bar">
+  <button class="tab-btn active" data-tab="assess">① 評估現況</button>
+  <button class="tab-btn" data-tab="goal">② 設定目標</button>
+  <button class="tab-btn" data-tab="gap">③ 分析差距</button>
+  <button class="tab-btn" data-tab="strategy">④ 開源節流</button>
+  <button class="tab-btn" data-tab="invest">⑤ 投資配置</button>
+  <button class="tab-btn" data-tab="monthly">⑥ 月報記錄</button>
+  <button class="tab-btn" data-tab="habits">⑦ 執行習慣</button>
+  <button class="tab-btn" data-tab="roadmap">⑧ 路線圖</button>
+  <button class="tab-btn" data-tab="wiki">⑨ 知識庫</button>
+</div>
+
+<!-- ① 評估現況 -->
+<div class="tab-panel active" id="tab-assess">
+  <div class="card">
+    <div class="card-title">收入</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <div class="input-label">月薪（稅後實拿）</div>
+        <div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="a-sal" placeholder="45000" step="1000" oninput="sc()"></div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">年終獎金</div>
+        <div class="input-hint">填幾個月，自動攤平成每月</div>
+        <div class="input-wrap"><input type="number" id="a-bon" placeholder="1.5" step="0.5" style="width:80px;"><span class="input-prefix" style="margin-left:4px;">個月</span></div>
+      </div>
+    </div>
+    <div class="input-grid">
+      <div class="input-group">
+        <div class="input-label">副業月收入</div>
+        <div class="input-hint">接案、freelance、產品收入，沒有填 0</div>
+        <div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="a-side" placeholder="0" step="1000" oninput="sc()"></div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">目前年齡</div>
+        <input type="number" id="a-age" placeholder="29" step="1" oninput="sc()">
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">支出</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <div class="input-label">月固定支出</div>
+        <div class="input-hint">房租、餐費、交通、手機…</div>
+        <div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="a-exp" placeholder="25000" step="1000" oninput="sc()"></div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">年繳費用合計</div>
+        <div class="input-hint">保險、訂閱年費（填全年總額）</div>
+        <div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="a-ann" placeholder="30000" step="1000" oninput="sc()"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">資產</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <div class="input-label">現金存款</div>
+        <div class="input-hint">銀行帳戶現金（活存＋定存）</div>
+        <div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="a-cash" placeholder="300000" step="10000" oninput="sc()"></div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">投資部位現值</div>
+        <div class="input-hint">股票、ETF 今天賣掉能拿到多少（填現值不是成本）</div>
+        <div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="a-inv" placeholder="50000" step="10000" oninput="sc()"></div>
+      </div>
+    </div>
+  </div>
+  <div id="assess-result" style="display:none;">
+    <div class="metric-grid" id="assess-metrics"></div>
+    <div class="card"><div class="card-title">月收入分配建議</div><div id="alloc-bars"></div></div>
+  </div>
+</div>
+
+<!-- ② 設定目標 -->
+<div class="tab-panel" id="tab-goal">
+  <div class="card">
+    <div class="card-title">財務自由參數</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <div class="input-label">目標財務自由年齡</div>
+        <input type="number" id="g-tgt" placeholder="39" step="1" oninput="sc()">
+      </div>
+      <div class="input-group">
+        <div class="input-label">退休後預期月支出</div>
+        <div class="input-hint">通常等於或略低於現在支出</div>
+        <div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="g-rexp" placeholder="30000" step="1000" oninput="sc()"></div>
+      </div>
+    </div>
+    <div class="input-grid">
+      <div class="input-group">
+        <div class="input-label">轉職後預期月薪（稅後）</div>
+        <div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="g-nsal" placeholder="65000" step="1000" oninput="sc()"></div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">預計幾個月後轉職</div>
+        <div class="input-wrap"><input type="number" id="g-jm" placeholder="6" step="1" style="width:80px;"><span class="input-prefix" style="margin-left:4px;">個月後</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">夢想量化清單</div>
+    <p style="font-size:12px;color:var(--txt3);margin-bottom:12px;">把模糊目標量化成數字，再倒推每月需要存多少。大腦對具體數字才會認真執行。</p>
+    <div id="dream-list"></div>
+    <button class="btn btn-sm" onclick="addDream()" style="margin-top:10px;">＋ 新增目標</button>
+  </div>
+  <div id="goal-result" style="display:none;" class="card">
+    <div class="card-title">你的關鍵數字</div>
+    <div class="metric-grid" id="goal-metrics"></div>
+  </div>
+</div>
+
+<!-- ③ 分析差距 -->
+<div class="tab-panel" id="tab-gap">
+  <div id="gap-content"><div class="rbox r-blue">請先完成「① 評估現況」和「② 設定目標」兩個頁面的填寫，差距分析才能計算。</div></div>
+</div>
+
+<!-- ④ 開源節流 -->
+<div class="tab-panel" id="tab-strategy">
+  <div class="card">
+    <div class="card-title">開源 — 增加收入來源</div>
+    <div class="strat-grid">
+      <div class="strat-card">
+        <div class="strat-head"><span class="badge b-now">3–6 個月</span>技術變現</div>
+        <ul class="strat-items">
+          <li>IoT + 後端接案（硬體背景稀缺）</li>
+          <li>Upwork 工業自動化小專案</li>
+          <li>智慧工廠系統完成後接相關案</li>
+          <li>目標時薪 NT$800–1,500</li>
+        </ul>
+      </div>
+      <div class="strat-card">
+        <div class="strat-head"><span class="badge b-soon">6–12 個月</span>知識變現</div>
+        <ul class="strat-items">
+          <li>英文技術寫作（Dev.to / Medium）</li>
+          <li>半導體供應鏈分析（稀缺內容）</li>
+          <li>Build in Public on X (Twitter)</li>
+          <li>目標：累積個人品牌流量</li>
+        </ul>
+      </div>
+      <div class="strat-card">
+        <div class="strat-head"><span class="badge b-later">12 個月+</span>產品變現</div>
+        <ul class="strat-items">
+          <li>多個小賭注快速迭代試水</li>
+          <li>每個賭注 4–8 週 MVP</li>
+          <li>全球市場為目標客戶群</li>
+          <li>找到 PMF 的那個加碼</li>
+        </ul>
+      </div>
+      <div class="strat-card">
+        <div class="strat-head">副業收入分配規則</div>
+        <ul class="strat-items">
+          <li>&lt; NT$10k → 全補備用金或核心倉</li>
+          <li>NT$10k–30k → 50% 核心 / 30% 衛星 / 20% 再投副業</li>
+          <li>&gt; NT$30k → 重新討論策略</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">節流 — 消費習慣</div>
+    <div class="wiki-block amber"><div class="wiki-title">先付錢給自己</div><div class="wiki-body">發薪日當天先自動轉帳到投資帳戶，剩下的才是生活費。不依賴月底有沒有剩。</div></div>
+    <div class="wiki-block amber"><div class="wiki-title">購物車冷靜法</div><div class="wiki-body">不要當下買，加入購物車後等 48 小時。大多數衝動消費在冷靜後會消失。</div></div>
+    <div class="wiki-block amber"><div class="wiki-title">分辨好債 vs 壞債</div><div class="wiki-body">好債：帶來資產增值。壞債：信用卡循環、BNPL。信用卡全額繳清，不跑循環利息。</div></div>
+    <div class="wiki-block amber"><div class="wiki-title">警惕生活膨脹</div><div class="wiki-body">轉職後薪資提升，消費不同步升級。增加的收入優先進投資帳戶。</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">三帳戶系統（這週內完成）</div>
+    <div class="layer open"><div class="layer-head" onclick="this.parentElement.classList.toggle('open')"><div class="layer-dot" style="background:#185FA5;"></div><div class="layer-name">帳戶 1 — 生活帳戶（薪轉）</div><div class="layer-chevron">▾</div></div><div class="layer-body">房租、餐費、交通、固定支出從這裡扣。薪水進來後先自動轉走投資部分，剩下的才是這個帳戶的余額，可以毫無罪惡感消費。</div></div>
+    <div class="layer open"><div class="layer-head" onclick="this.parentElement.classList.toggle('open')"><div class="layer-dot" style="background:#1D9E75;"></div><div class="layer-name">帳戶 2 — 投資帳戶（自動扣）</div><div class="layer-chevron">▾</div></div><div class="layer-body">發薪日自動轉帳進來，直接定期定額扣 0050。錢進去就不看、不動。連結券商設定自動扣款，把人為判斷移除流程。</div></div>
+    <div class="layer open"><div class="layer-head" onclick="this.parentElement.classList.toggle('open')"><div class="layer-dot" style="background:#854F0B;"></div><div class="layer-name">帳戶 3 — 享樂 / 備用金帳戶</div><div class="layer-chevron">▾</div></div><div class="layer-body">備用金未到位前：全力補足緊急備用金（月支出 × 6）。到位後：改存享樂基金，存到了開心花光，不需要內疚。</div></div>
+  </div>
+</div>
+
+<!-- ⑤ 投資配置 -->
+<div class="tab-panel" id="tab-invest">
+  <div class="card">
+    <div class="card-title">核心 / 衛星倉架構</div>
+    <div class="layer open"><div class="layer-head" onclick="this.parentElement.classList.toggle('open')"><div class="layer-dot" style="background:#1D9E75;"></div><div class="layer-name">核心倉 70% — 0050 定期定額</div><div class="layer-sub">機械式 · 不擇時 · 不看盤</div><div class="layer-chevron">▾</div></div>
+    <div class="layer-body">發薪日自動扣，設定好就忘記它。不看盤、不擇時、不停扣。長期年化報酬約 7–9%。<br><br>原則：上了車不輕易下車，讓時間和複利發揮。配息全部再投入，不提領。<br><br>
+    <span class="tool hl">0050</span><span class="tool">006208</span><span class="tool">VOO（海外帳戶）</span></div></div>
+    <div class="layer open"><div class="layer-head" onclick="this.parentElement.classList.toggle('open')"><div class="layer-dot" style="background:#185FA5;"></div><div class="layer-name">衛星倉 30% — 個股（地基穩後啟動）</div><div class="layer-sub">CoWoS / HBM 認知優勢變現 · 前提：備用金到位 + 轉職完成</div><div class="layer-chevron">▾</div></div>
+    <div class="layer-body">
+      <div class="wiki-block teal" style="margin-bottom:10px;"><div class="wiki-title">進場條件（同時滿足才買）</div><div class="wiki-body">① 供應鏈卡位確認，有明確訂單能見度<br>② 估值尚未反映題材，或從高點回落但基本面沒變<br>③ 看得懂財報那幾行：毛利率趨勢、產能利用率、庫存天數</div></div>
+      <div class="wiki-block coral" style="margin-bottom:10px;"><div class="wiki-title">出場條件（任一觸發就考慮）</div><div class="wiki-body">✗ 論文失效：客戶轉換供應商、技術路線改變<br>✗ 估值過高：本益比超過歷史區間且無新催化劑<br>✗ 基本面轉壞：連續兩季毛利率下滑、庫存異常累積</div></div>
+      <div class="wiki-block"><div class="wiki-title">部位管理</div><div class="wiki-body">單一個股上限：總資產 10% · 衛星倉整體上限：總資產 30%</div></div>
+    </div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">配息運用原則（核心倉 NT$200萬+ 後適用）</div>
+    <div class="wiki-block amber"><div class="wiki-title">用配息支付非必要支出</div><div class="wiki-body">主動薪資覆蓋基本生活費。高股息 ETF 配息拿來支付旅遊、享樂，不動本金。核心倉建立期配息一律再投入，不提領。</div></div>
+  </div>
+</div>
+
+<!-- ⑥ 月報記錄 -->
+<div class="tab-panel" id="tab-monthly">
+  <div class="card">
+    <div class="card-title">新增本月記錄</div>
+    <div class="input-grid">
+      <div class="input-group"><div class="input-label">月份</div><input type="text" id="m-month" placeholder="2026-06"></div>
+      <div class="input-group"><div class="input-label">本月總收入</div><div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="m-inc" placeholder="50000" step="1000"></div></div>
+    </div>
+    <div class="input-grid">
+      <div class="input-group"><div class="input-label">本月總支出</div><div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="m-exp" placeholder="28000" step="1000"></div></div>
+      <div class="input-group"><div class="input-label">資產淨值（存款＋投資現值）</div><div class="input-wrap"><span class="input-prefix">NT$</span><input type="number" id="m-net" placeholder="380000" step="10000"></div></div>
+    </div>
+    <div class="input-group" style="margin-bottom:12px;"><div class="input-label">本月備註（重要事件、異常支出、決策）</div><textarea id="m-note" placeholder="例：轉職完成，薪資增加 NT$15,000…"></textarea></div>
+    <button class="btn btn-primary" onclick="addMonthly()">儲存本月記錄</button>
+  </div>
+  <div class="card">
+    <div class="card-title">歷史趨勢</div>
+    <div class="chart-wrap"><canvas id="mc" role="img" aria-label="資產淨值與月儲蓄趨勢圖"></canvas></div>
+    <div style="overflow-x:auto;">
+      <table class="report-table">
+        <thead><tr><th>月份</th><th>收入</th><th>支出</th><th>儲蓄率</th><th>資產淨值</th><th>備註</th><th></th></tr></thead>
+        <tbody id="monthly-tbody"></tbody>
+      </table>
+    </div>
+    <div id="monthly-empty" style="text-align:center;color:var(--txt3);font-size:13px;padding:24px 0;">還沒有記錄，新增第一筆開始追蹤趨勢</div>
+  </div>
+</div>
+
+<!-- ⑦ 執行習慣 -->
+<div class="tab-panel" id="tab-habits">
+  <div class="rbox r-purple" style="margin-bottom:16px;">觀念知道了，執行才是差距。財務自由是被執行出來的，不是被想出來的。確認這些事情有沒有在跑。</div>
+  <div class="card"><div class="card-title">立刻要做（這週內）</div><div id="habits-now"></div></div>
+  <div class="card"><div class="card-title">持續要做（每月）</div><div id="habits-monthly"></div></div>
+  <div class="card"><div class="card-title">地基穩後啟動</div><div id="habits-later"></div></div>
+</div>
+
+<!-- ⑧ 路線圖 -->
+<div class="tab-panel" id="tab-roadmap">
+  <div class="card">
+    <div class="card-title">近期路線（3–5 年）— 已規劃</div>
+    <div class="rm-item"><div class="rm-line"><div class="rm-dot" style="background:var(--purple-border);"></div><div class="rm-conn"></div></div><div class="rm-body"><div class="rm-year">現在 — 6 個月</div><div class="rm-title">地基建設</div><div class="rm-desc">補足緊急備用金（月支出 × 6）· 啟動 0050 定期定額 · 三帳戶系統建立 · 智慧工廠 side project 完成</div></div></div>
+    <div class="rm-item"><div class="rm-line"><div class="rm-dot" style="background:var(--amber-border);"></div><div class="rm-conn"></div></div><div class="rm-body"><div class="rm-year">6 個月 — 1.5 年</div><div class="rm-title">轉職 + 技術深化</div><div class="rm-desc">完成轉職（月薪提升 30%+）· 英文技術文章起步 · Build in Public on X · 核心倉穩定累積</div></div></div>
+    <div class="rm-item"><div class="rm-line"><div class="rm-dot" style="background:var(--blue-border);"></div><div class="rm-conn" style="background:transparent;"></div></div><div class="rm-body"><div class="rm-year">1.5 年 — 3 年</div><div class="rm-title">個人品牌起步 + 衛星倉啟動</div><div class="rm-desc">技術文章累積 30+ 篇 · 個人品牌在特定圈子有能見度 · 衛星倉開始有實際部位 · 第一個 side project 試水</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">遠景方向（5–10 年）— 探索中</div>
+    <div class="rm-item"><div class="rm-line"><div class="rm-dot" style="background:var(--teal-border);"></div><div class="rm-conn"></div></div><div class="rm-body"><div class="rm-year">3 年 — 5 年</div><div class="rm-title">兩橫並進模式啟動</div><div class="rm-desc">工作：Senior/Staff Engineer，薪資覆蓋生活，不依賴副業 · 副業：多個小賭注快速迭代（4–8 週 MVP），全球市場為目標</div></div></div>
+    <div class="rm-item"><div class="rm-line"><div class="rm-dot" style="background:var(--teal-border);"></div><div class="rm-conn"></div></div><div class="rm-body"><div class="rm-year">5 年 — 10 年</div><div class="rm-title">收穫複利 + 副業找到方向</div><div class="rm-desc">投資資產複利效果明顯 · 副業有 1–2 個穩定現金流 · 工作變成選擇而非義務</div></div></div>
+    <div class="rm-item"><div class="rm-line"><div class="rm-dot" style="background:var(--teal-border);"></div><div class="rm-conn" style="background:transparent;"></div></div><div class="rm-body"><div class="rm-year">目標年份</div><div class="rm-title">財務自由</div><div class="rm-desc">被動收入 ≥ 月支出 · 工作是因為想做，不是因為必須 · 自由 = 選擇權，不是大數字</div></div></div>
+  </div>
+</div>
+
+<!-- ⑨ 知識庫 -->
+<div class="tab-panel" id="tab-wiki">
+  <div class="card">
+    <div class="card-title">財務自由第一性原理</div>
+    <div class="wiki-block teal"><div class="wiki-title">核心公式</div><div class="wiki-body" style="font-family:'IBM Plex Mono',monospace;">被動收入 ≥ 月支出 = 財務自由</div></div>
+    <div class="wiki-block teal"><div class="wiki-title">邏輯鏈（閉合的）</div><div class="wiki-body" style="font-family:'IBM Plex Mono',monospace;">認知提升 → 本業收入↑ → 儲蓄轉化資產 → 被動收入↑ → 覆蓋支出 → 自由</div></div>
+    <div class="wiki-block"><div class="wiki-title">財務自由 ≠ 退休</div><div class="wiki-body">自由的本質是選擇權，不是數字。當資產夠大，工作變成你選擇做的事，而不是你必須做的事。</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">郝哥四邏輯 × 個人校準</div>
+    <div class="wiki-block teal"><div class="wiki-title">邏輯一：自由 = 選擇權 ✓</div><div class="wiki-body">「當你不想做某件事時，你有拒絕的權利。」這是財務自由的真正定義，不是大數字。</div></div>
+    <div class="wiki-block teal"><div class="wiki-title">邏輯二：資產 vs 負債 ✓</div><div class="wiki-body">資產 = 把錢放進口袋的東西。負債 = 把錢拿走的東西。主動收入要像漏斗一樣流向資產。</div></div>
+    <div class="wiki-block amber"><div class="wiki-title">邏輯三：機械式定額 ⚠ 部分修正</div><div class="wiki-body">對一般人 100% 正確。但你對 CoWoS / HBM 供應鏈有真實認知優勢。正確框架：核心倉 70% 機械式 0050 + 衛星倉 30% 認知優勢選股，不是 100% 放棄選股。</div></div>
+    <div class="wiki-block teal"><div class="wiki-title">邏輯四：投資自己是最高報酬率 ✓</div><div class="wiki-body">早期本金小，自我投資 ROI 遠超金融投資。轉職加薪的影響遠比任何選股策略大。</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">三種槓桿（重要性排序）</div>
+    <div class="wiki-block purple"><div class="wiki-title">① 財務槓桿（讓錢生錢）</div><div class="wiki-body">股票、ETF、投資。資產規模越大複利效果越顯著。早期本金小，這個槓桿效果有限。</div></div>
+    <div class="wiki-block purple"><div class="wiki-title">② 數位槓桿（代碼與媒體）</div><div class="wiki-body">產品、內容、個人品牌。一次建立，持續產生效果。這是你中長期最重要的開源槓桿。</div></div>
+    <div class="wiki-block"><div class="wiki-title">③ 勞力槓桿（拼命升職加薪）</div><div class="wiki-body">天花板最低，但早期是最快提升收入的方法。轉職 = 目前最高 ROI 的財務決策。</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">常見執行陷阱</div>
+    <div class="wiki-block coral"><div class="wiki-title">觀念和執行之間的鴻溝</div><div class="wiki-body">你已經「知道」要做的事很多。財務自由是被執行出來的，不是被想出來的。</div></div>
+    <div class="wiki-block coral"><div class="wiki-title">記帳 ≠ 財務管理</div><div class="wiki-body">盲目記帳只是「事後後悔」。每月記錄四個數字就夠：收入、支出、資產淨值、儲蓄率。</div></div>
+    <div class="wiki-block coral"><div class="wiki-title">副業 vs 正職的優先順序</div><div class="wiki-body">轉職前不要分心太多副業。轉職是現在最大的槓桿，完成後再認真啟動副業試水。</div></div>
+  </div>
+</div>
+
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+var DB=JSON.parse(localStorage.getItem('fos')||'{}');
+if(!DB.monthly)DB.monthly=[];
+if(!DB.dreams)DB.dreams=[];
+if(!DB.hn)DB.hn={};if(!DB.hm)DB.hm={};if(!DB.hl)DB.hl={};
+function save(){localStorage.setItem('fos',JSON.stringify(DB));}
+document.querySelectorAll('.tab-btn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=this.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(function(x){x.classList.remove('active');});
+    document.querySelectorAll('.tab-panel').forEach(function(x){x.classList.remove('active');});
+    this.classList.add('active');
+    document.getElementById('tab-'+t).classList.add('active');
+    if(t==='assess')calcA();
+    if(t==='goal')calcG();
+    if(t==='gap')buildGap();
+    if(t==='monthly')renderMonthly();
+    if(t==='habits')renderHabits();
+  });
+});
+function fmt(n){return Math.round(n).toLocaleString('zh-TW');}
+function fmtW(n){return n>=10000?(n/10000).toFixed(1)+'萬':fmt(n);}
+function g(id){return parseFloat(document.getElementById(id)?.value)||0;}
+function mtc(label,val,sub,cls){return '<div class="metric"><div class="metric-label">'+label+'</div><div class="metric-value'+(cls?' '+cls:'')+'">'+val+'</div><div class="metric-sub">'+sub+'</div></div>';}
+function sc(){
+  DB.inp={sal:g('a-sal'),bon:g('a-bon'),side:g('a-side'),age:g('a-age'),exp:g('a-exp'),ann:g('a-ann'),cash:g('a-cash'),inv:g('a-inv'),tgt:g('g-tgt'),rexp:g('g-rexp'),nsal:g('g-nsal'),jm:g('g-jm')};
+  save();calcA();calcG();
+}
+function calcA(){
+  var d=DB.inp||{};if(!d.sal)return;
+  var inc=d.sal+d.sal*d.bon/12+(d.side||0);
+  var te=d.exp+d.ann/12;
+  var sur=inc-te;var sr=inc>0?sur/inc*100:0;
+  var ef=te*6;var ep=Math.min(100,(d.cash||0)/ef*100);
+  document.getElementById('assess-result').style.display='block';
+  var sc2=sr>=30?'c-teal':sr>=15?'c-amber':'c-coral';
+  var ec=ep>=100?'c-teal':ep>=50?'c-amber':'c-coral';
+  document.getElementById('assess-metrics').innerHTML=
+    mtc('月收入','NT$'+fmt(Math.round(inc)),d.side>0?'含副業 NT$'+fmt(d.side):'月薪＋年終攤平','c-purple')+
+    mtc('真實月支出','NT$'+fmt(Math.round(te)),'年繳 NT$'+fmt(d.ann)+' 已攤平','')+
+    mtc('月可投資','NT$'+fmt(Math.max(0,Math.round(sur))),sur<0?'⚠ 支出超過收入':'扣除所有支出後',sur>=0?'c-teal':'c-coral')+
+    mtc('儲蓄率',Math.max(0,sr).toFixed(1)+'%',sr>=30?'健康':sr>=15?'尚可':'需改善',sc2)+
+    mtc('緊急備用金',Math.round(ep)+'%','目標 NT$'+fmtW(ef),ec)+
+    mtc('總資產','NT$'+fmtW((d.cash||0)+(d.inv||0)),'現金＋投資現值','c-blue');
+  var items=[{l:'生活支出',v:te,c:'#534AB7'},{l:'備用金補充',v:ep<100?Math.min(sur*0.3,Math.max(0,ef-(d.cash||0))/12):0,c:'#854F0B'},{l:'核心倉 0050',v:Math.max(0,sur*(ep>=100?0.7:0.5)),c:'#1D9E75'},{l:'衛星倉個股',v:Math.max(0,sur*(ep>=100?0.3:0.2)),c:'#185FA5'}];
+  document.getElementById('alloc-bars').innerHTML=items.map(function(it){var p=inc>0?Math.min(100,Math.max(0,it.v)/inc*100):0;return '<div class="alloc-row"><div class="alloc-label">'+it.l+'</div><div class="alloc-track"><div class="alloc-fill" style="width:'+p.toFixed(1)+'%;background:'+it.c+';"></div></div><div class="alloc-val">NT$'+fmt(Math.max(0,Math.round(it.v)))+'</div></div>';}).join('');
+}
+function pj(mo,init,monthly){var v=init,r=Math.pow(1.095,1/12)-1;for(var i=0;i<mo;i++)v=v*(1+r)+monthly;return v;}
+function calcG(){
+  var d=DB.inp||{};if(!d.tgt||!d.age)return;
+  var te=d.exp+d.ann/12;var re=d.rexp||te;var fi=re*12*25;var yrs=d.tgt-d.age;
+  var tot=(d.cash||0)+(d.inv||0);var inc=(d.sal||0)+(d.sal||0)*(d.bon||0)/12+(d.side||0);
+  var sur=inc-te;var ns=d.nsal||d.sal;var ns2=ns+ns*(d.bon||0)/12+(d.side||0)-te;
+  var jm=d.jm||6;var m1=Math.min(jm*12,yrs*12);var m2=Math.max(0,yrs*12-m1);
+  var v1=pj(m1,tot,Math.max(0,sur));var v2=pj(m2,v1,Math.max(0,ns2));
+  DB.calc={fi,v2,ok:v2>=fi,yrs,sur,ns2};save();
+  document.getElementById('goal-result').style.display='block';
+  document.getElementById('goal-metrics').innerHTML=
+    mtc('財務自由目標','NT$'+fmtW(fi),'月支出 NT$'+fmt(Math.round(re))+' × 300','c-purple')+
+    mtc('距離目標',yrs+'年',d.tgt+'歲達成','c-blue')+
+    mtc('預計屆時資產','NT$'+fmtW(v2),v2>=fi?'✓ 達標':'缺口 NT$'+fmtW(fi-v2),v2>=fi?'c-teal':'c-coral')+
+    mtc('轉職後月可投','NT$'+fmt(Math.max(0,Math.round(ns2))),'比現在多 NT$'+fmt(Math.max(0,Math.round(ns2-sur))),'c-amber');
+}
+function buildGap(){
+  var d=DB.inp||{};
+  if(!d.sal||!d.tgt){document.getElementById('gap-content').innerHTML='<div class="rbox r-blue">請先完成「① 評估現況」和「② 設定目標」的填寫。</div>';return;}
+  var te=d.exp+d.ann/12;var inc=(d.sal||0)+(d.sal||0)*(d.bon||0)/12+(d.side||0);
+  var sur=inc-te;var sr=inc>0?sur/inc*100:0;var ef=te*6;var ep=Math.min(100,(d.cash||0)/ef*100);
+  var re=d.rexp||te;var fi=re*12*25;var yrs=d.tgt-d.age;
+  var tot=(d.cash||0)+(d.inv||0);
+  var ns=d.nsal||d.sal;var ns2=ns+ns*(d.bon||0)/12+(d.side||0)-te;
+  var jm=d.jm||6;var m1=Math.min(jm*12,yrs*12);var m2=Math.max(0,yrs*12-m1);
+  var v1=pj(m1,tot,Math.max(0,sur));var v2=pj(m2,v1,Math.max(0,ns2));
+  var ok=v2>=fi;
+  var levers=[];
+  if(ep<100){var mo=sur>0?Math.ceil((ef-(d.cash||0))/sur):99;levers.push({dot:'var(--coral-border)',b:'b-now',bl:'立刻開始',t:'補足緊急備用金',desc:'目前 '+Math.round(ep)+'%，還差 NT$'+fmtW(ef-(d.cash||0))+'。按現在儲蓄率約需 '+mo+' 個月。這是整個系統的地基。'});}
+  if((d.nsal||0)>(d.sal||0)){levers.push({dot:'var(--teal-border)',b:'b-soon',bl:(d.jm||6)+'個月內',t:'完成轉職（最大槓桿）',desc:'月薪 NT$'+fmt(d.sal)+' → NT$'+fmt(d.nsal)+'，月可投資增加 NT$'+fmt(Math.max(0,Math.round(ns2-sur)))+'。這是你目前 ROI 最高的財務決策。'});}
+  if(!ok)levers.push({dot:'var(--amber-border)',b:'b-later',bl:'中長期',t:'考慮調整目標年齡',desc:'目前缺口 NT$'+fmtW(Math.max(0,fi-v2))+'。目標年齡延後 3 年，複利時間增加，缺口大幅收窄。'});
+  if(!(d.side>0))levers.push({dot:'var(--blue-border)',b:'b-later',bl:'中長期',t:'啟動副業收入',desc:'目前副業為零。IoT + 後端的跨域背景在接案市場是稀缺組合，每月 NT$5,000 起步。'});
+  var html='<div class="metric-grid">'+
+    mtc('財務自由目標','NT$'+fmtW(fi),'','c-purple')+
+    mtc('預計屆時資產','NT$'+fmtW(v2),(ok?'✓ 達標':'缺口 NT$'+fmtW(fi-v2)),(ok?'c-teal':'c-coral'))+
+    mtc('儲蓄率',sr.toFixed(1)+'%',(sr>=30?'健康':sr>=15?'尚可':'需提升'),(sr>=30?'c-teal':'c-amber'))+
+    mtc('備用金進度',Math.round(ep)+'%','目標 NT$'+fmtW(ef),(ep>=100?'c-teal':'c-amber'))+
+    '</div><div class="card"><div class="card-title">槓桿分析 — 按影響力排序</div>';
+  levers.forEach(function(l){html+='<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);"><div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;background:'+l.dot+';"></div><div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--txt);margin-bottom:4px;display:flex;align-items:center;gap:6px;"><span class="badge '+l.b+'">'+l.bl+'</span>'+l.t+'</div><div style="font-size:12px;color:var(--txt2);line-height:1.6;">'+l.desc+'</div></div></div>';});
+  html+='</div>';
+  document.getElementById('gap-content').innerHTML=html;
+}
+function renderDreams(){
+  var html=DB.dreams.map(function(d,i){
+    var mo=d.amount>0&&d.years>0?Math.ceil(d.amount/(d.years*12)):0;
+    return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">'+
+      '<input type="text" value="'+(d.name||'')+'" placeholder="目標名稱" style="flex:2;" oninput="DB.dreams['+i+'].name=this.value;save();">'+
+      '<div class="input-wrap" style="flex:1;min-width:0;"><span class="input-prefix">NT$</span><input type="number" value="'+(d.amount||'')+'" placeholder="金額" oninput="DB.dreams['+i+'].amount=+this.value;save();renderDreams();"></div>'+
+      '<div class="input-wrap"><input type="number" value="'+(d.years||'')+'" placeholder="幾年後" style="width:58px;" oninput="DB.dreams['+i+'].years=+this.value;save();renderDreams();"><span class="input-prefix" style="margin-left:4px;font-size:11px;">年後</span></div>'+
+      (mo>0?'<span style="font-size:11px;font-family:IBM Plex Mono,monospace;color:var(--txt3);white-space:nowrap;">每月存 NT$'+fmt(mo)+'</span>':'')+
+      '<button class="btn btn-del btn-sm" onclick="DB.dreams.splice('+i+',1);save();renderDreams();">✕</button></div>';
+  }).join('');
+  document.getElementById('dream-list').innerHTML=html||'<p style="color:var(--txt3);font-size:12px;padding:8px 0;">例：歐洲旅遊 NT$150,000 / 2年後 → 每月存 NT$6,250</p>';
+}
+function addDream(){DB.dreams.push({name:'',amount:0,years:0});save();renderDreams();}
+var mChart=null;
+function addMonthly(){
+  var mo=document.getElementById('m-month').value;
+  var inc=+document.getElementById('m-inc').value||0;
+  var exp=+document.getElementById('m-exp').value||0;
+  var net=+document.getElementById('m-net').value||0;
+  var note=document.getElementById('m-note').value;
+  if(!mo){alert('請填入月份');return;}
+  DB.monthly=DB.monthly.filter(function(r){return r.month!==mo;});
+  DB.monthly.push({month:mo,inc,exp,net,note});
+  DB.monthly.sort(function(a,b){return a.month<b.month?-1:1;});
+  save();
+  ['m-month','m-inc','m-exp','m-net','m-note'].forEach(function(id){document.getElementById(id).value='';});
+  renderMonthly();
+}
+function renderMonthly(){
+  var rows=DB.monthly;
+  document.getElementById('monthly-empty').style.display=rows.length===0?'block':'none';
+  document.getElementById('monthly-tbody').innerHTML=rows.map(function(r,i){
+    var sr2=r.inc>0?((r.inc-r.exp)/r.inc*100).toFixed(1)+'%':'-';
+    var sc3=r.inc>0&&(r.inc-r.exp)/r.inc>=0.3?'c-teal':'c-amber';
+    return '<tr><td>'+r.month+'</td><td>NT$'+fmt(r.inc)+'</td><td>NT$'+fmt(r.exp)+'</td><td class="'+sc3+'">'+sr2+'</td><td class="c-blue">NT$'+fmt(r.net)+'</td><td style="font-family:\'Noto Sans TC\',sans-serif;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(r.note||'-')+'</td><td><button class="btn btn-del btn-sm" onclick="DB.monthly.splice('+i+',1);save();renderMonthly();">✕</button></td></tr>';
+  }).join('');
+  if(mChart){mChart.destroy();mChart=null;}
+  if(rows.length<2)return;
+  var ctx=document.getElementById('mc').getContext('2d');
+  mChart=new Chart(ctx,{type:'line',data:{labels:rows.map(function(r){return r.month;}),datasets:[{label:'資產淨值',data:rows.map(function(r){return r.net;}),borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.07)',fill:true,tension:0.4,pointRadius:4,yAxisID:'y'},{label:'月儲蓄',data:rows.map(function(r){return r.inc-r.exp;}),borderColor:'#534AB7',backgroundColor:'transparent',tension:0.4,pointRadius:3,borderDash:[4,3],yAxisID:'y'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return 'NT$'+(v/10000).toFixed(0)+'萬';},font:{size:11},color:'#888780'},grid:{color:'#e0ded8'}},x:{ticks:{font:{size:11},color:'#888780'},grid:{display:false}}}}});
+}
+var HN=[{id:'h1',t:'開立投資帳戶，設定發薪日自動轉帳',d:'金額不重要，先建立機制。自動化移除人為判斷。'},{id:'h2',t:'啟動 0050 定期定額',d:'從 NT$3,000 起步，設定自動扣款，不要依賴手動執行。'},{id:'h3',t:'計算緊急備用金缺口，設定每月補足金額',d:'目標 = 月支出 × 6。今天算出來，設定自動轉帳。'},{id:'h4',t:'完成三帳戶分流設定',d:'生活帳戶 / 投資帳戶 / 享樂備用金帳戶，本週完成。'}];
+var HM=[{id:'h5',t:'記錄月報四個數字',d:'收入、支出、資產淨值、儲蓄率。五分鐘，每月一次。'},{id:'h6',t:'確認 0050 定期定額有正常扣款',d:'偶爾因餘額不足導致扣款失敗，要定期確認。'},{id:'h7',t:'檢視備用金進度',d:'是否按計畫補足？有無異常支出？'}];
+var HL=[{id:'h8',t:'開立衛星倉，第一個個股部位',d:'前提：備用金 100% ＋ 轉職完成 ＋ 核心倉已在運行。'},{id:'h9',t:'副業第一個 MVP 上線',d:'4–8 週完成，公開發布，觀察市場反應再決定是否繼續。'},{id:'h10',t:'英文技術文章第一篇',d:'智慧工廠系統做完後，用英文寫轉職故事：履歷素材 + 品牌起點。'}];
+function renderHabits(){
+  function bld(list,key){return list.map(function(h){var ok=!!DB[key][h.id];return '<div class="habit-row"><div class="hcheck'+(ok?' done':'')+'" onclick="DB[\''+key+'\'][\''+h.id+'\']=!DB[\''+key+'\'][\''+h.id+'\'];save();renderHabits();">'+(ok?'✓':'')+'</div><div><div class="htitle">'+(ok?'<s style="color:var(--txt3);">'+h.t+'</s>':h.t)+'</div><div class="hdesc">'+h.d+'</div></div></div>';}).join('');}
+  document.getElementById('habits-now').innerHTML=bld(HN,'hn');
+  document.getElementById('habits-monthly').innerHTML=bld(HM,'hm');
+  document.getElementById('habits-later').innerHTML=bld(HL,'hl');
+}
+(function(){
+  if(DB.inp){var d=DB.inp;var map={'a-sal':d.sal,'a-bon':d.bon,'a-side':d.side,'a-age':d.age,'a-exp':d.exp,'a-ann':d.ann,'a-cash':d.cash,'a-inv':d.inv,'g-tgt':d.tgt,'g-rexp':d.rexp,'g-nsal':d.nsal,'g-jm':d.jm};Object.keys(map).forEach(function(id){var el=document.getElementById(id);if(el&&map[id])el.value=map[id];});calcA();calcG();}
+  renderDreams();
+})();
+</script>
+</body>
+</html>
