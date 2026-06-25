@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenResty / Nginx 完整學習指南</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--bg2:#f8f8f6;--bg3:#f0efe9;
+  --border:#e2e0d8;--border2:#c8c6bc;
+  --txt:#1a1a18;--txt2:#555550;--txt3:#999990;
+  --purple:#534AB7;--purple-bg:#EEEDFE;--purple-txt:#3C3489;
+  --teal:#0F6E56;--teal-bg:#E1F5EE;--teal-txt:#085041;
+  --amber:#854F0B;--amber-bg:#FAEEDA;--amber-txt:#633806;
+  --coral:#993C1D;--coral-bg:#FAECE7;--coral-txt:#712B13;
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-txt:#0C447C;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-txt:#27500A;
+  --gray:#5F5E5A;--gray-bg:#F1EFE8;--gray-txt:#444441;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Noto Sans TC',sans-serif;font-size:14px;line-height:1.6}
+#shell{max-width:980px;margin:0 auto;padding:36px 20px 80px}
+
+/* nav */
+#nav{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:32px;overflow-x:auto}
+.ntab{padding:10px 16px;font-size:12px;font-weight:500;color:var(--txt3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Noto Sans TC',sans-serif}
+.ntab:hover{color:var(--txt2)}.ntab.active{color:var(--purple);border-bottom-color:var(--purple)}
+.section{display:none}.section.active{display:block}
+
+/* chapter header */
+.ch-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.ch-title{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:500;color:var(--txt);margin-bottom:6px}
+.ch-sub{font-size:13px;color:var(--txt2);margin-bottom:24px;line-height:1.6}
+
+/* goal box */
+.goal-box{border:1px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--bg2);margin-bottom:24px}
+.goal-box-title{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.goal-list{display:flex;flex-direction:column;gap:6px}
+.goal-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--txt2)}
+.goal-dot{width:6px;height:6px;border-radius:50%;background:var(--purple);flex-shrink:0;margin-top:6px}
+
+/* intro callout */
+.callout{font-size:13px;color:var(--txt2);line-height:1.7;padding:12px 16px;border-radius:8px;margin-bottom:18px}
+.callout strong{color:var(--txt)}
+.callout.gray{background:var(--bg2);border-left:3px solid var(--border2)}
+.callout.amber{background:var(--amber-bg);border-left:3px solid var(--amber)}
+.callout.amber strong{color:var(--amber-txt)}
+.callout.teal{background:var(--teal-bg);border-left:3px solid var(--teal)}
+.callout.teal strong{color:var(--teal-txt)}
+.callout.coral{background:var(--coral-bg);border-left:3px solid var(--coral)}
+.callout.coral strong{color:var(--coral-txt)}
+.callout.blue{background:var(--blue-bg);border-left:3px solid var(--blue)}
+.callout.blue strong{color:var(--blue-txt)}
+
+/* section heading */
+.sec-h2{font-size:14px;font-weight:700;color:var(--txt);margin:24px 0 10px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+.sec-h3{font-size:13px;font-weight:700;color:var(--txt);margin:16px 0 8px}
+
+/* overview cards */
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-bottom:20px}
+.ov-card{border:1px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--bg2)}
+.ov-card-title{font-size:13px;font-weight:700;margin-bottom:6px}
+.ov-card-body{font-size:12px;color:var(--txt2);line-height:1.6}
+.ov-card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{font-size:11px;padding:2px 8px;border-radius:8px;font-family:'IBM Plex Mono',monospace}
+
+/* code block */
+.code-wrap{margin:10px 0 16px}
+.code-label{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
+.code-block{background:#1a1a1a;border-radius:8px;padding:14px 16px;overflow-x:auto}
+.code-block pre{font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.7;color:#d4d4d4;white-space:pre}
+
+/* step list */
+.step-list{display:flex;flex-direction:column;gap:16px;margin:12px 0 20px}
+.step-item{display:flex;gap:14px;align-items:flex-start}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--purple);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-family:'IBM Plex Mono',monospace}
+.step-body{flex:1}
+.step-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:4px}
+.step-desc{font-size:13px;color:var(--txt2);line-height:1.55}
+
+/* table */
+.cmp-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px}
+.cmp-table th{padding:9px 14px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.04em;border-bottom:2px solid var(--border);background:var(--bg2);color:var(--txt3);text-transform:uppercase}
+.cmp-table td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5;color:var(--txt2)}
+.cmp-table tr:last-child td{border-bottom:none}
+.cmp-table tr:hover td{background:var(--bg2)}
+.cmp-table td:first-child{font-weight:500;color:var(--txt);font-family:'IBM Plex Mono',monospace;font-size:12px}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:500;font-family:'IBM Plex Mono',monospace}
+.p-ok{background:var(--teal-bg);color:var(--teal-txt)}
+.p-warn{background:var(--amber-bg);color:var(--amber-txt)}
+.p-bad{background:var(--coral-bg);color:var(--coral-txt)}
+.p-blue{background:var(--blue-bg);color:var(--blue-txt)}
+.p-gray{background:var(--gray-bg);color:var(--gray-txt)}
+
+/* two col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+
+/* flow */
+.flow{display:flex;flex-direction:column;gap:4px;margin:12px 0}
+.flow-row{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap}
+.flow-node{flex:1;min-width:110px;border:1px solid var(--border);border-radius:8px;padding:10px 14px;background:var(--bg2);font-size:12px}
+.flow-node-title{font-weight:700;margin-bottom:3px}
+.flow-node-body{color:var(--txt2);font-size:11px;line-height:1.5}
+.flow-arrow{display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--txt3);padding:0 2px;flex-shrink:0}
+.flow-label{font-size:11px;color:var(--txt3);text-align:center;font-family:'IBM Plex Mono',monospace;padding:2px 0}
+
+/* arch box */
+.arch-box{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.arch-head{padding:11px 16px;background:var(--bg2);font-size:13px;font-weight:500;color:var(--txt);border-bottom:1px solid var(--border)}
+.arch-body{padding:14px 16px;background:var(--bg)}
+
+/* lua phase pipeline */
+.pipeline{display:flex;align-items:stretch;margin:14px 0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.phase{flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--border);cursor:default}
+.phase:last-child{border-right:none}
+.phase-name{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;margin-bottom:3px}
+.phase-desc{font-size:10px;color:var(--txt3);line-height:1.4}
+.phase.ph-init{background:var(--gray-bg)}.phase.ph-init .phase-name{color:var(--gray-txt)}
+.phase.ph-rw{background:var(--amber-bg)}.phase.ph-rw .phase-name{color:var(--amber-txt)}
+.phase.ph-ac{background:var(--coral-bg)}.phase.ph-ac .phase-name{color:var(--coral-txt)}
+.phase.ph-ct{background:var(--teal-bg)}.phase.ph-ct .phase-name{color:var(--teal-txt)}
+.phase.ph-hf{background:var(--blue-bg)}.phase.ph-hf .phase-name{color:var(--blue-txt)}
+.phase.ph-lg{background:var(--purple-bg)}.phase.ph-lg .phase-name{color:var(--purple-txt)}
+@media(max-width:640px){.pipeline{flex-direction:column}.phase{border-right:none;border-bottom:1px solid var(--border);text-align:left;display:flex;gap:10px;align-items:center}.phase:last-child{border-bottom:none}.phase-desc{margin:0}}
+
+/* lua syntax table */
+.syntax-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:16px}
+.syn-card{border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.syn-card-head{padding:8px 12px;background:var(--bg2);font-size:11px;font-weight:700;color:var(--txt);font-family:'IBM Plex Mono',monospace;border-bottom:1px solid var(--border)}
+.syn-card-body{padding:10px 12px}
+.syn-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px}
+.syn-row:last-child{border-bottom:none}
+.syn-code{font-family:'IBM Plex Mono',monospace;color:var(--purple-txt);font-size:11px;flex-shrink:0}
+.syn-note{color:var(--txt2);font-size:11px;text-align:right}
+
+/* summary box */
+.summary-box{border:1px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--bg2);margin-top:24px}
+.summary-box-title{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.summary-list{display:flex;flex-direction:column;gap:5px}
+.summary-item{font-size:13px;color:var(--txt2);display:flex;gap:8px;align-items:flex-start}
+.summary-item::before{content:"✓";color:var(--teal);font-weight:700;flex-shrink:0}
+
+/* inline code */
+code{font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:4px;color:var(--purple-txt)}
+
+/* error badge */
+.err-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-weight:500}
+</style>
+</head>
+<body>
+<div id="shell">
+
+<div style="margin-bottom:28px">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Learning Guide</div>
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;color:var(--txt);margin-bottom:6px">OpenResty / Nginx</div>
+  <div style="font-size:13px;color:var(--txt2)">從零開始 → 安裝配置 → Lua 邏輯 → Domain / SSL → 跳板機 → 企業級架構</div>
+</div>
+
+<div id="nav">
+  <button class="ntab active" data-sec="s01">① 概念</button>
+  <button class="ntab" data-sec="s02">② 安裝啟動</button>
+  <button class="ntab" data-sec="s03">③ 配置結構</button>
+  <button class="ntab" data-sec="s04">④ 反向代理</button>
+  <button class="ntab" data-sec="s05">⑤ Domain / SSL</button>
+  <button class="ntab" data-sec="s06">⑥ Lua 語法</button>
+  <button class="ntab" data-sec="s07">⑦ Lua 實戰</button>
+  <button class="ntab" data-sec="s08">⑧ 跳板機</button>
+  <button class="ntab" data-sec="s09">⑨ 企業架構</button>
+  <button class="ntab" data-sec="s10">⑩ 錯誤排查</button>
+</div>
+
+<!-- ① 概念 -->
+<div class="section active" id="sec-s01">
+  <div class="ch-eyebrow">Chapter 01</div>
+  <div class="ch-title">OpenResty 是什麼？</div>
+  <div class="ch-sub">在學配置之前，先搞清楚它解決的問題——以及為什麼不用純 Nginx 就好</div>
+
+  <div class="goal-box">
+    <div class="goal-box-title">本章學完你會知道</div>
+    <div class="goal-list">
+      <div class="goal-item"><div class="goal-dot"></div>OpenResty 跟 Nginx 的關係是什麼</div>
+      <div class="goal-item"><div class="goal-dot"></div>它比純 Nginx 多了什麼能力</div>
+      <div class="goal-item"><div class="goal-dot"></div>在架構中它扮演什麼角色</div>
+      <div class="goal-item"><div class="goal-dot"></div>什麼情況下應該選它</div>
+    </div>
+  </div>
+
+  <div class="sec-h2">OpenResty = Nginx + LuaJIT</div>
+  <div class="callout gray">
+    <strong>一句話解釋：</strong>OpenResty 就是在 Nginx 裡裝了一個 Lua 執行引擎（LuaJIT），讓你可以在 Nginx 處理請求的過程中插入自訂邏輯——驗證 Token、查 Redis、做路由判斷，而且這些操作是<strong>非阻塞的</strong>，不會影響 Nginx 同時處理其他請求。
+  </div>
+
+  <div class="ov-grid">
+    <div class="ov-card" style="border-top:3px solid var(--purple)">
+      <div class="ov-card-title" style="color:var(--purple-txt)">Nginx（基底）</div>
+      <div class="ov-card-body">高效能 HTTP Server，事件驅動模型，處理靜態檔案、反向代理。但設定檔是靜態的，<code>if</code> 能力有限，沒辦法寫複雜邏輯。</div>
+      <div class="ov-card-tags"><span class="tag" style="background:var(--gray-bg);color:var(--gray-txt)">靜態配置</span><span class="tag" style="background:var(--gray-bg);color:var(--gray-txt)">反向代理</span></div>
+    </div>
+    <div class="ov-card" style="border-top:3px solid var(--teal)">
+      <div class="ov-card-title" style="color:var(--teal-txt)">LuaJIT（擴充）</div>
+      <div class="ov-card-body">高效能 Lua 直譯器，效能接近 C。搭配協程（Coroutine）實現非阻塞 I/O——寫起來像同步，執行起來不阻塞。</div>
+      <div class="ov-card-tags"><span class="tag" style="background:var(--teal-bg);color:var(--teal-txt)">動態邏輯</span><span class="tag" style="background:var(--teal-bg);color:var(--teal-txt)">Coroutine</span></div>
+    </div>
+    <div class="ov-card" style="border-top:3px solid var(--blue)">
+      <div class="ov-card-title" style="color:var(--blue-txt)">lua-resty-* 模組</div>
+      <div class="ov-card-body">豐富的官方與社群模組：Redis、MySQL、HTTP Client、JWT、Session 等，全部都是非阻塞實作。</div>
+      <div class="ov-card-tags"><span class="tag" style="background:var(--blue-bg);color:var(--blue-txt)">resty.redis</span><span class="tag" style="background:var(--blue-bg);color:var(--blue-txt)">resty.jwt</span></div>
+    </div>
+  </div>
+
+  <div class="sec-h2">在架構中的位置</div>
+  <div class="arch-box">
+    <div class="arch-head">Client 的請求如何經過 OpenResty 到達後端</div>
+    <div class="arch-body">
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-node" style="border-top:2px solid var(--gray);max-width:150px">
+            <div class="flow-node-title">Client</div>
+            <div class="flow-node-body">Browser / App</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="border-top:2px solid var(--purple)">
+            <div class="flow-node-title" style="color:var(--purple-txt)">OpenResty（Port 443）</div>
+            <div class="flow-node-body">SSL 終止 · JWT 驗證 · 限流 · 路由判斷</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="border-top:2px solid var(--teal)">
+            <div class="flow-node-title" style="color:var(--teal-txt)">後端服務</div>
+            <div class="flow-node-body">Spring Boot / Go / Node.js（私有網路）</div>
+          </div>
+        </div>
+        <div class="flow-label">↕ 可直接查詢（不走後端）</div>
+        <div class="flow-row">
+          <div class="flow-node" style="border-top:2px solid var(--amber);max-width:200px">
+            <div class="flow-node-title" style="color:var(--amber-txt)">Redis</div>
+            <div class="flow-node-body">快取 / 限流計數 / 白名單</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-h2">OpenResty vs 純 Nginx vs 後端 Gateway</div>
+  <table class="cmp-table">
+    <tr><th>方案</th><th>動態邏輯</th><th>效能</th><th>適合場景</th></tr>
+    <tr>
+      <td>純 Nginx</td>
+      <td>幾乎沒有，if 有限制</td>
+      <td><span class="pill p-ok">極高</span></td>
+      <td>純靜態檔案、簡單反向代理</td>
+    </tr>
+    <tr>
+      <td>OpenResty</td>
+      <td>Lua 完整邏輯能力</td>
+      <td><span class="pill p-ok">極高</span></td>
+      <td><span class="pill p-blue">高流量 API 入口、Gateway</span></td>
+    </tr>
+    <tr>
+      <td>Kong / APISIX</td>
+      <td>Plugin 生態，開箱即用</td>
+      <td><span class="pill p-ok">高</span></td>
+      <td>標準化 Gateway，不想自己寫 Lua</td>
+    </tr>
+    <tr>
+      <td>Spring Cloud Gateway</td>
+      <td>Java 完整生態</td>
+      <td><span class="pill p-warn">中（JVM 開銷）</span></td>
+      <td>Java 微服務生態、已有 Spring</td>
+    </tr>
+  </table>
+
+  <div class="callout amber">
+    <strong>Kong 和 APISIX 底層就是 OpenResty。</strong>理解 OpenResty 等於理解這兩個主流 API Gateway 的運作原理。
+  </div>
+
+  <div class="summary-box">
+    <div class="summary-box-title">本章小結</div>
+    <div class="summary-list">
+      <div class="summary-item">OpenResty = Nginx + LuaJIT，在 Nginx 請求生命週期中插入 Lua 邏輯</div>
+      <div class="summary-item">非阻塞 I/O：Lua 查 Redis 時不會卡住其他請求</div>
+      <div class="summary-item">在架構中作為統一入口，負責驗證、限流、路由，後端服務只處理業務邏輯</div>
+      <div class="summary-item">Kong / APISIX 底層皆基於 OpenResty</div>
+    </div>
+  </div>
+</div>
+
+<!-- ② 安裝啟動 -->
+<div class="section" id="sec-s02">
+  <div class="ch-eyebrow">Chapter 02</div>
+  <div class="ch-title">安裝與啟動</div>
+  <div class="ch-sub">安裝 OpenResty、確認版本、啟動服務、找到配置檔位置</div>
+
+  <div class="goal-box">
+    <div class="goal-box-title">本章學完你會知道</div>
+    <div class="goal-list">
+      <div class="goal-item"><div class="goal-dot"></div>如何安裝 OpenResty（CentOS / Ubuntu）</div>
+      <div class="goal-item"><div class="goal-dot"></div>啟動、停止、reload 的正確指令</div>
+      <div class="goal-item"><div class="goal-dot"></div>配置檔在哪裡、目錄結構長什麼樣</div>
+      <div class="goal-item"><div class="goal-dot"></div>如何確認服務有在跑</div>
+    </div>
+  </div>
+
+  <div class="sec-h2">安裝</div>
+  <div class="two-col">
+    <div>
+      <div class="sec-h3">CentOS / RHEL</div>
+      <div class="code-wrap">
+        <div class="code-label">新增 repo 並安裝</div>
+        <div class="code-block"><pre>yum install -y yum-utils
+yum-config-manager --add-repo \
+  https://openresty.org/package/centos/openresty.repo
+yum install -y openresty</pre></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-h3">Ubuntu / Debian</div>
+      <div class="code-wrap">
+        <div class="code-label">新增 repo 並安裝</div>
+        <div class="code-block"><pre>apt install -y software-properties-common
+add-apt-repository -y ppa:openresty/ppa
+apt update
+apt install -y openresty</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-h2">啟動與管理</div>
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">確認版本（確認安裝成功）</div>
+        <div class="code-block"><pre>openresty -v</pre></div>
+        <div class="step-desc">會看到類似 <code>nginx version: openresty/1.25.3.1</code></div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">語法檢查（修改配置後先檢查，不重啟）</div>
+        <div class="code-block"><pre>openresty -t</pre></div>
+        <div class="step-desc">若看到 <code>syntax is ok</code> 才繼續下一步。<strong>養成習慣：改完先 -t 再 reload。</strong></div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">啟動</div>
+        <div class="code-block"><pre>sudo openresty</pre></div>
+        <div class="step-desc">啟動後用 <code>curl http://localhost</code> 確認，看到 <code>Welcome to OpenResty!</code> 代表成功。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Graceful Reload（生產環境修改配置後用這個）</div>
+        <div class="code-block"><pre>sudo openresty -s reload</pre></div>
+        <div class="step-desc">不中斷現有連線，新配置對新請求生效。<strong>生產環境永遠優先用 reload，不要 stop + 重啟。</strong></div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">停止</div>
+        <div class="code-block"><pre>sudo openresty -s stop</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout amber">
+    <strong>reload vs stop+重啟的差別：</strong><code>reload</code> 讓舊的 Worker 處理完現有連線後才退出，新 Worker 用新配置接新請求。<code>stop</code> 是立即中斷所有連線。生產環境幾乎只用 reload。
+  </div>
+
+  <div class="sec-h2">確認服務狀態與找配置檔</div>
+  <div class="code-wrap">
+    <div class="code-label">常用確認指令</div>
+    <div class="code-block"><pre># 確認 process 有在跑（會看到 master + worker process）
+ps aux | grep nginx
+
+# 確認監聽的 port
+ss -tlnp | grep nginx
+
+# 找配置檔位置
+find / -name nginx.conf 2>/dev/null | grep openresty
+
+# 預設路徑
+/usr/local/openresty/nginx/conf/nginx.conf</pre></div>
+  </div>
+
+  <div class="summary-box">
+    <div class="summary-box-title">本章小結</div>
+    <div class="summary-list">
+      <div class="summary-item">安裝完用 <code>openresty -v</code> 確認版本</div>
+      <div class="summary-item">改完配置先 <code>openresty -t</code> 語法檢查，再 <code>openresty -s reload</code></div>
+      <div class="summary-item">生產環境用 reload，不要 stop + 重啟</div>
+      <div class="summary-item">配置檔預設在 <code>/usr/local/openresty/nginx/conf/nginx.conf</code></div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ 配置結構 -->
+<div class="section" id="sec-s03">
+  <div class="ch-eyebrow">Chapter 03</div>
+  <div class="ch-title">nginx.conf 配置結構</div>
+  <div class="ch-sub">理解每個區塊的職責、推薦的目錄結構、常用全域設定</div>
+
+  <div class="goal-box">
+    <div class="goal-box-title">本章學完你會知道</div>
+    <div class="goal-list">
+      <div class="goal-item"><div class="goal-dot"></div>nginx.conf 的五大區塊各自負責什麼</div>
+      <div class="goal-item"><div class="goal-dot"></div>如何用 include 把配置拆成多個檔案</div>
+      <div class="goal-item"><div class="goal-dot"></div>生產環境推薦的目錄結構</div>
+      <div class="goal-item"><div class="goal-dot"></div>location 匹配規則與優先順序</div>
+    </div>
+  </div>
+
+  <div class="sec-h2">nginx.conf 五大區塊</div>
+  <table class="cmp-table">
+    <tr><th>區塊</th><th>層級</th><th>職責</th><th>常見設定</th></tr>
+    <tr><td>worker_processes</td><td>最外層</td><td>Worker 數量</td><td>設 <code>auto</code> 等於 CPU 核心數</td></tr>
+    <tr><td>events {}</td><td>最外層</td><td>連線事件模型</td><td><code>worker_connections 102400</code></td></tr>
+    <tr><td>http {}</td><td>最外層</td><td>HTTP 全域設定、include 子配置</td><td>log_format、lua_shared_dict、include</td></tr>
+    <tr><td>server {}</td><td>http 內</td><td>虛擬主機，一個 domain 一個</td><td>listen、server_name、ssl_certificate</td></tr>
+    <tr><td>location {}</td><td>server 內</td><td>URL 路徑規則與處理邏輯</td><td>proxy_pass、content_by_lua_block</td></tr>
+  </table>
+
+  <div class="sec-h2">推薦目錄結構（生產環境）</div>
+  <div class="code-wrap">
+    <div class="code-block"><pre>/usr/local/openresty/nginx/
+├── conf/
+│   ├── nginx.conf              ← 主配置（全域設定）
+│   ├── proxy.conf              ← proxy header 統一管理
+│   ├── blockip.conf            ← IP 封鎖清單
+│   ├── logable.conf            ← log 條件過濾
+│   ├── cf_ip.conf              ← Cloudflare IP 白名單
+│   ├── upstream/               ← 各服務的 upstream 定義
+│   │   ├── api.conf
+│   │   └── admin.conf
+│   └── conf.d/                 ← 各 domain 的 server block
+│       ├── api.example.com.conf
+│       └── admin.example.com.conf
+├── lua/                        ← 所有 Lua 業務邏輯
+│   ├── init.lua
+│   ├── jwt_auth.lua
+│   └── whitelist.lua
+└── html/                       ← 靜態檔案</pre></div>
+  </div>
+
+  <div class="sec-h2">完整 nginx.conf 範本</div>
+  <div class="code-wrap">
+    <div class="code-label">nginx.conf（含重要說明）</div>
+    <div class="code-block"><pre>user  root;
+worker_processes  auto;          # 建議設 auto
+
+events {
+    worker_connections  102400;  # 每個 Worker 最大連線數
+}
+
+http {
+    # ── Buffer 設定 ──────────────────────────────────
+    client_max_body_size 200M;
+    client_header_buffer_size 256k;
+    proxy_buffers 128 32k;
+    proxy_buffer_size 64k;
+
+    include  mime.types;
+    default_type  application/octet-stream;
+
+    # 隱藏 Server header（避免暴露版本資訊）
+    more_set_headers 'Server: -';
+
+    # ── Log 格式 ─────────────────────────────────────
+    log_format main '[$request_time] | $time_local | $remote_addr'
+                    ' | $http_host | $request | $status'
+                    ' | "$upstream_response_time" | $upstream_addr';
+
+    # ── Lua 設定 ─────────────────────────────────────
+    lua_shared_dict shared_data 512m;  # 跨 Worker 共享記憶體
+    lua_code_cache on;                 # 生產環境必須 on
+    init_by_lua_file /usr/local/openresty/nginx/lua/init.lua;
+
+    # ── 傳遞真實 IP ───────────────────────────────────
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    sendfile on;
+    keepalive_timeout 65;
+
+    # ── 引入子配置 ────────────────────────────────────
+    include /usr/local/openresty/nginx/conf/blockip.conf;
+    include /usr/local/openresty/nginx/conf/logable.conf;
+    include /usr/local/openresty/nginx/conf/upstream/*.conf;
+    include /usr/local/openresty/nginx/conf/conf.d/*.conf;
+}</pre></div>
+  </div>
+
+  <div class="sec-h2">location 匹配規則與優先順序</div>
+  <table class="cmp-table">
+    <tr><th>語法</th><th>說明</th><th>優先級</th></tr>
+    <tr><td>= /exact</td><td>完全匹配，只有這條路徑符合</td><td><span class="pill p-ok">最高</span></td></tr>
+    <tr><td>^~ /prefix</td><td>前綴匹配，找到後不再繼續比對正則</td><td><span class="pill p-ok">高</span></td></tr>
+    <tr><td>~ /regex</td><td>正則匹配，區分大小寫</td><td><span class="pill p-warn">中</span></td></tr>
+    <tr><td>~* /regex</td><td>正則匹配，不區分大小寫</td><td><span class="pill p-warn">中</span></td></tr>
+    <tr><td>/prefix</td><td>一般前綴，最長的優先</td><td><span class="pill p-bad">低</span></td></tr>
+  </table>
+
+  <div class="callout amber">
+    <strong>proxy_pass 結尾斜線是常見坑：</strong><br>
+    <code>proxy_pass http://backend/api/</code> → location <code>/app/</code> 的請求 <code>/app/user</code> 會被轉成 <code>/api/user</code>（路徑替換）<br>
+    <code>proxy_pass http://backend</code> → 保留完整路徑 <code>/app/user</code> 不變<br>
+    不確定時建議用無斜線版本，行為更直覺。
+  </div>
+
+  <div class="summary-box">
+    <div class="summary-box-title">本章小結</div>
+    <div class="summary-list">
+      <div class="summary-item">conf.d/ 目錄每個 domain 一個 .conf 檔，用 include 全部載入</div>
+      <div class="summary-item">lua_code_cache on 生產環境必開，否則每次請求重新編譯</div>
+      <div class="summary-item">location 優先順序：= > ^~ > ~ > ~* > 一般前綴</div>
+      <div class="summary-item">proxy_pass 結尾斜線會影響路徑拼接，務必測試確認</div>
+    </div>
+  </div>
+</div>
+
+<!-- ④ 反向代理 -->
+<div class="section" id="sec-s04">
+  <div class="ch-eyebrow">Chapter 04</div>
+  <div class="ch-title">反向代理 &amp; Upstream</div>
+  <div class="ch-sub">把外部流量轉發到後端服務、多台機器負載平衡、Timeout 與錯誤處理</div>
+
+  <div class="goal-box">
+    <div class="goal-box-title">本章學完你會知道</div>
+    <div class="goal-list">
+      <div class="goal-item"><div class="goal-dot"></div>proxy_pass 基本用法與 proxy.conf 的作用</div>
+      <div class="goal-item"><div class="goal-dot"></div>upstream 設定多台後端機器</div>
+      <div class="goal-item"><div class="goal-dot"></div>負載平衡演算法怎麼選</div>
+      <div class="goal-item"><div class="goal-dot"></div>Timeout 設定與 proxy_next_upstream 錯誤轉移</div>
+    </div>
+  </div>
+
+  <div class="sec-h2">最基本的反向代理</div>
+  <div class="callout gray">Client 的請求進來後，Nginx 轉發給後端服務（Spring Boot / Go 等），再把回應回傳給 Client。後端服務不直接對外，只有 Nginx 的 port 對外開放。</div>
+
+  <div class="code-wrap">
+    <div class="code-label">最基本範例：把 /api/ 轉發給後端 8080</div>
+    <div class="code-block"><pre>server {
+    listen 80;
+    server_name localhost;
+
+    location /api/ {
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+        proxy_pass http://127.0.0.1:8080;
+    }
+}</pre></div>
+  </div>
+
+  <div class="sec-h2">proxy.conf — 統一管理代理 Header</div>
+  <div class="callout gray">每次用 <code>proxy_pass</code> 都 include 這個檔，確保後端永遠能拿到正確的 Client IP 和協議資訊。</div>
+  <div class="code-wrap">
+    <div class="code-label">proxy.conf</div>
+    <div class="code-block"><pre>proxy_http_version 1.1;
+proxy_set_header Connection "";           # 啟用 keep-alive 到 upstream
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;</pre></div>
+  </div>
+  <div class="callout teal">
+    <strong>為什麼要設 HTTP 1.1 + Connection ""？</strong>預設 Nginx 對 upstream 用 HTTP 1.0，每次請求結束連線就關掉。改成 1.1 + keepalive 讓連線可以重複使用，避免頻繁建立 TCP 三次握手，高流量下效能差異明顯。
+  </div>
+
+  <div class="sec-h2">Upstream — 多台後端負載平衡</div>
+  <div class="code-wrap">
+    <div class="code-label">upstream/api.conf</div>
+    <div class="code-block"><pre>upstream backend_api {
+    least_conn;   # 負載平衡演算法（見下表）
+
+    server 10.20.35.152:8080 weight=5 max_fails=3 fail_timeout=10s;
+    server 10.20.35.120:8080 weight=5 max_fails=3 fail_timeout=10s;
+
+    keepalive 64;  # 維持 64 條長連線到後端
+}</pre></div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">server block 中引用 upstream</div>
+    <div class="code-block"><pre>location /api/ {
+    include /usr/local/openresty/nginx/conf/proxy.conf;
+    proxy_pass http://backend_api;   # 直接用 upstream 名稱
+}</pre></div>
+  </div>
+
+  <table class="cmp-table">
+    <tr><th>演算法</th><th>說明</th><th>適合場景</th></tr>
+    <tr><td>round-robin（預設）</td><td>輪流分配，每台輪一次</td><td>後端效能相近</td></tr>
+    <tr><td>weight=N</td><td>按比例，weight 越高收越多請求</td><td>機器規格不同</td></tr>
+    <tr><td>least_conn</td><td>選當前連線數最少的</td><td><span class="pill p-blue">推薦：長連線 API</span></td></tr>
+    <tr><td>ip_hash</td><td>同一 IP 固定打同一台</td><td>需要 session 黏性（不推薦，應改用 Redis session）</td></tr>
+  </table>
+
+  <div class="sec-h2">Timeout 設定</div>
+  <div class="code-wrap">
+    <div class="code-label">Timeout 設定（放在 location 或 server 內）</div>
+    <div class="code-block"><pre>proxy_connect_timeout  5s;    # 建立連線最多等 5 秒
+proxy_send_timeout     30s;   # 送出請求最多等 30 秒
+proxy_read_timeout     30s;   # 等待後端回應最多 30 秒
+
+# 後端出錯時自動轉到下一台
+proxy_next_upstream error timeout http_500 http_502;</pre></div>
+  </div>
+
+  <div class="callout amber">
+    <strong>max_fails + fail_timeout 被動健康檢查：</strong><code>max_fails=3</code> 代表 3 次失敗後，該機器被標記為不可用，<code>fail_timeout=10s</code> 後再試。這是 Nginx 內建的被動式健康檢查，不需要額外模組。
+  </div>
+
+  <div class="summary-box">
+    <div class="summary-box-title">本章小結</div>
+    <div class="summary-list">
+      <div class="summary-item">proxy_pass 轉發流量，proxy.conf 統一管理 header，每次都 include</div>
+      <div class="summary-item">多台機器用 upstream block，keepalive 維持長連線到後端</div>
+      <div class="summary-item">長連線 API 推薦 least_conn，避免某台機器堆積慢請求</div>
+      <div class="summary-item">max_fails + fail_timeout 是 Nginx 內建被動健康檢查，不需額外模組</div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑤ Domain / SSL -->
+<div class="section" id="sec-s05">
+  <div class="ch-eyebrow">Chapter 05</div>
+  <div class="ch-title">Domain 綁定 / SSL 配置</div>
+  <div class="ch-sub">從 DNS 設定到 HTTPS 憑證，讓服務對外正式上線</div>
+
+  <div class="goal-box">
+    <div class="goal-box-title">本章學完你會知道</div>
+    <div class="goal-list">
+      <div class="goal-item"><div class="goal-dot"></div>DNS A Record 怎麼設定</div>
+      <div class="goal-item"><div class="goal-dot"></div>用 certbot 申請免費 Let's Encrypt 憑證</div>
+      <div class="goal-item"><div class="goal-dot"></div>nginx.conf 完整 HTTPS server block 寫法</div>
+      <div class="goal-item"><div class="goal-dot"></div>HTTP 強制轉 HTTPS、HSTS、安全 header</div>
+      <div class="goal-item"><div class="goal-dot"></div>一台機器多個 domain 的做法</div>
+    </div>
+  </div>
+
+  <div class="sec-h2">完整流程概覽</div>
+  <div class="arch-box">
+    <div class="arch-head">DNS → Server → OpenResty 的解析路徑</div>
+    <div class="arch-body">
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-node" style="border-top:2px solid var(--gray)">
+            <div class="flow-node-title">① 購買 Domain</div>
+            <div class="flow-node-body">GoDaddy / Namecheap / Google Domains</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="border-top:2px solid var(--blue)">
+            <div class="flow-node-title" style="color:var(--blue-txt)">② DNS A Record</div>
+            <div class="flow-node-body">api.example.com → 203.0.113.10（Server IP）</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="border-top:2px solid var(--teal)">
+            <div class="flow-node-title" style="color:var(--teal-txt)">③ certbot 申請 SSL</div>
+            <div class="flow-node-body">Let's Encrypt 免費憑證，90 天自動續期</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="border-top:2px solid var(--purple)">
+            <div class="flow-node-title" style="color:var(--purple-txt)">④ nginx server_name</div>
+            <div class="flow-node-body">server_name api.example.com 匹配 domain</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-h2">一、DNS 設定（以 Cloudflare 為例）</div>
+  <table class="cmp-table">
+    <tr><th>Record 類型</th><th>Name</th><th>Value</th><th>用途</th></tr>
+    <tr><td>A</td><td>@</td><td>203.0.113.10</td><td>根域名 example.com → IP</td></tr>
+    <tr><td>A</td><td>api</td><td>203.0.113.10</td><td>api.example.com → IP</td></tr>
+    <tr><td>A</td><td>admin</td><td>203.0.113.10</td><td>admin.example.com → IP（同一台機器）</td></tr>
+    <tr><td>CNAME</td><td>www</td><td>example.com</td><td>www 轉向根域名</td></tr>
+  </table>
+  <div class="callout gray">多個 subdomain 指向同一個 IP 完全沒問題。由 OpenResty 的 <code>server_name</code> 區分要路由到哪個後端服務。</div>
+
+  <div class="sec-h2">二、申請 Let's Encrypt 免費憑證</div>
+  <div class="code-wrap">
+    <div class="code-label">安裝 certbot</div>
+    <div class="code-block"><pre># Ubuntu / Debian
+apt install -y certbot python3-certbot-nginx
+
+# CentOS / RHEL
+yum install -y certbot python3-certbot-nginx</pre></div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">申請憑證</div>
+    <div class="code-block"><pre># 方式一：讓 certbot 自動修改 nginx 配置（快速）
+certbot --nginx -d api.example.com -d admin.example.com
+
+# 方式二：只申請憑證，自己手動設定 nginx（推薦，比較可控）
+certbot certonly --webroot \
+  -w /usr/local/openresty/nginx/html \
+  -d api.example.com
+
+# 憑證存放位置
+# /etc/letsencrypt/live/api.example.com/fullchain.pem
+# /etc/letsencrypt/live/api.example.com/privkey.pem
+
+# 自動續期（加入 crontab，每月 1 號凌晨更新）
+0 0 1 * * certbot renew --quiet && openresty -s reload</pre></div>
+  </div>
+
+  <div class="sec-h2">三、完整 HTTPS server block</div>
+  <div class="code-wrap">
+    <div class="code-label">conf.d/api.example.com.conf</div>
+    <div class="code-block"><pre># ── HTTP 強制轉 HTTPS ─────────────────────────────
+server {
+    listen 80;
+    server_name api.example.com;
+    return 301 https://$host$request_uri;
+}
+
+# ── HTTPS 主配置 ──────────────────────────────────
+server {
+    listen 443 ssl;
+    server_name api.example.com;
+
+    # 憑證
+    ssl_certificate     /etc/letsencrypt/live/api.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.example.com/privkey.pem;
+
+    # SSL 安全設定
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # 安全 Header
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+
+    access_log  /var/log/nginx/api.access.log  main;
+    error_log   /var/log/nginx/api.error.log;
+
+    location / {
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+        proxy_pass http://backend_api;
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/local/openresty/nginx/html;
+    }
+}</pre></div>
+  </div>
+
+  <div class="sec-h2">四、多 domain 一台機器（Virtual Host）</div>
+  <div class="callout gray">每個 domain 一個 .conf 檔放在 <code>conf.d/</code>，nginx.conf 最後 <code>include conf.d/*.conf</code> 全部載入。TLS 握手時 Client 會透過 SNI 告知要連哪個 domain，Nginx 自動選對應的憑證和 server block。</div>
+  <div class="code-wrap">
+    <div class="code-block"><pre># conf.d/
+# ├── api.example.com.conf     → proxy_pass http://backend_api
+# ├── admin.example.com.conf   → proxy_pass http://backend_admin（限 IP）
+# └── static.example.com.conf  → root /var/www/static（靜態檔案直接 serve）
+
+# 靜態資源直接用 root，不要 proxy，效能差距 10x 以上
+server {
+    listen 443 ssl;
+    server_name static.example.com;
+    # ... ssl 設定 ...
+    root /var/www/static;
+    location / {
+        try_files $uri $uri/ =404;
+        add_header Cache-Control "public, max-age=31536000";
+    }
+}</pre></div>
+  </div>
+
+  <div class="summary-box">
+    <div class="summary-box-title">本章小結</div>
+    <div class="summary-list">
+      <div class="summary-item">DNS A Record 指向 Server IP，多個 subdomain 可以指向同一台</div>
+      <div class="summary-item">certbot 申請免費憑證，加 crontab 自動每月續期</div>
+      <div class="summary-item">HTTP server block 只做 301 轉 HTTPS，邏輯都在 443 server block</div>
+      <div class="summary-item">多 domain 每個建一個 .conf 檔，用 include conf.d/*.conf 全部載入</div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑥ Lua 語法 -->
+<div class="section" id="sec-s06">
+  <div class="ch-eyebrow">Chapter 06</div>
+  <div class="ch-title">Lua 語法入門</div>
+  <div class="ch-sub">專為沒用過 Lua 的人設計——只學 OpenResty 中實際會用到的部分</div>
+
+  <div class="goal-box">
+    <div class="goal-box-title">本章學完你會知道</div>
+    <div class="goal-list">
+      <div class="goal-item"><div class="goal-dot"></div>Lua 基本語法（變數、條件、迴圈、函式）</div>
+      <div class="goal-item"><div class="goal-dot"></div>Lua table 是什麼（OpenResty 中到處都是）</div>
+      <div class="goal-item"><div class="goal-dot"></div>require 載入模組的方式</div>
+      <div class="goal-item"><div class="goal-dot"></div>OpenResty 專屬的 ngx.* API</div>
+    </div>
+  </div>
+
+  <div class="callout blue">
+    <strong>學習策略：</strong>Lua 語法簡單，但跟 Java / JavaScript 有幾個明顯差異。本章只學 OpenResty 中真正會用到的部分，不需要成為 Lua 專家。
+  </div>
+
+  <div class="sec-h2">Lua 基本語法</div>
+
+  <div class="two-col">
+    <div>
+      <div class="sec-h3">變數宣告</div>
+      <div class="code-block"><pre>-- 區域變數（推薦）
+local name = "Kai"
+local age = 29
+local active = true
+
+-- 全域變數（盡量避免）
+greeting = "hello"
+
+-- 字串拼接用 .. （不是 +）
+local msg = "Hello, " .. name</pre></div>
+    </div>
+    <div>
+      <div class="sec-h3">條件判斷</div>
+      <div class="code-block"><pre>local score = 80
+
+if score >= 90 then
+    ngx.say("A")
+elseif score >= 60 then
+    ngx.say("B")
+else
+    ngx.say("F")
+end
+
+-- 不等於用 ~= （不是 !=）
+if name ~= "admin" then
+    ngx.exit(403)
+end</pre></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="sec-h3">迴圈</div>
+      <div class="code-block"><pre>-- 數字迴圈
+for i = 1, 5 do
+    ngx.say(i)
+end
+
+-- 遍歷 table（類似 for-each）
+local fruits = {"apple", "banana", "mango"}
+for i, v in ipairs(fruits) do
+    ngx.say(i, ": ", v)
+end</pre></div>
+    </div>
+    <div>
+      <div class="sec-h3">函式</div>
+      <div class="code-block"><pre>-- 定義函式
+local function greet(name)
+    return "Hello, " .. name
+end
+
+-- 呼叫
+local msg = greet("Kai")
+ngx.say(msg)
+
+-- 函式可以回傳多個值
+local function minmax(a, b)
+    return math.min(a,b), math.max(a,b)
+end
+local lo, hi = minmax(3, 7)</pre></div>
+    </div>
+  </div>
+
+  <div class="sec-h2">Lua Table（最重要的資料結構）</div>
+  <div class="callout gray">
+    <strong>Table 是 Lua 唯一的資料結構，</strong>可以同時當 Array、HashMap、物件使用。OpenResty 中幾乎所有 API 回傳的都是 table。
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="sec-h3">當 Array 用</div>
+      <div class="code-block"><pre>local fruits = {"apple", "banana"}
+
+-- Lua index 從 1 開始（不是 0）
+ngx.say(fruits[1])   -- apple
+ngx.say(#fruits)     -- 2（長度）
+
+-- 新增
+fruits[3] = "mango"
+table.insert(fruits, "grape")</pre></div>
+    </div>
+    <div>
+      <div class="sec-h3">當 HashMap 用</div>
+      <div class="code-block"><pre>local user = {
+    name = "Kai",
+    age = 29,
+    role = "admin"
+}
+
+ngx.say(user.name)       -- Kai
+ngx.say(user["role"])    -- admin
+
+-- 遍歷 HashMap
+for k, v in pairs(user) do
+    ngx.say(k, " = ", v)
+end</pre></div>
+    </div>
+  </div>
+
+  <div class="sec-h2">require — 載入模組</div>
+  <div class="code-wrap">
+    <div class="code-label">nginx.conf 設定模組搜尋路徑</div>
+    <div class="code-block"><pre>http {
+    # 告訴 Lua 去哪裡找 .lua 檔
+    lua_package_path "/usr/local/openresty/nginx/lua/?.lua;;";
+}</pre></div>
+  </div>
+  <div class="two-col">
+    <div>
+      <div class="code-label">lua/utils.lua（自訂模組）</div>
+      <div class="code-block"><pre>local M = {}   -- M 是這個模組的 table
+
+function M.greet(name)
+    return "Hello, " .. name
+end
+
+function M.is_admin(role)
+    return role == "admin"
+end
+
+return M       -- 模組必須 return</pre></div>
+    </div>
+    <div>
+      <div class="code-label">lua/auth.lua（使用模組）</div>
+      <div class="code-block"><pre>-- 載入自訂模組
+local utils = require "utils"
+
+-- 載入內建模組
+local cjson = require "cjson"
+local jwt   = require "resty.jwt"
+local redis = require "resty.redis"
+
+-- 使用
+local msg = utils.greet("Kai")
+ngx.say(msg)</pre></div>
+    </div>
+  </div>
+
+  <div class="sec-h2">OpenResty 專屬 ngx.* API</div>
+  <div class="syntax-grid">
+    <div class="syn-card">
+      <div class="syn-card-head">讀取請求</div>
+      <div class="syn-card-body">
+        <div class="syn-row"><span class="syn-code">ngx.var.uri</span><span class="syn-note">當前 URI 路徑</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.var.http_authorization</span><span class="syn-note">Authorization header（全小寫！）</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.req.get_uri_args()</span><span class="syn-note">Query String → table</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.req.get_headers()</span><span class="syn-note">所有 header → table</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.req.read_body()</span><span class="syn-note">讀 body 前必須先呼叫</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.req.get_body_data()</span><span class="syn-note">取得 body 字串</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.req.get_post_args()</span><span class="syn-note">表單參數 → table</span></div>
+      </div>
+    </div>
+    <div class="syn-card">
+      <div class="syn-card-head">輸出回應</div>
+      <div class="syn-card-body">
+        <div class="syn-row"><span class="syn-code">ngx.say("text")</span><span class="syn-note">輸出並自動加換行</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.print("text")</span><span class="syn-note">輸出，不加換行</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.status = 401</span><span class="syn-note">設定 HTTP 狀態碼</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.header["Content-Type"]</span><span class="syn-note">設定 response header</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.exit(401)</span><span class="syn-note">立即終止並回傳狀態碼</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.req.set_header("X-Id","1")</span><span class="syn-note">修改送給後端的 header</span></div>
+      </div>
+    </div>
+    <div class="syn-card">
+      <div class="syn-card-head">JSON 處理（cjson）</div>
+      <div class="syn-card-body">
+        <div class="syn-row"><span class="syn-code">local cjson = require "cjson"</span><span class="syn-note">載入（已內建）</span></div>
+        <div class="syn-row"><span class="syn-code">cjson.encode(table)</span><span class="syn-note">table → JSON 字串</span></div>
+        <div class="syn-row"><span class="syn-code">cjson.decode(str)</span><span class="syn-note">JSON 字串 → table</span></div>
+      </div>
+    </div>
+    <div class="syn-card">
+      <div class="syn-card-head">Log / 除錯</div>
+      <div class="syn-card-body">
+        <div class="syn-row"><span class="syn-code">ngx.log(ngx.ERR, "msg")</span><span class="syn-note">寫 error.log</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.log(ngx.WARN, "msg")</span><span class="syn-note">寫 warn log</span></div>
+        <div class="syn-row"><span class="syn-code">ngx.log(ngx.INFO, "msg")</span><span class="syn-note">寫 info log</span></div>
+        <div class="syn-row"><span class="syn-code">tostring(value)</span><span class="syn-note">任意值轉字串（debug 用）</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout coral">
+    <strong>常見錯誤：ngx.var.http_* 要全小寫</strong><br>
+    Nginx 會把所有 header name 轉成小寫存在 <code>ngx.var</code>，所以 <code>Authorization</code> header 要用 <code>ngx.var.http_authorization</code>（全小寫），用 <code>http_Authorization</code> 會永遠拿不到值。
+  </div>
+
+  <div class="summary-box">
+    <div class="summary-box-title">本章小結</div>
+    <div class="summary-list">
+      <div class="summary-item">Lua 用 <code>local</code> 宣告區域變數，字串拼接用 <code>..</code>，不等於用 <code>~=</code></div>
+      <div class="summary-item">Table 是唯一資料結構，Array index 從 1 開始（不是 0）</div>
+      <div class="summary-item">讀取 POST body 前必須先呼叫 <code>ngx.req.read_body()</code></div>
+      <div class="summary-item"><code>ngx.var.http_*</code> 的 header name 要全小寫，這是常見 bug 來源</div>
+      <div class="summary-item">模組用 <code>require</code> 載入，自訂模組記得最後 <code>return M</code></div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑦ Lua 實戰 -->
+<div class="section" id="sec-s07">
+  <div class="ch-eyebrow">Chapter 07</div>
+  <div class="ch-title">Lua 實戰</div>
+  <div class="ch-sub">請求生命週期 · JWT 驗證 · Redis 快取 · Rate Limit · 實際可用的完整範例</div>
+
+  <div class="goal-box">
+    <div class="goal-box-title">本章學完你會知道</div>
+    <div class="goal-list">
+      <div class="goal-item"><div class="goal-dot"></div>請求經過哪些階段，各階段能做什麼</div>
+      <div class="goal-item"><div class="goal-dot"></div>用 access_by_lua_file 做 JWT 驗證</div>
+      <div class="goal-item"><div class="goal-dot"></div>用 Redis 做 API 快取和 Rate Limit</div>
+      <div class="goal-item"><div class="goal-dot"></div>init_by_lua 初始化全域設定</div>
+    </div>
+  </div>
+
+  <div class="sec-h2">請求生命週期（Phase）</div>
+  <div class="callout gray">一個請求進來，Nginx 會依序經過以下階段，每個階段都可以用不同的 Lua hook 插入邏輯。</div>
+  <div class="pipeline">
+    <div class="phase ph-init">
+      <div class="phase-name">init_by_lua</div>
+      <div class="phase-desc">Worker 啟動時執行一次。初始化設定、載入模組。不是每個 request 都走。</div>
+    </div>
+    <div class="phase ph-rw">
+      <div class="phase-name">rewrite_by_lua</div>
+      <div class="phase-desc">修改 URI、做 URL 轉向、動態路由（灰度發布）</div>
+    </div>
+    <div class="phase ph-ac">
+      <div class="phase-name">access_by_lua</div>
+      <div class="phase-desc">驗證 Token、IP 白名單、Rate Limit。驗證失敗直接 exit，不進後端。</div>
+    </div>
+    <div class="phase ph-ct">
+      <div class="phase-name">content_by_lua</div>
+      <div class="phase-desc">直接回傳內容（快取命中、健康檢查）。與 proxy_pass 互斥。</div>
+    </div>
+    <div class="phase ph-hf">
+      <div class="phase-name">header_filter_by_lua</div>
+      <div class="phase-desc">修改 response header（加 CORS、移除敏感 header）</div>
+    </div>
+    <div class="phase ph-lg">
+      <div class="phase-name">log_by_lua</div>
+      <div class="phase-desc">記錄 log、埋監控指標。不影響 response，用於後置處理。</div>
+    </div>
+  </div>
+
+  <div class="sec-h2">實戰一：JWT 驗證（access 階段）</div>
+  <div class="code-wrap">
+    <div class="code-label">lua/jwt_auth.lua</div>
+    <div class="code-block"><pre>local jwt   = require "resty.jwt"
+local cjson = require "cjson"
+
+-- 讀取 Authorization header（注意：全小寫）
+local auth_header = ngx.var.http_authorization
+if not auth_header then
+    ngx.status = 401
+    ngx.header["Content-Type"] = "application/json"
+    ngx.say(cjson.encode({ error = "Missing Authorization header" }))
+    return ngx.exit(401)
+end
+
+-- 取出 Bearer token
+local token = auth_header:match("Bearer%s+(.+)")
+if not token then
+    ngx.status = 401
+    ngx.say(cjson.encode({ error = "Invalid format. Use: Bearer <token>" }))
+    return ngx.exit(401)
+end
+
+-- 驗證 JWT（secret 從 shared_dict 讀，不要 hardcode）
+local config = ngx.shared.shared_data
+local secret = config:get("jwt_secret")
+
+local jwt_obj = jwt:verify(secret, token)
+if not jwt_obj.verified then
+    ngx.status = 403
+    ngx.say(cjson.encode({ error = "Invalid token", reason = jwt_obj.reason }))
+    return ngx.exit(403)
+end
+
+-- 把 user_id 注入 header，後端直接信任，不用再次驗證
+ngx.req.set_header("X-User-Id", jwt_obj.payload.sub)
+ngx.req.set_header("X-User-Role", jwt_obj.payload.role or "user")</pre></div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">nginx.conf 中掛載</div>
+    <div class="code-block"><pre>location /api/ {
+    access_by_lua_file /usr/local/openresty/nginx/lua/jwt_auth.lua;
+    include /usr/local/openresty/nginx/conf/proxy.conf;
+    proxy_pass http://backend_api;
+}</pre></div>
+  </div>
+
+  <div class="sec-h2">實戰二：Redis 快取（content 階段）</div>
+  <div class="code-wrap">
+    <div class="code-label">lua/cache.lua — 先查快取，miss 才打後端（要搭配 proxy_pass 的版本見下方）</div>
+    <div class="code-block"><pre>local redis = require "resty.redis"
+local cjson = require "cjson"
+
+local red = redis:new()
+red:set_timeout(500)
+
+local ok, err = red:connect("127.0.0.1", 6379)
+if not ok then
+    ngx.log(ngx.ERR, "Redis connect failed: ", err)
+    return  -- 連線失敗就直接讓請求繼續到後端
+end
+
+local cache_key = "cache:" .. ngx.var.uri
+local cached = red:get(cache_key)
+
+if cached and cached ~= ngx.null then
+    -- 快取命中，直接回傳
+    red:set_keepalive(10000, 100)    -- 用完放回 pool（重要！）
+    ngx.header["Content-Type"] = "application/json"
+    ngx.header["X-Cache"] = "HIT"
+    ngx.say(cached)
+    return ngx.exit(200)
+end
+
+-- 快取 miss，放回 pool，讓請求繼續到後端
+red:set_keepalive(10000, 100)
+ngx.header["X-Cache"] = "MISS"</pre></div>
+  </div>
+  <div class="callout amber">
+    <strong>set_keepalive 是必須的：</strong>Redis 用完後必須呼叫 <code>red:set_keepalive(timeout_ms, pool_size)</code> 把連線放回 connection pool。忘記這步，高併發下每次請求都新建 TCP 連線，效能急劇下降。
+  </div>
+
+  <div class="sec-h2">實戰三：Rate Limit（Redis INCR）</div>
+  <div class="code-wrap">
+    <div class="code-label">lua/rate_limit.lua — 每分鐘限制同一 IP 最多 100 次請求</div>
+    <div class="code-block"><pre>local redis = require "resty.redis"
+local cjson = require "cjson"
+
+local red = redis:new()
+red:set_timeout(500)
+
+local ok, err = red:connect("127.0.0.1", 6379)
+if not ok then
+    ngx.log(ngx.WARN, "Rate limit Redis unavailable: ", err)
+    return  -- Redis 掛了就放行（降級策略）
+end
+
+-- 用 Client IP 作為 key（若有 Cloudflare 用 http_cf_connecting_ip）
+local client_ip = ngx.var.remote_addr
+local key = "rate:" .. client_ip
+
+local count, err = red:incr(key)
+if count == 1 then
+    -- 第一次請求，設定 TTL 60 秒（一個計數窗口）
+    red:expire(key, 60)
+end
+
+red:set_keepalive(10000, 100)
+
+if count > 100 then
+    ngx.status = 429
+    ngx.header["Retry-After"] = "60"
+    ngx.header["Content-Type"] = "application/json"
+    ngx.say(cjson.encode({ error = "Too many requests. Limit: 100/min" }))
+    return ngx.exit(429)
+end</pre></div>
+  </div>
+
+  <div class="sec-h2">實戰四：init_by_lua 全域初始化</div>
+  <div class="code-wrap">
+    <div class="code-label">lua/init.lua — Worker 啟動時執行一次</div>
+    <div class="code-block"><pre>-- 從環境變數讀設定，存進 shared_dict（跨 Worker 共享）
+local config = ngx.shared.shared_data
+
+-- JWT secret 從環境變數讀（不要 hardcode 在程式碼裡）
+local jwt_secret = os.getenv("JWT_SECRET") or "change_me_in_production"
+config:set("jwt_secret", jwt_secret)
+
+-- 可以在這裡做其他初始化，例如預熱 Redis 連線
+ngx.log(ngx.INFO, "OpenResty init complete")</pre></div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">nginx.conf 掛載 init.lua</div>
+    <div class="code-block"><pre>http {
+    lua_shared_dict shared_data 512m;
+    lua_code_cache on;
+    init_by_lua_file /usr/local/openresty/nginx/lua/init.lua;
+    ...
+}</pre></div>
+  </div>
+
+  <div class="summary-box">
+    <div class="summary-box-title">本章小結</div>
+    <div class="summary-list">
+      <div class="summary-item">access_by_lua 做驗證，通過才讓請求繼續到後端（proxy_pass）</div>
+      <div class="summary-item">content_by_lua 直接回傳，與 proxy_pass 互斥，只能選一個</div>
+      <div class="summary-item">init_by_lua 只在 Worker 啟動時跑一次，不是每個 request 都走</div>
+      <div class="summary-item">Redis 用完必須 set_keepalive 放回 pool，這是最常遺漏的效能坑</div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑧ 跳板機 -->
+<div class="section" id="sec-s08">
+  <div class="ch-eyebrow">Chapter 08</div>
+  <div class="ch-title">跳板機 (Bastion Host)</div>
+  <div class="ch-sub">為什麼要跳板機、SSH 跳轉設定、Port Forwarding、搭配 OpenResty 的架構</div>
+
+  <div class="goal-box">
+    <div class="goal-box-title">本章學完你會知道</div>
+    <div class="goal-list">
+      <div class="goal-item"><div class="goal-dot"></div>跳板機解決什麼問題</div>
+      <div class="goal-item"><div class="goal-dot"></div>SSH ProxyJump 一行指令跳轉到內部主機</div>
+      <div class="goal-item"><div class="goal-dot"></div>~/.ssh/config 設定讓跳轉更方便</div>
+      <div class="goal-item"><div class="goal-dot"></div>SSH Tunnel 讓本機直接連內部 DB</div>
+      <div class="goal-item"><div class="goal-dot"></div>OpenResty 在跳板機上的雙角色</div>
+    </div>
+  </div>
+
+  <div class="sec-h2">為什麼需要跳板機？</div>
+  <div class="callout gray">
+    <strong>核心問題：</strong>內部的資料庫、後端服務如果直接對公網開放 port，就是巨大的攻擊面。跳板機（Bastion Host）是唯一對公網開放 SSH 的主機，內部所有主機只接受來自跳板機 IP 的連線。
+  </div>
+
+  <div class="arch-box">
+    <div class="arch-head">跳板機架構：外部開發者進入內部的唯一通道</div>
+    <div class="arch-body">
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-node" style="border-top:2px solid var(--gray);max-width:140px">
+            <div class="flow-node-title">開發者筆電</div>
+            <div class="flow-node-body">本機 SSH Client</div>
+          </div>
+          <div class="flow-arrow">→ SSH :22</div>
+          <div class="flow-node" style="border-top:2px solid var(--coral)">
+            <div class="flow-node-title" style="color:var(--coral-txt)">Bastion Host（公網）</div>
+            <div class="flow-node-body">203.0.113.10<br>只開 Port 22 / 80 / 443<br>OpenResty 也在這裡</div>
+          </div>
+          <div class="flow-arrow">→ 私有網路</div>
+          <div class="flow-node" style="border-top:2px solid var(--teal)">
+            <div class="flow-node-title" style="color:var(--teal-txt)">內部主機群</div>
+            <div class="flow-node-body">10.20.35.x<br>DB / 後端服務<br>不對公網開放</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-h2">SSH ProxyJump（現代跳轉方式）</div>
+  <div class="code-wrap">
+    <div class="code-label">一行指令跳轉</div>
+    <div class="code-block"><pre># -J 指定跳板機，直接連到內部主機
+ssh -J deploy@203.0.113.10 root@10.20.35.152</pre></div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">~/.ssh/config（推薦：設定一次，永久生效）</div>
+    <div class="code-block"><pre># 跳板機設定
+Host bastion
+    HostName     203.0.113.10
+    User         deploy
+    IdentityFile ~/.ssh/bastion_key
+    Port         22
+
+# 內部 App 主機
+Host internal-app
+    HostName     10.20.35.152
+    User         root
+    IdentityFile ~/.ssh/internal_key
+    ProxyJump    bastion       # 自動透過跳板機跳轉
+
+# 內部 DB 主機
+Host internal-db
+    HostName     10.20.35.120
+    User         root
+    IdentityFile ~/.ssh/internal_key
+    ProxyJump    bastion
+
+# 設定好後直接用：
+# ssh internal-app
+# ssh internal-db</pre></div>
+  </div>
+
+  <div class="sec-h2">SSH Tunnel（Port Forwarding）</div>
+  <div class="callout gray">情境：本機無法直接連到內部 MySQL，但可以連到跳板機。透過 SSH Tunnel 讓本機的某個 port 轉發到內部服務。</div>
+  <div class="code-wrap">
+    <div class="code-label">Local Port Forwarding</div>
+    <div class="code-block"><pre># 本機 3307 → 透過跳板機 → 內部 MySQL 3306
+# -N 表示不執行任何指令，只做 tunnel
+ssh -L 3307:10.20.35.120:3306 deploy@203.0.113.10 -N
+
+# 之後本機 DB 工具直接連 127.0.0.1:3307
+mysql -h 127.0.0.1 -P 3307 -u root -p
+
+# 背景執行（加 -f）
+ssh -fN -L 3307:10.20.35.120:3306 deploy@203.0.113.10</pre></div>
+  </div>
+  <div class="code-wrap">
+    <div class="code-label">Dynamic SOCKS Proxy（讓整個本機網路走跳板機）</div>
+    <div class="code-block"><pre># 建立 SOCKS5 proxy，本機 1080 port
+ssh -D 1080 deploy@203.0.113.10 -N
+
+# 配合 proxychains 或瀏覽器 proxy 設定
+proxychains curl http://10.20.35.152:8080/api/health</pre></div>
+  </div>
+
+  <div class="sec-h2">跳板機安全強化</div>
+  <div class="two-col">
+    <div>
+      <div class="sec-h3">/etc/ssh/sshd_config</div>
+      <div class="code-block"><pre># 禁止 root 直接 SSH
+PermitRootLogin no
+
+# 只允許 Key 認證，禁止密碼
+PasswordAuthentication no
+PubkeyAuthentication yes
+
+# 只允許特定使用者登入
+AllowUsers deploy devops
+
+# 閒置超時踢掉（300 秒）
+ClientAliveInterval 300
+ClientAliveCountMax 2</pre></div>
+    </div>
+    <div>
+      <div class="sec-h3">防火牆規則</div>
+      <div class="code-block"><pre># 跳板機只開必要 port
+ufw allow 22/tcp    # SSH
+ufw allow 80/tcp    # HTTP
+ufw allow 443/tcp   # HTTPS
+ufw default deny incoming
+
+# 內部主機：只接受跳板機 IP
+# （在內部主機上執行）
+iptables -A INPUT \
+  -s 10.20.35.1 -j ACCEPT
+iptables -A INPUT -j DROP</pre></div>
+    </div>
+  </div>
+
+  <div class="sec-h2">OpenResty 在跳板機上的雙角色</div>
+  <div class="code-wrap">
+    <div class="code-label">跳板機上同時跑兩個 server block</div>
+    <div class="code-block"><pre># ① 對外 API（正常流量）
+server {
+    listen 443 ssl;
+    server_name api.example.com;
+    # ... 正常 proxy_pass 到後端 ...
+}
+
+# ② 管理介面（限 IP 才能存取）
+server {
+    listen 443 ssl;
+    server_name admin.example.com;
+
+    location / {
+        # 只允許公司 IP 和內部網段
+        allow 211.75.184.0/24;
+        allow 10.20.35.0/24;
+        deny all;
+
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+        proxy_pass http://10.20.35.152:9090;
+    }
+}</pre></div>
+  </div>
+
+  <div class="summary-box">
+    <div class="summary-box-title">本章小結</div>
+    <div class="summary-list">
+      <div class="summary-item">跳板機是唯一對公網開放 SSH 的主機，內部機器只接受來自跳板機的連線</div>
+      <div class="summary-item"><code>~/.ssh/config</code> 設定 ProxyJump，之後直接 <code>ssh internal-app</code> 自動跳轉</div>
+      <div class="summary-item">SSH Tunnel <code>-L</code> 讓本機直接連內部 MySQL / Redis，不需要開 port</div>
+      <div class="summary-item">跳板機禁止密碼登入，只允許 Key 認證，加防火牆限制</div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑨ 企業架構 -->
+<div class="section" id="sec-s09">
+  <div class="ch-eyebrow">Chapter 09</div>
+  <div class="ch-title">企業級架構範例</div>
+  <div class="ch-sub">多服務多 domain · JWT Gateway · 灰度發布 · 完整生產配置整合</div>
+
+  <div class="goal-box">
+    <div class="goal-box-title">本章學完你會知道</div>
+    <div class="goal-list">
+      <div class="goal-item"><div class="goal-dot"></div>一台 OpenResty 服務多個 domain 多個後端的完整架構</div>
+      <div class="goal-item"><div class="goal-dot"></div>JWT Gateway：OpenResty 統一驗證，後端服務不再各自實作</div>
+      <div class="goal-item"><div class="goal-dot"></div>灰度發布：用 Lua 動態把部分流量導到新版本</div>
+      <div class="goal-item"><div class="goal-dot"></div>整合所有章節的完整 production-ready 配置</div>
+    </div>
+  </div>
+
+  <div class="sec-h2">整體架構圖</div>
+  <div class="arch-box">
+    <div class="arch-head">企業級架構：多 domain · JWT Gateway · 灰度 · Redis</div>
+    <div class="arch-body">
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-node" style="border-top:2px solid var(--gray);max-width:130px">
+            <div class="flow-node-title">Client</div>
+            <div class="flow-node-body">Browser / App</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="border-top:2px solid var(--blue)">
+            <div class="flow-node-title" style="color:var(--blue-txt)">Cloudflare</div>
+            <div class="flow-node-body">CDN · DDoS 防護 · 真實 IP 傳遞</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node" style="border-top:2px solid var(--purple)">
+            <div class="flow-node-title" style="color:var(--purple-txt)">OpenResty :443</div>
+            <div class="flow-node-body">SSL 終止 · JWT 驗證 · 限流 · 灰度路由</div>
+          </div>
+        </div>
+        <div class="flow-label">↓ proxy_pass 依 domain / path 路由</div>
+        <div class="flow-row">
+          <div class="flow-node" style="border-top:2px solid var(--teal)">
+            <div class="flow-node-title" style="color:var(--teal-txt)">api 後端 v1 ×2</div>
+            <div class="flow-node-body">Spring Boot :8080<br>10.20.35.152 / 120</div>
+          </div>
+          <div class="flow-arrow">·</div>
+          <div class="flow-node" style="border-top:2px solid var(--teal)">
+            <div class="flow-node-title" style="color:var(--teal-txt)">api 後端 v2</div>
+            <div class="flow-node-body">灰度版本 :8080<br>10.20.35.200</div>
+          </div>
+          <div class="flow-arrow">·</div>
+          <div class="flow-node" style="border-top:2px solid var(--amber)">
+            <div class="flow-node-title" style="color:var(--amber-txt)">Redis</div>
+            <div class="flow-node-body">JWT cache · Rate Limit · 快取</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-h2">完整配置檔：upstream 定義</div>
+  <div class="code-wrap">
+    <div class="code-label">conf/upstream/api.conf</div>
+    <div class="code-block"><pre>upstream backend_v1 {
+    least_conn;
+    server 10.20.35.152:8080 weight=5 max_fails=3 fail_timeout=10s;
+    server 10.20.35.120:8080 weight=5 max_fails=3 fail_timeout=10s;
+    keepalive 64;
+}
+
+upstream backend_v2 {
+    server 10.20.35.200:8080 max_fails=3 fail_timeout=10s;
+    keepalive 32;
+}</pre></div>
+  </div>
+
+  <div class="sec-h2">完整配置檔：api.example.com.conf</div>
+  <div class="code-wrap">
+    <div class="code-label">conf/conf.d/api.example.com.conf</div>
+    <div class="code-block"><pre># HTTP 強制轉 HTTPS
+server {
+    listen 80;
+    server_name api.example.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name api.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/api.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.example.com/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_session_cache   shared:SSL:10m;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+
+    # Cloudflare 真實 IP 還原
+    set_real_ip_from 173.245.48.0/20;
+    set_real_ip_from 103.21.244.0/22;
+    set_real_ip_from 141.101.64.0/18;
+    real_ip_header CF-Connecting-IP;
+
+    access_log  /var/log/nginx/api.access.log main;
+
+    # 健康檢查（不需驗證）
+    location = /health {
+        default_type application/json;
+        content_by_lua_block {
+            ngx.say('{"status":"ok"}')
+        }
+    }
+
+    # 主要 API（JWT 驗證 + Rate Limit + 灰度）
+    location /api/ {
+        # access 階段：JWT 驗證 + Rate Limit
+        access_by_lua_file /usr/local/openresty/nginx/lua/jwt_auth.lua;
+
+        # rewrite 階段：灰度路由（10% 流量到 v2）
+        set $upstream_target "backend_v1";
+        rewrite_by_lua_block {
+            math.randomseed(ngx.now() * 1000)
+            local canary = ngx.req.get_headers()["X-Canary"]
+            if canary == "true" or math.random(100) <= 10 then
+                ngx.var.upstream_target = "backend_v2"
+            end
+        }
+
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+        proxy_pass http://$upstream_target;
+
+        proxy_connect_timeout  5s;
+        proxy_send_timeout    30s;
+        proxy_read_timeout    30s;
+        proxy_next_upstream error timeout http_500 http_502;
+    }
+
+    # 內部管理端點（限 IP）
+    location /internal/ {
+        allow 10.20.35.0/24;
+        deny all;
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+        proxy_pass http://backend_v1/internal/;
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/local/openresty/nginx/html;
+    }
+}</pre></div>
+  </div>
+
+  <div class="sec-h2">完整配置檔：lua/init.lua</div>
+  <div class="code-wrap">
+    <div class="code-label">lua/init.lua — Worker 啟動初始化</div>
+    <div class="code-block"><pre>local config = ngx.shared.shared_data
+
+-- 從環境變數讀取敏感設定
+config:set("jwt_secret",     os.getenv("JWT_SECRET") or "CHANGE_ME")
+config:set("rate_limit_max", tonumber(os.getenv("RATE_LIMIT")) or 100)
+
+ngx.log(ngx.INFO, "init_by_lua complete")</pre></div>
+  </div>
+
+  <div class="callout teal">
+    <strong>生產環境安全注意事項：</strong>JWT secret 和其他敏感設定用環境變數注入，不要 hardcode 在 .lua 或 .conf 檔案中。可以用 <code>export JWT_SECRET=xxx</code> 或 systemd EnvironmentFile 設定。
+  </div>
+
+  <div class="summary-box">
+    <div class="summary-box-title">本章小結</div>
+    <div class="summary-list">
+      <div class="summary-item">多 domain 每個建一個 .conf 檔，共用同一套 upstream 和 Lua 模組</div>
+      <div class="summary-item">JWT Gateway：OpenResty 統一驗證，把 user_id 注入 header 給後端</div>
+      <div class="summary-item">灰度發布用 Lua math.random 決定路由，可搭配 Redis 動態調整比例</div>
+      <div class="summary-item">敏感設定（JWT secret）透過環境變數注入，不 hardcode 在程式碼中</div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑩ 錯誤排查 -->
+<div class="section" id="sec-s10">
+  <div class="ch-eyebrow">Chapter 10</div>
+  <div class="ch-title">錯誤排查</div>
+  <div class="ch-sub">常見錯誤 · 排查指令 · 筆記中的已知 Bug 修正</div>
+
+  <div class="sec-h2">常見 HTTP 錯誤</div>
+  <table class="cmp-table">
+    <tr><th>錯誤</th><th>最常見原因</th><th>排查方式</th></tr>
+    <tr>
+      <td><span class="err-badge" style="background:var(--coral-bg);color:var(--coral-txt)">502 Bad Gateway</span></td>
+      <td>proxy_pass 的後端沒啟動、port 錯、upstream 全部失敗</td>
+      <td><code>curl http://10.x.x.x:8080/health</code> 直接測後端</td>
+    </tr>
+    <tr>
+      <td><span class="err-badge" style="background:var(--amber-bg);color:var(--amber-txt)">504 Gateway Timeout</span></td>
+      <td>後端執行太久，<code>proxy_read_timeout</code> 太短</td>
+      <td>調高 timeout 或查後端 slow query log</td>
+    </tr>
+    <tr>
+      <td><span class="err-badge" style="background:var(--coral-bg);color:var(--coral-txt)">403 Forbidden</span></td>
+      <td><code>access_by_lua</code> 擋掉、<code>deny all</code>、SELinux</td>
+      <td><code>tail -f /var/log/nginx/error.log</code></td>
+    </tr>
+    <tr>
+      <td><span class="err-badge" style="background:var(--amber-bg);color:var(--amber-txt)">Lua 語法錯</span></td>
+      <td>.lua 檔案有錯，nginx 拒絕啟動</td>
+      <td><code>openresty -t</code> 語法檢查</td>
+    </tr>
+    <tr>
+      <td><span class="err-badge" style="background:var(--gray-bg);color:var(--gray-txt)">SSL 憑證錯誤</span></td>
+      <td>路徑錯、憑證過期、chain 不完整</td>
+      <td><code>openssl s_client -connect api.example.com:443</code></td>
+    </tr>
+  </table>
+
+  <div class="sec-h2">已知 Bug 與修正（來自筆記審查）</div>
+  <div class="step-list">
+    <div class="step-item">
+      <div class="step-num" style="background:var(--coral)">!</div>
+      <div class="step-body">
+        <div class="step-title">JWT Header 大小寫問題（直接影響功能）</div>
+        <div class="step-desc">
+          <code>ngx.var.http_Authorization</code> 永遠拿不到值。<br>
+          Nginx 把所有 header name 轉小寫，正確寫法是 <code>ngx.var.http_authorization</code>（全小寫）。
+        </div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num" style="background:var(--coral)">!</div>
+      <div class="step-body">
+        <div class="step-title">Redis 連線沒放回 Pool（直接影響效能）</div>
+        <div class="step-desc">
+          Redis 用完後沒有呼叫 <code>red:set_keepalive(10000, 100)</code>，高併發下每次都新建 TCP 連線。所有 Redis 操作完畢後必須加這行。
+        </div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num" style="background:var(--amber)">?</div>
+      <div class="step-body">
+        <div class="step-title">init_by_lua 不是每個 request 都走</div>
+        <div class="step-desc">
+          <code>init_by_lua_file</code> 只在 Worker <strong>啟動</strong>時執行一次，不在每個請求生命週期中。流程圖誤把它畫在 request 路徑內，容易誤解。
+        </div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num" style="background:var(--amber)">?</div>
+      <div class="step-body">
+        <div class="step-title">find 指令 typo（01 章安裝）</div>
+        <div class="step-desc">
+          原文：<code>grep oenresty</code> → 應為 <code>grep openresty</code>（少了一個 p）
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-h2">排查指令速查</div>
+  <div class="code-wrap">
+    <div class="code-block"><pre># 語法檢查（不重啟，改完配置必做）
+openresty -t
+
+# Graceful reload（生產環境修改配置）
+openresty -s reload
+
+# 即時查看 error log
+tail -f /var/log/nginx/error.log
+
+# 即時查看 access log
+tail -f /var/log/nginx/access.log
+
+# 確認 process 狀態
+ps aux | grep nginx
+
+# 確認監聽 port
+ss -tlnp | grep nginx
+
+# 測試 SSL 憑證鏈
+openssl s_client -connect api.example.com:443 -servername api.example.com
+
+# 直接測試後端是否活著
+curl -v http://10.20.35.152:8080/actuator/health
+
+# 測試 Lua 語法（單獨測試某個 .lua 檔）
+luajit /usr/local/openresty/nginx/lua/jwt_auth.lua</pre></div>
+  </div>
+</div>
+
+</div><!-- #shell -->
+
+<script>
+document.querySelectorAll('.ntab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ntab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sec-' + btn.dataset.sec).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

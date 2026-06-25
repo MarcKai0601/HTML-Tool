@@ -236,6 +236,7 @@ header p { font-size:13px; color:var(--txt2); }
   <button class="tab-btn" onclick="showTab('training',this)">循環課表</button>
   <button class="tab-btn" onclick="showTab('suppl',this)">補充品做法</button>
   <button class="tab-btn" onclick="showTab('plan',this)">全年規劃</button>
+  <button class="tab-btn" onclick="showTab('mindset',this)">可持續心法</button>
   <button class="tab-btn" onclick="showTab('stall',this)">停滯排查</button>
 </div>
 
@@ -613,6 +614,64 @@ header p { font-size:13px; color:var(--txt2); }
     <div id="goal-advice"></div>
   </div>
 </div>
+
+<!-- ══ TAB: 可持續心法 ══ -->
+<div id="tab-mindset" class="tab-panel">
+  <div class="sec-label">核心精神</div>
+  <div class="card">
+    <div style="font-size:13px;color:var(--txt2);line-height:1.7;margin-bottom:14px;">這套心法來自 IFBB PRO 大H 為 Joey 規劃的六週改造計畫，核心是「<strong style="color:var(--txt);">彈性、佛系、能持續一輩子</strong>」。減重不是短暫的痛苦衝刺，而是找到一套不過度緊繃的方法，讓身體去享受堅持下來的複利效果。</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:140px;background:var(--teal-bg);border-radius:8px;padding:14px 16px;text-align:center;">
+        <div style="font-size:22px;font-weight:500;font-family:'IBM Plex Mono',monospace;color:var(--teal-txt);">吃</div>
+        <div style="font-size:11px;color:var(--teal-txt);margin-top:4px;">80 分原型食物</div>
+      </div>
+      <div style="flex:1;min-width:140px;background:var(--blue-bg);border-radius:8px;padding:14px 16px;text-align:center;">
+        <div style="font-size:22px;font-weight:500;font-family:'IBM Plex Mono',monospace;color:var(--blue-txt);">睡</div>
+        <div style="font-size:11px;color:var(--blue-txt);margin-top:4px;">睡飽、作息規律</div>
+      </div>
+      <div style="flex:1;min-width:140px;background:var(--amber-bg);border-radius:8px;padding:14px 16px;text-align:center;">
+        <div style="font-size:22px;font-weight:500;font-family:'IBM Plex Mono',monospace;color:var(--amber-txt);">練</div>
+        <div style="font-size:11px;color:var(--amber-txt);margin-top:4px;">肌肥大切入</div>
+      </div>
+    </div>
+    <div class="info-box" style="margin-top:14px;margin-bottom:0;">「睡」的責任完全在自己——這是金三角裡最容易被忽略、卻最便宜的一環。盡可能睡飽、作息規律。</div>
+  </div>
+
+  <div class="sec-label">飲食心法（吃）</div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="rule-table">
+      <thead><tr><th style="width:130px;">原則</th><th style="width:150px;">數字 / 做法</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge b-teal">80 分原則</span></td><td style="font-family:'IBM Plex Mono',monospace;font-weight:500;">80% 原型食物</td><td style="color:var(--txt2);">想吃精緻食物時，盡量安排在「練後」吃</td></tr>
+        <tr><td><span class="badge b-purple">蛋白質</span></td><td style="font-family:'IBM Plex Mono',monospace;font-weight:500;">體重 × 2 g</td><td style="color:var(--txt2);">1.6–2.2 倍，最簡單抓法直接體重 ×2，可用高蛋白飲品補</td></tr>
+        <tr><td><span class="badge b-blue">喝水</span></td><td style="font-family:'IBM Plex Mono',monospace;font-weight:500;">體重 × 40 cc</td><td style="color:var(--txt2);">增肌減脂利器，每天至少達標</td></tr>
+        <tr><td><span class="badge b-amber">減重速度</span></td><td style="font-family:'IBM Plex Mono',monospace;font-weight:500;">每週 0.5–1%</td><td style="color:var(--txt2);">約 0.5–1 kg 以內，太快肌肉也跟著流失、身型縮水</td></tr>
+        <tr><td><span class="badge b-green">彈性空間</span></td><td style="font-family:'IBM Plex Mono',monospace;font-weight:500;">達標後放鬆</td><td style="color:var(--txt2);">每週達進度後可吃大餐或小酌，不要太嚴格才能長久</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-label">訓練策略（練）</div>
+  <div class="card">
+    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;"><span class="badge b-amber" style="flex-shrink:0;margin-top:2px;">肌肥大</span><div><div style="font-weight:500;font-size:13px;margin-bottom:2px;">從肌肥大切入</div><div style="font-size:13px;color:var(--txt2);">目的是從外觀改變體態，一週安排 3–4 天重訓。</div></div></div>
+    <div style="display:flex;align-items:flex-start;gap:12px;"><span class="badge b-teal" style="flex-shrink:0;margin-top:2px;">保留次數</span><div><div style="font-weight:500;font-size:13px;margin-bottom:2px;">新手先求動作正確，不急著力竭</div><div style="font-size:13px;color:var(--txt2);">初期不需力竭或追求大重量，多留保留次數，讓關節、神經系統和大腦先連結動作，熟練後再加強強度。</div></div></div>
+  </div>
+
+  <div class="sec-label">日常追蹤與心態</div>
+  <div class="card">
+    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;"><span class="badge b-blue" style="flex-shrink:0;margin-top:2px;">量體重</span><div><div style="font-weight:500;font-size:13px;margin-bottom:2px;">每天固定量體重</div><div style="font-size:13px;color:var(--txt2);">早晨起床、空腹、上完廁所、還沒進食前量測記錄。不看單一天的絕對值，看整體變化曲線。</div></div></div>
+    <div style="display:flex;align-items:flex-start;gap:12px;"><span class="badge b-purple" style="flex-shrink:0;margin-top:2px;">紀律</span><div><div style="font-weight:500;font-size:13px;margin-bottom:2px;">把紀律花在刀口上</div><div style="font-size:13px;color:var(--txt2);">光靠意志力死撐很快放棄。找一套合理、不過度緊繃的方法，享受堅持下來的複利效果。</div></div></div>
+  </div>
+
+  <div class="sec-label">減脂後的下一階段</div>
+  <div class="card">
+    <div class="warn-box" style="margin-top:0;">減脂期不能無限期延長。一直靠意志力死撐吃很少，身體最後會因熱量長期不足引發強烈嘴饞，甚至內分泌失衡、代謝變差。</div>
+    <div class="phase-row" style="border-top:1px solid var(--border);padding-top:14px;"><div class="phase-num" style="background:var(--teal-bg);color:var(--teal-txt);">→</div><div class="phase-body"><div class="phase-title">緩慢增加熱量（過渡到增肌期）</div><div class="phase-desc">達到目標體重後不要再壓低熱量，進入維持期或增肌期。每天或每週逐漸把熱量加回去一點。</div></div></div>
+    <div class="phase-row"><div class="phase-num" style="background:var(--amber-bg);color:var(--amber-txt);">↑</div><div class="phase-body"><div class="phase-title">吃得多，練得更強</div><div class="phase-desc">熱量與營養提高後，擺脫飢餓感，還能提升訓練強度與體能。配合已熟練的動作與感受度，肌肉順利生長。</div></div></div>
+    <div class="succ-box" style="margin-bottom:0;">減重不是一輩子挨餓，而是「週期性」的過程。階段性達標後適時調高熱量、提升訓練強度，才是讓體態越來越好、能一輩子持續的健康循環。</div>
+  </div>
+</div>
+
 <div id="tab-stall" class="tab-panel">
   <div class="sec-label">停滯檢查清單（2 週體重無變化時使用）</div>
   <div style="font-size:13px;color:var(--txt2);margin-bottom:16px;line-height:1.6;">依序排查。體重停滯 90% 的情況是「漏算」而非「代謝適應」。先查這個清單，再考慮調整缺口。</div>
