@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenResty / Nginx 學習指南</title>
+<style>
+  :root{
+    --purple:#534AB7; --purple-bg:#EDEBFB; --purple-text:#3B2F8C;
+    --teal:#0F6E56; --teal-bg:#E1F5EF; --teal-text:#0F6E56;
+    --amber:#854F0B; --amber-bg:#FDF3DA; --amber-text:#854F0B;
+    --coral:#993C1D; --coral-bg:#FCE7DD; --coral-text:#993C1D;
+    --blue:#185FA5; --blue-bg:#E3F0FC; --blue-text:#185FA5;
+    --green:#3B6D11; --green-bg:#EBF5DD; --green-text:#3B6D11;
+    --border:#E5E7EB; --gray-bg:#F7F7F8; --text:#1F2328; --text-sub:#5B6068;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:#ffffff; color:var(--text);
+    font-family:"Noto Sans TC","IBM Plex Mono",-apple-system,sans-serif;
+    line-height:1.7;
+  }
+  code, pre, .mono{ font-family:"IBM Plex Mono",monospace; }
+  header{
+    padding:28px 32px 20px; border-bottom:1px solid var(--border);
+    position:sticky; top:0; background:#fff; z-index:10;
+  }
+  header h1{ margin:0 0 4px; font-size:22px; font-weight:700; }
+  header p{ margin:0; color:var(--text-sub); font-size:13px; }
+  .badge{
+    display:inline-block; padding:2px 10px; border-radius:20px;
+    font-size:11px; font-weight:600; background:var(--purple-bg); color:var(--purple-text);
+    margin-right:6px;
+  }
+  nav{
+    display:flex; flex-wrap:wrap; gap:6px; padding:14px 32px;
+    border-bottom:1px solid var(--border); position:sticky; top:78px; background:#fff; z-index:9;
+  }
+  nav button{
+    font-family:inherit; font-size:12.5px; padding:7px 12px; border-radius:8px;
+    border:1px solid var(--border); background:#fff; color:var(--text-sub);
+    cursor:pointer; white-space:nowrap; transition:all .15s;
+  }
+  nav button:hover{ border-color:var(--purple); color:var(--purple-text); }
+  nav button.active{ background:var(--purple); border-color:var(--purple); color:#fff; }
+  main{ max-width:900px; margin:0 auto; padding:28px 32px 80px; }
+  section{ display:none; }
+  section.active{ display:block; animation:fade .2s ease; }
+  @keyframes fade{ from{opacity:0;} to{opacity:1;} }
+  h2{ font-size:19px; margin:0 0 6px; padding-bottom:10px; border-bottom:2px solid var(--purple); }
+  h3{ font-size:16px; margin:26px 0 10px; color:var(--text); }
+  h4{ font-size:14px; margin:18px 0 8px; color:var(--text-sub); }
+  .goal-box{
+    background:var(--purple-bg); border-radius:10px; padding:14px 18px; margin:14px 0 18px;
+  }
+  .goal-box strong{ color:var(--purple-text); }
+  .goal-box ul{ margin:6px 0 0; padding-left:20px; color:var(--purple-text); }
+  p{ font-size:14px; color:var(--text); }
+  .card{
+    background:var(--gray-bg); border:1px solid var(--border); border-radius:10px;
+    padding:16px 18px; margin:14px 0;
+  }
+  pre{
+    background:#F6F8FA; border:1px solid var(--border); border-radius:8px;
+    padding:14px 16px; overflow-x:auto; font-size:12.5px; line-height:1.6;
+  }
+  pre code{ background:none; padding:0; }
+  code{
+    background:#F0F1F3; padding:1px 6px; border-radius:4px; font-size:12.5px;
+  }
+  table{ width:100%; border-collapse:collapse; margin:14px 0; font-size:13px; }
+  th, td{ border:1px solid var(--border); padding:8px 10px; text-align:left; vertical-align:top; }
+  th{ background:var(--gray-bg); font-weight:700; }
+  .tag{
+    display:inline-block; padding:2px 9px; border-radius:6px; font-size:11px; font-weight:700;
+  }
+  .tag.teal{ background:var(--teal-bg); color:var(--teal-text); }
+  .tag.amber{ background:var(--amber-bg); color:var(--amber-text); }
+  .tag.coral{ background:var(--coral-bg); color:var(--coral-text); }
+  .tag.blue{ background:var(--blue-bg); color:var(--blue-text); }
+  .tag.green{ background:var(--green-bg); color:var(--green-text); }
+  .tag.purple{ background:var(--purple-bg); color:var(--purple-text); }
+  hr{ border:none; border-top:1px solid var(--border); margin:22px 0; }
+  details{
+    background:var(--gray-bg); border:1px solid var(--border); border-radius:8px;
+    padding:10px 14px; margin:10px 0;
+  }
+  summary{ cursor:pointer; font-weight:600; font-size:13px; }
+  .summary-box{
+    background:var(--teal-bg); border-radius:10px; padding:14px 18px; margin:18px 0;
+  }
+  .summary-box h4{ color:var(--teal-text); margin-top:0; }
+  .index-list{ list-style:none; padding:0; margin:14px 0; }
+  .index-list li{
+    padding:10px 14px; border:1px solid var(--border); border-radius:8px; margin-bottom:8px;
+    font-size:13.5px; display:flex; align-items:center; gap:10px; cursor:pointer;
+  }
+  .index-list li:hover{ border-color:var(--purple); background:var(--purple-bg); }
+  .index-list li .num{
+    font-weight:700; color:var(--purple-text); font-family:"IBM Plex Mono",monospace; min-width:26px;
+  }
+  footer{ text-align:center; color:var(--text-sub); font-size:12px; padding:24px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>OpenResty / Nginx 學習指南</h1>
+  <p><span class="badge">機器配置相關</span>從 Notion 遷移的完整筆記 · 共 14 個章節</p>
+</header>
+
+<nav id="tabnav"></nav>
+
+<main id="content"></main>
+
+<footer>OpenResty / Nginx 學習指南 · 內容轉出自 Notion「筆記庫 / 機器配置相關」</footer>
+
+<script>
+const sections = [
+  {id:'overview', label:'總覽', color:'purple'},
+  {id:'s01', label:'01 安裝與啟動', color:'blue'},
+  {id:'s02', label:'02 配置結構', color:'blue'},
+  {id:'s03', label:'03 第一個 Lua 應用', color:'blue'},
+  {id:'s04', label:'04 Lua 模組化', color:'blue'},
+  {id:'s05', label:'05 正則處理', color:'blue'},
+  {id:'s06', label:'06 請求處理流程', color:'blue'},
+  {id:'s07', label:'07 靜態檔+API分流', color:'blue'},
+  {id:'s08', label:'08 AJAX 串接', color:'blue'},
+  {id:'s09', label:'09 路由參數', color:'blue'},
+  {id:'s10', label:'10 POST 請求', color:'blue'},
+  {id:'s11', label:'11 登入驗證', color:'blue'},
+  {id:'s12', label:'12 反向代理指南', color:'teal'},
+  {id:'cors', label:'CORS', color:'teal'},
+  {id:'advanced', label:'進階主題總整理', color:'teal'},
+];
+
+const nav = document.getElementById('tabnav');
+sections.forEach((s,i)=>{
+  const btn = document.createElement('button');
+  btn.textContent = s.label;
+  btn.dataset.target = s.id;
+  if(i===0) btn.classList.add('active');
+  btn.onclick = ()=> showSection(s.id);
+  nav.appendChild(btn);
+});
+
+function showSection(id){
+  document.querySelectorAll('section').forEach(sec=> sec.classList.toggle('active', sec.id===id));
+  document.querySelectorAll('nav button').forEach(b=> b.classList.toggle('active', b.dataset.target===id));
+  window.scrollTo({top:0, behavior:'instant'});
+}
+</script>
+
+<script type="text/template" id="tpl"></script>
+
+<div style="display:none" id="raw"></div>
+
+<script>
+document.getElementById('content').innerHTML = `
+
+<section id="overview" class="active">
+  <h2>OpenResty / Nginx 總覽</h2>
+  <p>OpenResty 是基於 Nginx 的高效能 Web 平台，內建整合了 Nginx（處理 HTTP 請求）、LuaJIT（高效能 Lua 處理器）、以及大量 Lua 模組（處理資料庫、JSON、加解密、HTTP 請求等），讓你可以用 Lua 編寫動態的 Web 應用程式，擴展原本只能處理靜態請求的 Nginx。</p>
+
+  <h3>📌 OpenResty 可以做什麼？</h3>
+  <ul>
+    <li>撰寫高效能 API（如反向代理、驗證機制、限流等）</li>
+    <li>與 Redis / MySQL 直接整合</li>
+    <li>實作微服務中的邏輯前置處理器（如 gateway）</li>
+    <li>做為一個輕量的 Web 應用伺服器</li>
+  </ul>
+
+  <h3>🚀 為什麼選擇 OpenResty？（核心優勢）</h3>
+  <div class="card">
+    <p><span class="tag blue">1</span> <strong>非阻塞 I/O 的極致效能</strong><br>
+    結合 Nginx 的事件驅動模型與 LuaJIT 的協程。當 Lua 發起網路請求（查 Redis、呼叫外部 API）時不會阻塞 Nginx Worker，單機可輕鬆支撐數萬併發（C10K+），是傳統阻塞式 Web Server 無法比擬的。</p>
+    <p><span class="tag blue">2</span> <strong>動態邏輯前置（Logic at the Edge）</strong><br>
+    原生 Nginx 設定檔是靜態的，邏輯判斷能力有限。OpenResty 允許在流量進入後端（Tomcat / Spring Boot）之前，先在 Nginx 層處理複雜邏輯（驗證 Token、動態路由、限流），大幅減輕後端資料庫壓力。</p>
+    <p><span class="tag blue">3</span> <strong>同步的寫法，非阻塞的執行</strong><br>
+    不像 Node.js 需要寫大量 Callback 或 Await/Async，OpenResty 的 Lua 代碼看起來是同步執行，開發直觀，但底層自動處理非阻塞切換。</p>
+  </div>
+
+  <h3>🛠️ 實際應用場景（Killer Apps）</h3>
+  <table>
+    <tr><th>應用場景</th><th>說明</th><th>對應筆記</th></tr>
+    <tr><td><strong>1. API 網關</strong></td><td>取代傳統硬體網關。統一身分驗證（JWT/OAuth）、權限控制、流量整形。知名的 Kong、APISIX 皆基於此。</td><td><code>access_by_lua_file whiteList.lua</code></td></tr>
+    <tr><td><strong>2. 高併發 WAF 防火牆</strong></td><td>在 Nginx 層攔截 SQL Injection、XSS、惡意爬蟲 IP，效能極高不拖慢正常服務。</td><td><code>blockip.conf</code> 與 <code>shared_data</code></td></tr>
+    <tr><td><strong>3. 分散式快取 / 降級</strong></td><td>秒殺活動時直接在 Nginx 層查 Redis 庫存，沒貨直接返回，請求完全不進後端，保護 DB 不崩潰。</td><td><code>proxy_cache</code> 相關設定</td></tr>
+    <tr><td><strong>4. 灰度發布</strong></td><td>根據 Header、User ID 或 IP 地區，動態將流量導向不同版本的 Upstream（A/B Testing）。</td><td><code>upstream</code> 權重配置</td></tr>
+  </table>
+
+  <h3>💡 xxpay 生產環境配置範例</h3>
+  <p>以下是實際生產環境的配置檔範例，展示了 OpenResty 在真實付款系統中的用法：跨 Worker 共享記憶體、白名單存取控制、Cloudflare IP 白名單、多組 upstream 負載平衡等。</p>
+
+  <details><summary>nginx.conf（主設定檔）</summary>
+<pre><code>user  root;
+worker_processes  auto;
+
+events {
+    worker_connections  102400;
+}
+
+http {
+    types_hash_max_size 4096;
+    client_max_body_size 200M;
+    client_header_buffer_size 256k;
+    server_names_hash_max_size 8192;
+    server_names_hash_bucket_size 256;
+    fastcgi_buffers 128 128k;
+    proxy_buffers 128 32k;
+    proxy_buffer_size 64k;
+    include       mime.types;
+    default_type  application/octet-stream;
+    more_set_headers 'Server: -';
+
+    include       blockip.conf;
+    include       logable.conf;
+
+    log_format  main  '[$request_time]' | $time_local | $remote_addr | $http_host | $http_x_forwarded_for | $request_method | $request | $server_protocol | $status | $body_bytes_sent | $http_referer | "'$http_user_agent'" | "$upstream_response_time" | $upstream_addr | $request_body | $status $sent_http_content_type;
+
+    lua_shared_dict shared_data 512m;
+    lua_code_cache on;
+    init_by_lua_file    /usr/local/openresty/nginx/lua/init.lua;
+
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    include /usr/local/openresty/nginx/conf/upstream/*.conf;
+    include /usr/local/openresty/nginx/conf/conf.d/*.conf;
+    include /usr/local/openresty/nginx/conf/conf.d/*/*.conf;
+}</code></pre>
+  </details>
+
+  <details><summary>proxy.conf</summary>
+<pre><code>proxy_http_version 1.1;
+proxy_set_header Connection "";
+proxy_set_header    Host             $host;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</code></pre>
+  </details>
+
+  <details><summary>cf_ip.conf（Cloudflare IP 白名單）</summary>
+<pre><code>allow 173.245.48.0/20;
+allow 103.21.244.0/22;
+allow 103.22.200.0/22;
+allow 103.31.4.0/22;
+allow 141.101.64.0/18;
+allow 108.162.192.0/18;
+allow 190.93.240.0/20;
+allow 188.114.96.0/20;
+allow 197.234.240.0/22;
+allow 198.41.128.0/17;
+allow 162.158.0.0/15;
+allow 104.16.0.0/13;
+allow 104.24.0.0/14;
+allow 172.64.0.0/13;
+allow 131.0.72.0/22;
+
+allow 2400:cb00::/32;
+allow 2606:4700::/32;
+allow 2803:f800::/32;
+allow 2405:b500::/32;
+allow 2405:8100::/32;
+allow 2a06:98c0::/29;
+allow 2c0f:f248::/32;</code></pre>
+  </details>
+
+  <details><summary>fastcgi.conf</summary>
+<pre><code>fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+fastcgi_param  QUERY_STRING       $query_string;
+fastcgi_param  REQUEST_METHOD     $request_method;
+fastcgi_param  CONTENT_TYPE       $content_type;
+fastcgi_param  CONTENT_LENGTH     $content_length;
+
+fastcgi_param  SCRIPT_NAME        $fastcgi_script_name;
+fastcgi_param  REQUEST_URI        $request_uri;
+fastcgi_param  DOCUMENT_URI       $document_uri;
+fastcgi_param  DOCUMENT_ROOT      $document_root;
+fastcgi_param  SERVER_PROTOCOL    $server_protocol;
+fastcgi_param  REQUEST_SCHEME     $scheme;
+fastcgi_param  HTTPS              $https if_not_empty;
+
+fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
+
+fastcgi_param  REMOTE_ADDR        $remote_addr;
+fastcgi_param  REMOTE_PORT        $remote_port;
+fastcgi_param  SERVER_ADDR        $server_addr;
+fastcgi_param  SERVER_PORT        $server_port;
+fastcgi_param  SERVER_NAME        $server_name;
+
+# PHP only, required if PHP was built with --enable-force-cgi-redirect
+fastcgi_param  REDIRECT_STATUS    200;</code></pre>
+  </details>
+
+  <details><summary>logable.conf</summary>
+<pre><code>map_hash_max_size 4096;
+map_hash_bucket_size 2048;
+map $remote_addr $blockip {
+139.162.24.149 0;
+default 1;
+}
+map $status $logable {
+507 0;
+400 0;
+403 0;
+404 0;
+408 0;
+default $blockip;
+}</code></pre>
+  </details>
+
+  <details><summary>xpay3.conf（付款主機路由）</summary>
+<pre><code>server {
+    listen 80;
+    server_name   gpay.dfgame.club swap.dfgame.club;
+
+    proxy_set_header   Host             $host;
+    proxy_set_header   X-Real-IP        $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    add_header Cache-Control "no-cache";
+
+    access_log  /var/log/nginx/3host.access.log  main if=$logable;
+    error_log  /var/log/nginx/openPaigeError.log debug;
+    gzip  on;
+    gzip_types *;
+    gzip_comp_level 1;
+
+    location /activemq {
+        proxy_pass http://10.20.35.152:8161/;
+    }
+    location /styles {
+        proxy_pass http://10.20.35.152:8161/;
+    }
+
+    location /bank_logo/ {
+        access_log  /var/log/nginx/payhost.access.log  main;
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+        proxy_pass http://trader/bank_logo/;
+    }
+
+    location /pay-success.html {
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+        proxy_pass http://trader/pay-success.html;
+    }
+
+    location / {
+        access_by_lua_file /usr/local/openresty/nginx/lua/whiteList.lua;
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+        proxy_pass http://127.0.0.1:9081/;
+    }
+
+    location /pay/ {
+        access_log  /var/log/nginx/payhost.access.log  main;
+        error_log  /var/log/nginx/blockip.log;
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+        proxy_pass http://trader/pay/;
+        include cf_ip.conf;
+        deny all;
+    }
+
+    error_page 500 502 503 504  /50x.html;
+    location = /50x.html {
+        root /usr/local/openresty/nginx/html;
+    }
+}</code></pre>
+  </details>
+
+  <details><summary>upstream 設定（mgr.conf / trader.conf / web.conf）</summary>
+<pre><code>upstream mgr {
+    server 10.20.35.152:9092 weight=5 max_fails=3 fail_timeout=10s;
+    server 10.20.35.120:9092 weight=5 max_fails=3 fail_timeout=10s;
+    keepalive 64;
+}
+
+upstream trader {
+    server 10.20.35.152:4020 weight=1 max_fails=3 fail_timeout=10s;
+    server 10.20.35.120:4020 weight=1 max_fails=3 fail_timeout=10s;
+    keepalive 64;
+}
+
+upstream web {
+    server 10.20.35.152:19092 weight=1;
+    keepalive 64;
+}</code></pre>
+  </details>
+
+  <h3>📦 常用 Lua / OpenResty 語法對照表</h3>
+  <table>
+    <tr><th>類型</th><th>語法</th><th>說明</th></tr>
+    <tr><td>輸出</td><td><code>ngx.say("hello")</code></td><td>回傳字串給用戶端</td></tr>
+    <tr><td>取得 URI</td><td><code>ngx.var.uri</code></td><td>拿到當前 URI</td></tr>
+    <tr><td>讀取 body</td><td><code>ngx.req.read_body()</code></td><td>啟用讀取 POST body</td></tr>
+    <tr><td>POST 參數</td><td><code>ngx.req.get_post_args()</code></td><td>取得 POST 參數 table</td></tr>
+    <tr><td>GET 參數</td><td><code>ngx.req.get_uri_args()</code></td><td>取得查詢參數</td></tr>
+    <tr><td>JSON</td><td><code>cjson.encode(table)</code></td><td>Lua table 轉 JSON</td></tr>
+    <tr><td>模組載入</td><td><code>require("api.login")</code></td><td>載入外部模組</td></tr>
+    <tr><td>正則擷取</td><td><code>ngx.re.match(str, pattern)</code></td><td>類似 Java 的 matcher</td></tr>
+    <tr><td>設定狀態碼</td><td><code>ngx.status = 400</code></td><td>回應 HTTP 狀態碼</td></tr>
+    <tr><td>設定 Content-Type</td><td><code>ngx.header["Content-Type"] = "application/json"</code></td><td>設定輸出類型</td></tr>
+    <tr><td>取得 Header</td><td><code>ngx.req.get_headers()["Authorization"]</code></td><td>取得特定 header 內容</td></tr>
+  </table>
+
+  <h3>🔍 查詢資源推薦</h3>
+  <table>
+    <tr><th>主題</th><th>網站</th></tr>
+    <tr><td>OpenResty 教學</td><td>openresty-reference.readthedocs.io</td></tr>
+    <tr><td>Lua 語法手冊</td><td>lua.org/manual/5.1</td></tr>
+    <tr><td>ngx API 文件</td><td>github.com/openresty/lua-nginx-module</td></tr>
+    <tr><td>中文 Lua 教學</td><td>runoob.com/lua/lua-tutorial.html</td></tr>
+  </table>
+
+  <h3>✅ 學習主題整理</h3>
+  <table>
+    <tr><th>主題</th><th>說明</th><th>應用比例</th></tr>
+    <tr><td>安裝 OpenResty</td><td>編譯/套件安裝</td><td><span class="tag green">必備 100%</span></td></tr>
+    <tr><td>.conf 檔基礎設定</td><td>listen、server_name、location、root</td><td><span class="tag green">必備 100%</span></td></tr>
+    <tr><td>content_by_lua_block</td><td>直接用 Lua 回應內容</td><td><span class="tag blue">基礎 80%</span></td></tr>
+    <tr><td>Lua 檔案分離管理</td><td>access_by_lua_file / content_by_lua_file</td><td><span class="tag blue">實務 90%</span></td></tr>
+    <tr><td>路由處理</td><td>RESTful API 結構，例如 /api/user/:id</td><td><span class="tag blue">常見 80%</span></td></tr>
+    <tr><td>require 模組化</td><td>拆分多檔案，例如 login.lua、jwt.lua</td><td><span class="tag blue">維護 80%</span></td></tr>
+    <tr><td>JWT 驗證</td><td>基於 token 的身份驗證</td><td><span class="tag amber">API 開發 70%</span></td></tr>
+    <tr><td>Redis 快取</td><td>Lua 操作 Redis 快取回應、白名單控制</td><td><span class="tag amber">中高階 60%</span></td></tr>
+    <tr><td>反向代理</td><td>proxy_pass 轉發請求到後端服務</td><td><span class="tag blue">常見 90%</span></td></tr>
+    <tr><td>負載平衡</td><td>多個後端 upstream 配置</td><td><span class="tag coral">中大型 50%</span></td></tr>
+    <tr><td>Timeout / 健康檢查</td><td>保護後端服務異常時不中斷</td><td><span class="tag coral">嚴謹部署 30%</span></td></tr>
+    <tr><td>CORS 跨域處理</td><td>前後端分離、Vue/React 項目必備</td><td><span class="tag blue">前端合作 90%</span></td></tr>
+  </table>
+
+  <h3>📌 進階可選主題</h3>
+  <table>
+    <tr><th>主題</th><th>說明</th></tr>
+    <tr><td>🔧 LuaResty 模組精通</td><td>深入了解 lua-resty-http、lua-resty-session</td></tr>
+    <tr><td>🔒 HTTPS + SSL 憑證配置</td><td>Let's Encrypt 自動化憑證更新</td></tr>
+    <tr><td>📊 Prometheus + Grafana 監控</td><td>對接 nginx + Lua 的指標給監控工具</td></tr>
+    <tr><td>🧵 Lua 協程 / 非同步處理</td><td>ngx.timer, ngx.thread 用於高併發處理</td></tr>
+    <tr><td>🧰 自訂 Middleware 架構</td><td>模組化設計類似 express.js middleware</td></tr>
+  </table>
+
+  <h3>📒 章節索引</h3>
+  <ul class="index-list">
+    <li onclick="showSection('s01')"><span class="num">01</span> 安裝與啟動</li>
+    <li onclick="showSection('s02')"><span class="num">02</span> 配置結構與 nginx.conf 教學</li>
+    <li onclick="showSection('s03')"><span class="num">03</span> 撰寫第一個 Lua + Nginx 應用邏輯</li>
+    <li onclick="showSection('s04')"><span class="num">04</span> Lua 檔案載入（模組化）</li>
+    <li onclick="showSection('s05')"><span class="num">05</span> 正則處理</li>
+    <li onclick="showSection('s06')"><span class="num">06</span> 請求處理流程與各階段用途</li>
+    <li onclick="showSection('s07')"><span class="num">07</span> 靜態檔案伺服器 + API 分流</li>
+    <li onclick="showSection('s08')"><span class="num">08</span> 瀏覽器 AJAX 串接 API</li>
+    <li onclick="showSection('s09')"><span class="num">09</span> 路由參數處理（path/query）</li>
+    <li onclick="showSection('s10')"><span class="num">10</span> 接收 POST 請求（JSON / 表單）</li>
+    <li onclick="showSection('s11')"><span class="num">11</span> Lua 模組簡單驗證（登入範例）</li>
+    <li onclick="showSection('s12')"><span class="num">12</span> 反向代理完全指南</li>
+    <li onclick="showSection('cors')"><span class="num">•</span> CORS（跨來源資源共享）</li>
+    <li onclick="showSection('advanced')"><span class="num">•</span> 進階主題筆記總整理</li>
+  </ul>
+</section>
+
+<section id="s01">
+  <h2>01 · 安裝與啟動</h2>
+  <div class="goal-box"><strong>本章目標：</strong>
+    <ul>
+      <li>確認 OpenResty 是否安裝成功</li>
+      <li>啟動 OpenResty（即 Nginx）</li>
+      <li>了解配置檔與預設目錄</li>
+    </ul>
+  </div>
+
+  <h3>✅ 安裝 OpenResty</h3>
+  <pre><code>yum install -y openresty</code></pre>
+
+  <h3>🧪 步驟一：確認 OpenResty 版本</h3>
+  <pre><code>openresty -v</code></pre>
+  <p>📘 這會顯示 OpenResty 的版本，代表你已經能夠執行 openresty 指令。</p>
+
+  <h3>🧪 步驟二：啟動 OpenResty</h3>
+  <pre><code>sudo openresty</code></pre>
+  <p>📘 這個指令會啟動一個內建的 Nginx + Lua 伺服器。若啟動成功，可用 curl 確認：</p>
+  <pre><code>curl http://localhost</code></pre>
+  <p>若看到 <code>Welcome to OpenResty</code> 或沒有錯誤訊息，就代表成功。</p>
+
+  <h3>🧪 步驟三：查看 Nginx 配置檔位置</h3>
+  <pre><code>/etc/openresty/nginx.conf
+/usr/local/openresty/nginx/conf/nginx.conf</code></pre>
+  <pre><code>find / -name nginx.conf 2>/dev/null | grep openresty</code></pre>
+
+  <h3>🧪 步驟四：檢查 OpenResty 是否有在執行</h3>
+  <pre><code>ps aux | grep nginx</code></pre>
+  <p>📘 會看到 master process 與 worker process，代表 OpenResty 正在執行。</p>
+
+  <h3>🧪 步驟五：停止 OpenResty</h3>
+  <pre><code>sudo openresty -s stop</code></pre>
+
+  <div class="summary-box"><h4>✅ 小結</h4>
+    <ul>
+      <li>使用 <code>openresty</code> 啟動伺服器</li>
+      <li>使用 <code>-s stop</code> 停止伺服器</li>
+      <li>找到 <code>nginx.conf</code> 的位置</li>
+      <li>使用 curl 或瀏覽器確認伺服器有回應</li>
+    </ul>
+  </div>
+</section>
+
+<section id="s02">
+  <h2>02 · 配置結構與 nginx.conf 教學</h2>
+  <div class="goal-box"><strong>本章目標：</strong>
+    <ul>
+      <li>瞭解 OpenResty / Nginx 的配置結構</li>
+      <li>編輯與測試 nginx.conf</li>
+      <li>學會每一個區塊（server、location）的作用</li>
+    </ul>
+  </div>
+
+  <h3>📁 1. 找到 nginx.conf 的位置</h3>
+  <pre><code>/usr/local/openresty/nginx/conf/nginx.conf</code></pre>
+  <pre><code>find / -name nginx.conf 2>/dev/null | grep openresty</code></pre>
+
+  <h3>📝 2. 基本 nginx.conf 結構</h3>
+  <pre><code>sudo vi /usr/local/openresty/nginx/conf/nginx.conf</code></pre>
+<pre><code>worker_processes  1;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            default_type text/html;
+            content_by_lua_block {
+                ngx.say("Hello from OpenResty!")
+            }
+        }
+    }
+}</code></pre>
+
+  <h3>🧠 各區塊說明</h3>
+  <table>
+    <tr><th>區塊名稱</th><th>用途</th></tr>
+    <tr><td><code>worker_processes</code></td><td>設定處理程序數量（通常等於 CPU 數）</td></tr>
+    <tr><td><code>events</code></td><td>處理連線數量與事件模型</td></tr>
+    <tr><td><code>http</code></td><td>處理 HTTP 請求的主要設定區域</td></tr>
+    <tr><td><code>server</code></td><td>表示一個虛擬主機（可以有多個）</td></tr>
+    <tr><td><code>location</code></td><td>定義某個 URL 路徑對應的處理邏輯</td></tr>
+  </table>
+
+  <h3>🔧 3. 修改設定後重新啟動服務</h3>
+  <pre><code>sudo openresty -s stop
+sudo openresty</code></pre>
+  <p>或使用平滑 reload：</p>
+  <pre><code>sudo openresty -s reload</code></pre>
+
+  <h3>✅ 測試結果</h3>
+  <pre><code>curl http://localhost</code></pre>
+  <pre><code>Hello from OpenResty!</code></pre>
+
+  <div class="summary-box"><h4>✅ 小結</h4>
+    <ul>
+      <li>找到並修改 nginx.conf</li>
+      <li>瞭解各區塊用途：http、server、location</li>
+      <li>用 Lua 回應基本字串</li>
+      <li>重啟 / reload OpenResty</li>
+    </ul>
+  </div>
+</section>
+
+<section id="s03">
+  <h2>03 · 撰寫第一個 Lua + Nginx 應用邏輯</h2>
+  <div class="goal-box"><strong>本章目標：</strong>
+    <ul>
+      <li>認識 content_by_lua_block 的 Lua 語法基礎</li>
+      <li>傳回 JSON 而非純文字</li>
+      <li>實作一個回傳當前時間與 IP 的 API</li>
+    </ul>
+  </div>
+
+  <h3>🔧 步驟一：修改 nginx.conf 內的 / 路徑內容</h3>
+<pre><code>location / {
+    default_type application/json;
+    content_by_lua_block {
+        local cjson = require("cjson")
+
+        local res = {
+            message = "Hello from OpenResty!",
+            time = os.date("%Y-%m-%d %H:%M:%S"),
+            client_ip = ngx.var.remote_addr
+        }
+
+        ngx.say(cjson.encode(res))
+    }
+}</code></pre>
+
+  <h3>📘 說明重點</h3>
+  <table>
+    <tr><th>Lua 語法</th><th>用途說明</th></tr>
+    <tr><td><code>require("cjson")</code></td><td>載入 Lua CJSON 模組（內建）</td></tr>
+    <tr><td><code>ngx.var.remote_addr</code></td><td>取得客戶端 IP</td></tr>
+    <tr><td><code>os.date()</code></td><td>回傳系統時間</td></tr>
+    <tr><td><code>ngx.say(...)</code></td><td>將輸出結果印到 HTTP 回應內容中（自動加換行）</td></tr>
+    <tr><td><code>content_by_lua_block</code></td><td>直接在 nginx.conf 中嵌入 Lua 程式碼</td></tr>
+  </table>
+
+  <h3>💡 JSON 回應結果</h3>
+<pre><code>{
+  "message": "Hello from OpenResty!",
+  "time": "2025-05-06 21:38:22",
+  "client_ip": "127.0.0.1"
+}</code></pre>
+
+  <h3>🔄 步驟二：重新載入 OpenResty</h3>
+  <pre><code>sudo openresty -s reload</code></pre>
+  <pre><code>curl http://localhost</code></pre>
+
+  <div class="summary-box"><h4>✅ 小結</h4>
+    <ul>
+      <li>在 content_by_lua_block 裡撰寫 Lua 程式</li>
+      <li>回傳 JSON 格式的資料</li>
+      <li>使用 OpenResty 提供的 ngx 物件與 Lua 標準庫</li>
+    </ul>
+  </div>
+</section>
+
+<section id="s04">
+  <h2>04 · Lua 檔案載入（模組化）</h2>
+  <div class="goal-box"><strong>本章目標：</strong>
+    <ul>
+      <li>把 Lua 程式從 nginx.conf 拆出來</li>
+      <li>使用 require 載入自訂模組</li>
+      <li>讓專案更結構化、易維護</li>
+    </ul>
+  </div>
+
+  <h3>🗂️ 建立檔案結構</h3>
+<pre><code>mkdir -p /usr/local/openresty/nginx/lua/api
+touch /usr/local/openresty/nginx/lua/api/login.lua</code></pre>
+
+  <h3>✏️ 編寫 login.lua 檔案</h3>
+  <p><code>/usr/local/openresty/nginx/lua/api/login.lua</code></p>
+<pre><code>local cjson = require "cjson"
+
+local _M = {}
+
+function _M.handle()
+    ngx.req.read_body()
+    local body = ngx.req.get_body_data()
+    local data = cjson.decode(body or "{}")
+
+    local username = data.username or ""
+    local password = data.password or ""
+
+    if username == "admin" and password == "1234" then
+        ngx.status = 200
+        ngx.say(cjson.encode({
+            status = "ok",
+            token = "fake-jwt-token-abc123"
+        }))
+    else
+        ngx.status = 401
+        ngx.say(cjson.encode({
+            status = "error",
+            message = "Invalid username or password"
+        }))
+    end
+end
+
+return _M</code></pre>
+
+  <h3>✏️ 修改 nginx.conf 使用這個 Lua 模組</h3>
+<pre><code>location = /api/login {
+    content_by_lua_block {
+        package.path = "/usr/local/openresty/nginx/lua/?.lua;" .. package.path
+        local login = require "api.login"
+        login.handle()
+    }
+}</code></pre>
+
+  <h3>🧪 測試方式</h3>
+<pre><code>curl -X POST http://localhost/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "1234"}'</code></pre>
+  <p>✅ 回傳 token，說明模組運作正常！</p>
+
+  <h3>🛠️ 備註：package.path</h3>
+  <pre><code>package.path = "/your/path/?.lua;" .. package.path</code></pre>
+  <p>這行是為了讓 Lua 能找到你自訂的 .lua 模組路徑。</p>
+
+  <div class="summary-box"><h4>✅ 小結</h4>
+    <ul>
+      <li>建立 Lua 檔案並封裝成模組</li>
+      <li>用 require 引入自訂模組</li>
+      <li>使用 .handle() 呼叫處理函數</li>
+      <li>讓程式結構更乾淨（分層）</li>
+    </ul>
+  </div>
+
+  <h3>✅ 調用外部 Lua 的常見做法總結</h3>
+  <table>
+    <tr><th>調用方式</th><th>用法</th><th>適合情境</th></tr>
+    <tr><td><code>content_by_lua_file</code></td><td>在 location 區塊中執行外部 Lua 檔</td><td>單一 endpoint 直接對應一個 Lua 腳本</td></tr>
+    <tr><td><code>access_by_lua_file</code></td><td>在存取階段執行 Lua</td><td>驗證、檢查 IP、token 等</td></tr>
+    <tr><td><code>rewrite_by_lua_file</code></td><td>在 rewrite 階段執行 Lua</td><td>URL 重寫、參數處理</td></tr>
+    <tr><td><code>header_filter_by_lua_file</code></td><td>修改回應 header</td><td>改寫 response headers（如加 CORS）</td></tr>
+    <tr><td><code>log_by_lua_file</code></td><td>在 log 階段執行 Lua</td><td>記錄 log 或統計用</td></tr>
+  </table>
+
+  <h3>🔍 內容舉例</h3>
+<pre><code># content_by_lua_file
+location /hello {
+    content_by_lua_file /usr/local/openresty/nginx/lua/hello.lua;
+}</code></pre>
+<pre><code># access_by_lua_file
+location /api/ {
+    access_by_lua_file /usr/local/openresty/nginx/lua/auth.lua;
+    proxy_pass http://backend;
+}</code></pre>
+<pre><code># rewrite_by_lua_file
+location /rewrite {
+    rewrite_by_lua_file /usr/local/openresty/nginx/lua/url_rewrite.lua;
+    proxy_pass http://backend;
+}</code></pre>
+<pre><code># header_filter_by_lua_file
+location /api/ {
+    proxy_pass http://backend;
+    header_filter_by_lua_file /usr/local/openresty/nginx/lua/cors.lua;
+}</code></pre>
+<pre><code># log_by_lua_file
+location / {
+    log_by_lua_file /usr/local/openresty/nginx/lua/logger.lua;
+}</code></pre>
+
+  <h3>📌 小提醒</h3>
+  <p>如果有許多 Lua 檔案，建議建立這樣的結構：</p>
+<pre><code>/usr/local/openresty/nginx/lua/
+├── api/
+│   ├── login.lua
+│   └── user.lua
+├── auth.lua
+├── logger.lua
+├── cors.lua</code></pre>
+</section>
+
+<section id="s05">
+  <h2>05 · 正則處理</h2>
+
+  <h3>✅ Nginx location 幾種寫法</h3>
+  <table>
+    <tr><th>語法</th><th>說明</th><th>範例</th></tr>
+    <tr><td><code>location /foo</code></td><td>精準開頭匹配</td><td>/foo, /foo/bar 都會匹配</td></tr>
+    <tr><td><code>location = /foo</code></td><td>完整比對（完全相等）</td><td>只有 /foo 才會匹配</td></tr>
+    <tr><td><code>location ~ /foo\d+</code></td><td>使用正則表達式比對，大小寫敏感</td><td>/foo1, /foo123</td></tr>
+    <tr><td><code>location ~* /foo\d+</code></td><td>正則，大小寫不敏感</td><td>/FOO1, /foo123</td></tr>
+    <tr><td><code>location ^~ /foo</code></td><td>前綴匹配優先，會忽略正則</td><td>常用來加快比對速度</td></tr>
+  </table>
+
+  <h3>📌 <code>location ~ /api/user/(\d+)$</code> 的解釋</h3>
+  <ul>
+    <li><code>~</code>：代表使用正則表達式（regular expression）</li>
+    <li><code>/api/user/</code>：固定開頭</li>
+    <li><code>(\d+)</code>：括號代表「擷取群組」，表示「一個以上的數字」</li>
+    <li><code>$</code>：結尾，確保路由剛好結束在數字，不允許 /api/user/123/abc</li>
+  </ul>
+  <p>這讓我們可以用 <code>ngx.re.match()</code> 去擷取那段數字（user ID）。</p>
+</section>
+
+<section id="s06">
+  <h2>06 · 請求處理流程與各階段用途</h2>
+  <div class="goal-box"><strong>本章目標：</strong>
+    <ul>
+      <li>瞭解 Nginx / OpenResty 請求經過哪些階段</li>
+      <li>認識每個階段可以放什麼邏輯（Lua）</li>
+      <li>實作一個在 access 階段檢查 token 的範例</li>
+    </ul>
+  </div>
+
+  <h3>🔄 請求處理流程概念</h3>
+<pre><code>          ┌────────────┐
+          │ init_by_lua│ （啟動時執行一次）
+          └─────┬──────┘
+                ↓
+          ┌────────────┐
+          │ rewrite_by_lua │（路由前可修改 URI、轉向）
+          └─────┬──────┘
+                ↓
+          ┌────────────┐
+          │ access_by_lua │（可用來做權限驗證）
+          └─────┬──────┘
+                ↓
+          ┌────────────┐
+          │ content_by_lua │（回傳內容）
+          └─────┬──────┘
+                ↓
+        其他如：header_filter_by_lua、log_by_lua 等</code></pre>
+
+  <h3>🛡️ 實作：用 access_by_lua_block 驗證 API token</h3>
+<pre><code>server {
+    listen 80;
+    server_name localhost;
+
+    location /secure {
+        default_type application/json;
+
+        access_by_lua_block {
+            local args = ngx.req.get_uri_args()
+            local token = args["token"]
+
+            if token ~= "abc123" then
+                ngx.status = 401
+                ngx.say('{"error":"Unauthorized"}')
+                return ngx.exit(401)
+            end
+        }
+
+        content_by_lua_block {
+            ngx.say('{"data":"You have access!"}')
+        }
+    }
+}</code></pre>
+
+  <h3>🧪 測試</h3>
+  <p>正確 token：</p>
+  <pre><code>curl "http://localhost/secure?token=abc123"</code></pre>
+  <pre><code>{"data":"You have access!"}</code></pre>
+  <p>錯誤或沒 token：</p>
+  <pre><code>curl "http://localhost/secure"</code></pre>
+  <pre><code>{"error":"Unauthorized"}</code></pre>
+
+  <div class="summary-box"><h4>✅ 小結</h4>
+    <table>
+      <tr><th>階段</th><th>用途</th></tr>
+      <tr><td><code>rewrite_by_lua_block</code></td><td>修改路徑、做 URL 重寫等</td></tr>
+      <tr><td><code>access_by_lua_block</code></td><td>驗證 token、檢查 IP</td></tr>
+      <tr><td><code>content_by_lua_block</code></td><td>回傳資料</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="s07">
+  <h2>07 · 靜態檔案伺服器 + API 分流</h2>
+  <div class="goal-box"><strong>本章目標：</strong>
+    <ul>
+      <li>使用 OpenResty 伺服靜態 HTML 檔案</li>
+      <li>使用不同路徑分流：/static 給前端頁面，/api 給 JSON API</li>
+      <li>練習前後端共用同個伺服器（這在開發時很常見）</li>
+    </ul>
+  </div>
+
+  <h3>🗂️ 檔案結構示意</h3>
+<pre><code>/usr/local/openresty/nginx/html/
+└── index.html        ← 一個簡單的 HTML 靜態頁面</code></pre>
+
+  <h3>🧾 步驟一：建立靜態 HTML</h3>
+<pre><code>cd /usr/local/openresty/nginx/html
+
+echo '&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;OpenResty Page&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;&lt;h1&gt;Hello from Static HTML&lt;/h1&gt;&lt;/body&gt;
+&lt;/html&gt;' > index.html</code></pre>
+
+  <h3>✏️ 步驟二：修改 nginx.conf</h3>
+<pre><code>server {
+    listen 80;
+    server_name localhost;
+
+    # 提供靜態頁面
+    location / {
+        root html;
+        index index.html;
+    }
+
+    # 提供 API
+    location /api {
+        default_type application/json;
+        content_by_lua_block {
+            ngx.say('{"message": "Hello from API"}')
+        }
+    }
+}</code></pre>
+
+  <h3>🔄 步驟三：重新載入 OpenResty</h3>
+  <pre><code>sudo openresty -s reload</code></pre>
+
+  <h3>🧪 測試</h3>
+  <p>開啟瀏覽器輸入 <code>http://localhost/</code> → 看到 <code>Hello from Static HTML</code> 頁面</p>
+  <pre><code>curl http://localhost/api</code></pre>
+  <pre><code>{"message": "Hello from API"}</code></pre>
+
+  <div class="summary-box"><h4>✅ 小結</h4>
+    <ul>
+      <li>用 OpenResty 服務靜態 HTML（root + index）</li>
+      <li>用 /api 做後端 API 路徑</li>
+      <li>同一台 OpenResty 可同時提供頁面與資料</li>
+    </ul>
+  </div>
+</section>
+
+<section id="s08">
+  <h2>08 · 瀏覽器 AJAX 串接 API</h2>
+  <div class="goal-box"><strong>本章目標：</strong>
+    <ul>
+      <li>在 HTML 裡加入 &lt;script&gt; 發送 AJAX 請求</li>
+      <li>顯示從 /api 回來的資料</li>
+      <li>打通前後端互動流程</li>
+    </ul>
+  </div>
+
+  <h3>🧾 步驟一：更新 index.html，加上 JavaScript</h3>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;OpenResty AJAX Demo&lt;/title&gt;
+    &lt;script&gt;
+        window.onload = function () {
+            fetch("/api")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+                })
+                .catch(err => {
+                    document.getElementById("result").innerText = "Error: " + err;
+                });
+        };
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Hello from Static HTML&lt;/h1&gt;
+    &lt;h2&gt;API Response:&lt;/h2&gt;
+    &lt;pre id="result"&gt;Loading...&lt;/pre&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+  <h3>✏️ 說明</h3>
+  <table>
+    <tr><th>部分</th><th>用途</th></tr>
+    <tr><td><code>fetch("/api")</code></td><td>用 JavaScript 向 /api 發出 HTTP GET 請求</td></tr>
+    <tr><td><code>response.json()</code></td><td>把回傳的 JSON 字串轉成 JS 物件</td></tr>
+    <tr><td><code>innerText = JSON.stringify(...)</code></td><td>把結果顯示在 &lt;pre&gt; 裡</td></tr>
+  </table>
+
+  <h3>🔄 步驟二：重新載入 OpenResty</h3>
+  <pre><code>sudo openresty -s reload</code></pre>
+
+  <h3>🧪 測試</h3>
+  <p>開啟瀏覽器輸入 <code>http://localhost/</code>，應該會看到：</p>
+<pre><code>Hello from Static HTML
+API Response:
+{
+  "message": "Hello from API"
+}</code></pre>
+
+  <div class="summary-box"><h4>✅ 小結</h4>
+    <ul>
+      <li>HTML 頁面請求 OpenResty API</li>
+      <li>JavaScript 與後端互動的流程</li>
+      <li>用瀏覽器展示動態內容</li>
+    </ul>
+  </div>
+</section>
+
+<section id="s09">
+  <h2>09 · 路由參數處理（path / query）</h2>
+  <div class="goal-box"><strong>本章目標：</strong>
+    <ul>
+      <li>學會接收 URL 查詢參數（Query string）：如 /api/hello?name=Tom</li>
+      <li>學會接收 URL 路徑參數（Path variable）：如 /api/user/123</li>
+      <li>做出不同回應內容</li>
+    </ul>
+  </div>
+
+  <h3>🧾 步驟一：查詢參數（Query String）</h3>
+  <p>寫一個 <code>/api/hello?name=Tom</code> 的 API，會回應 <code>{"message": "Hello, Tom!"}</code></p>
+<pre><code>server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        root html;
+        index index.html;
+    }
+
+    location /api/hello {
+        default_type application/json;
+        content_by_lua_block {
+            local args = ngx.req.get_uri_args()
+            local name = args["name"] or "Guest"
+            ngx.say('{"message":"Hello, ' .. name .. '!"}')
+        }
+    }
+}</code></pre>
+
+  <h3>🧪 測試查詢參數</h3>
+  <pre><code>curl "http://localhost/api/hello?name=Tom"</code></pre>
+  <pre><code>{"message":"Hello, Tom!"}</code></pre>
+
+  <h3>🧾 步驟二：路徑參數（Path Variable）</h3>
+  <p>處理類似 <code>/api/user/123</code> 的請求，顯示使用者 ID。</p>
+<pre><code>location ~ /api/user/(\d+)$ {
+    default_type application/json;
+    content_by_lua_block {
+        local m = ngx.re.match(ngx.var.uri, "/api/user/(\\d+)")
+        local id = m and m[1] or "unknown"
+        ngx.say('{"user_id": "' .. id .. '"}')
+    }
+}</code></pre>
+
+  <h3>🧪 測試路徑參數</h3>
+  <pre><code>curl http://localhost/api/user/123</code></pre>
+  <pre><code>{"user_id": "123"}</code></pre>
+
+  <div class="summary-box"><h4>✅ 小結</h4>
+    <table>
+      <tr><th>技術</th><th>用途</th><th>範例</th></tr>
+      <tr><td><code>ngx.req.get_uri_args()</code></td><td>取得查詢字串</td><td>/api/hello?name=Tom</td></tr>
+      <tr><td><code>ngx.re.match(...)</code></td><td>取得路徑參數</td><td>/api/user/123</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="s10">
+  <h2>10 · 接收 POST 請求（JSON / 表單）</h2>
+  <div class="goal-box"><strong>本章目標：</strong>
+    <ul>
+      <li>使用 curl 或 JavaScript 發送 POST 請求</li>
+      <li>在 OpenResty 內部讀取請求主體（body）</li>
+      <li>支援 JSON 或表單格式（application/json、application/x-www-form-urlencoded）</li>
+    </ul>
+  </div>
+
+  <h3>🧾 步驟一：建立接收 POST 請求的 API</h3>
+<pre><code>location = /api/register {
+    content_by_lua_block {
+        ngx.req.read_body()  -- 讀取 POST 主體
+
+        local ctype = ngx.req.get_headers()["Content-Type"]
+        local body = ngx.req.get_body_data()
+        local name = "unknown"
+
+        if ctype == "application/json" then
+            local cjson = require "cjson"
+            local decoded = cjson.decode(body)
+            name = decoded.name or "anonymous"
+        elseif ctype == "application/x-www-form-urlencoded" then
+            local args = ngx.req.get_post_args()
+            name = args["name"] or "anonymous"
+        end
+
+        ngx.say('{"status":"ok","name":"' .. name .. '"}')
+    }
+}</code></pre>
+
+  <h3>📦 安裝 cjson</h3>
+  <p>OpenResty 已預裝 cjson 模組，不需手動安裝。</p>
+
+  <h3>🧪 測試 JSON 請求</h3>
+<pre><code>curl -X POST http://localhost/api/register \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Tom"}'</code></pre>
+  <pre><code>{"status":"ok","name":"Tom"}</code></pre>
+
+  <h3>🧪 測試表單請求</h3>
+<pre><code>curl -X POST http://localhost/api/register \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "name=Jerry"</code></pre>
+  <pre><code>{"status":"ok","name":"Jerry"}</code></pre>
+
+  <div class="summary-box"><h4>✅ 小結</h4>
+    <ul>
+      <li>使用 ngx.req.read_body() 讀取 POST 主體</li>
+      <li>用 get_body_data() 取得 JSON 字串</li>
+      <li>用 get_post_args() 處理表單格式</li>
+      <li>判斷 Content-Type 來分流邏輯</li>
+    </ul>
+  </div>
+</section>
+
+<section id="s11">
+  <h2>11 · Lua 模組簡單驗證（登入範例）</h2>
+  <div class="goal-box"><strong>本章目標：</strong>
+    <ul>
+      <li>接收帳號與密碼（POST）</li>
+      <li>簡單比對是否正確</li>
+      <li>回傳登入成功或失敗的訊息與狀態碼</li>
+    </ul>
+  </div>
+
+  <h3>🧾 新增登入 API：/api/login</h3>
+<pre><code>location = /api/login {
+    content_by_lua_block {
+        ngx.req.read_body()
+        local cjson = require "cjson"
+        local body = ngx.req.get_body_data()
+        local data = cjson.decode(body)
+
+        local username = data.username or ""
+        local password = data.password or ""
+
+        if username == "admin" and password == "1234" then
+            ngx.status = 200
+            ngx.say(cjson.encode({
+                status = "ok",
+                token = "fake-jwt-token-abc123"
+            }))
+        else
+            ngx.status = 401
+            ngx.say(cjson.encode({
+                status = "error",
+                message = "Invalid username or password"
+            }))
+        end
+    }
+}</code></pre>
+
+  <h3>🧪 測試成功登入</h3>
+<pre><code>curl -X POST http://localhost/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "1234"}'</code></pre>
+<pre><code>{
+  "status": "ok",
+  "token": "fake-jwt-token-abc123"
+}</code></pre>
+
+  <h3>🧪 測試登入失敗</h3>
+<pre><code>curl -X POST http://localhost/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "wrong"}'</code></pre>
+<pre><code>{
+  "status": "error",
+  "message": "Invalid username or password"
+}</code></pre>
+  <p>HTTP 狀態碼：<code>401 Unauthorized</code></p>
+
+  <div class="summary-box"><h4>✅ 小結</h4>
+    <ul>
+      <li>在 Lua 中解析 JSON 登入資料</li>
+      <li>根據帳密邏輯判斷並設定狀態碼</li>
+      <li>回傳不同訊息給前端使用者</li>
+    </ul>
+  </div>
+</section>
+
+<section id="s12">
+  <h2>12 · 反向代理完全指南</h2>
+
+  <h3>📌 什麼是反向代理？</h3>
+  <p>反向代理（Reverse Proxy）是一個中間層伺服器，用來接收來自用戶端（瀏覽器、App 等）的請求，然後轉發給內部伺服器處理，再將結果回傳給用戶端。</p>
+  <pre><code>Client → [ Nginx/OpenResty ] → Backend API (如 Golang/Node.js)</code></pre>
+
+  <h3>🎯 使用反向代理的目的</h3>
+  <table>
+    <tr><th>用途</th><th>說明</th></tr>
+    <tr><td>安全性</td><td>隱藏內部伺服器 IP、port，避免被攻擊</td></tr>
+    <tr><td>HTTPS 處理</td><td>Proxy 統一處理 SSL/TLS，加密由 Nginx 管理</td></tr>
+    <tr><td>負載平衡</td><td>多台後端機器時，由 proxy 分流流量</td></tr>
+    <tr><td>緩存</td><td>proxy 可快取靜態檔或 API 回應，減少後端壓力</td></tr>
+    <tr><td>統一入口</td><td>各種後端（Node、Java、Go）整合在同一個網域與 port</td></tr>
+    <tr><td>路由轉換</td><td>根據請求路徑動態轉向對應後端，實現 API gateway</td></tr>
+  </table>
+
+  <h3>🛠 基本範例：反向代理 Golang API</h3>
+  <p><code>/usr/local/openresty/nginx/conf/nginx.conf</code></p>
+<pre><code>server {
+    listen 80;
+    server_name localhost;
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:3000;
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+    }
+}</code></pre>
+  <p>代理參數檔 <code>proxy.conf</code>：</p>
+<pre><code>proxy_redirect          off;
+proxy_set_header        Host $host;
+proxy_set_header        X-Real-IP $remote_addr;
+proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header        X-Forwarded-Proto $scheme;</code></pre>
+
+  <h3>🔁 負載平衡設定</h3>
+<pre><code>upstream backend_api {
+    least_conn;
+    server 127.0.0.1:3000;
+    server 127.0.0.1:3001;
+}
+
+server {
+    location /api/ {
+        proxy_pass http://backend_api;
+        include /usr/local/openresty/nginx/conf/proxy.conf;
+    }
+}</code></pre>
+  <p>可選策略：<code>round-robin</code>（預設輪詢）、<code>least_conn</code>（最少連線）、<code>ip_hash</code>（相同 IP 分配同一台機器）</p>
+
+  <h3>⏱ Proxy timeout 與錯誤處理</h3>
+<pre><code>proxy_connect_timeout       5s;
+proxy_send_timeout          10s;
+proxy_read_timeout          10s;
+proxy_next_upstream         error timeout http_500 http_502;</code></pre>
+
+  <h3>🧪 錯誤排查小抄</h3>
+  <table>
+    <tr><th>錯誤</th><th>可能原因</th></tr>
+    <tr><td>502 Bad Gateway</td><td>proxy_pass 的目標服務沒啟動、port 錯</td></tr>
+    <tr><td>504 Timeout</td><td>後端執行太久，需調整 timeout 設定</td></tr>
+    <tr><td>403 Forbidden</td><td>權限不夠、防火牆或 SELinux 阻擋</td></tr>
+    <tr><td>主機無法解析</td><td>DNS 錯誤或 proxy_pass 寫錯</td></tr>
+  </table>
+
+  <h3>🔐 延伸應用：JWT 驗證（由 Lua 攔截）</h3>
+<pre><code>access_by_lua_block {
+    local token = ngx.var.http_Authorization
+    if not token or token ~= "Bearer abc123" then
+        ngx.status = 401
+        ngx.say("Unauthorized")
+        return ngx.exit(401)
+    end
+}</code></pre>
+
+  <div class="summary-box"><h4>🔚 小結</h4>
+    <p>反向代理是 OpenResty/Nginx 的強項，可支援安全、分流、快取、協議轉換等。建議搭配：</p>
+    <ul>
+      <li>proxy.conf 統一管理 header</li>
+      <li>access_by_lua 做驗證/日誌紀錄</li>
+      <li>upstream 實現負載平衡</li>
+      <li>rewrite/location 實現靈活路由</li>
+    </ul>
+  </div>
+</section>
+
+<section id="cors">
+  <h2>CORS（跨來源資源共享）</h2>
+
+  <h3>📘 什麼是 CORS？</h3>
+  <p>CORS 是瀏覽器的安全機制，用來防止一個網站的前端 JavaScript 向不同來源的伺服器發出請求。若前後端分離（如前端在 localhost:3000，後端在 localhost:8000），就需要設定 CORS，讓瀏覽器允許這種跨來源請求。</p>
+
+  <h3>🎯 常見的 CORS 場景</h3>
+  <ul>
+    <li>前端開發階段跨域存取 API</li>
+    <li>前端透過 AJAX / Fetch 向後端發送認證請求</li>
+    <li>第三方網頁嵌入本網站的資源</li>
+  </ul>
+
+  <h3>📂 檔案結構範例</h3>
+<pre><code>/usr/local/openresty/nginx/
+├── conf.d/
+│   └── api.conf        # 主設定檔
+├── lua/
+│   └── cors.lua        # 處理 CORS 的 Lua 邏輯</code></pre>
+
+  <h3>🔧 api.conf 中引入 cors.lua</h3>
+<pre><code>server {
+    listen 80;
+    server_name localhost;
+
+    location /api/ {
+        default_type application/json;
+
+        # CORS handler before all logic
+        access_by_lua_file /usr/local/openresty/nginx/lua/cors.lua;
+
+        content_by_lua_block {
+            ngx.say('{"message": "API response"}')
+        }
+    }
+
+    # 處理 OPTIONS 預檢請求
+    location /api/ {
+        if ($request_method = OPTIONS) {
+            add_header 'Access-Control-Allow-Origin' '*';
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
+            add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization';
+            add_header 'Access-Control-Max-Age' 3600;
+            add_header 'Content-Length' 0;
+            add_header 'Content-Type' 'text/plain charset=UTF-8';
+            return 204;
+        }
+    }
+}</code></pre>
+
+  <h3>🧠 cors.lua 範例內容</h3>
+<pre><code>-- cors.lua
+local origin = ngx.var.http_origin or "*"
+
+ngx.header["Access-Control-Allow-Origin"] = origin
+ngx.header["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+ngx.header["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+ngx.header["Access-Control-Allow-Credentials"] = "true"</code></pre>
+
+  <h3>✏️ 標頭說明</h3>
+  <table>
+    <tr><th>標頭</th><th>說明</th></tr>
+    <tr><td><code>Access-Control-Allow-Origin</code></td><td>哪些來源允許存取。可設為 "*" 或指定網域</td></tr>
+    <tr><td><code>Access-Control-Allow-Methods</code></td><td>允許的 HTTP 方法</td></tr>
+    <tr><td><code>Access-Control-Allow-Headers</code></td><td>前端可以送出的 header</td></tr>
+    <tr><td><code>Access-Control-Allow-Credentials</code></td><td>是否允許帶 cookie 或驗證資訊</td></tr>
+    <tr><td><code>Access-Control-Max-Age</code></td><td>預檢請求快取秒數</td></tr>
+  </table>
+
+  <h3>🧪 測試方式</h3>
+<pre><code>curl -i -X OPTIONS http://localhost/api/ -H "Origin: http://localhost:3000"</code></pre>
+<pre><code>HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: http://localhost:3000
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Authorization
+Access-Control-Max-Age: 3600</code></pre>
+
+  <div class="summary-box"><h4>✅ 建議實作方式</h4>
+    <ul>
+      <li>建議將 cors.lua 抽出來，並在所有 API 入口使用 access_by_lua_file 引入</li>
+      <li>搭配 OPTIONS 預檢處理可避免前端報錯</li>
+      <li>若後端需接收 cookie/token，需設 credentials=true 並指定來源</li>
+    </ul>
+  </div>
+
+  <h3>📌 小提醒</h3>
+  <ul>
+    <li><code>Access-Control-Allow-Origin: *</code> 無法與 <code>Allow-Credentials: true</code> 同時使用，會被瀏覽器擋掉</li>
+    <li>OPTIONS 處理一定要寫，不然前端會 preflight fail</li>
+    <li>如果有 JWT 驗證，建議 CORS 的處理放在驗證之前</li>
+  </ul>
+</section>
+
+<section id="advanced">
+  <h2>進階主題筆記總整理</h2>
+  <p>本章為進階主題筆記，每個主題皆包含用途說明、範例、重點解析。</p>
+
+  <h3>🧱 第 1 章：proxy.conf 詳解</h3>
+  <p><code>proxy.conf</code> 是常見的設定片段，用來標準化反向代理行為，將 client 的資訊正確傳遞到後端伺服器。</p>
+<pre><code>proxy_redirect off;
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;</code></pre>
+  <ul>
+    <li><code>proxy_redirect off</code>：停用自動的 redirect 重寫</li>
+    <li><code>proxy_set_header Host $host</code>：保留原始 Host 資訊，避免被覆蓋</li>
+    <li><code>X-Real-IP</code>、<code>X-Forwarded-For</code>：傳遞真實 IP，便於後端紀錄與分析</li>
+    <li><code>X-Forwarded-Proto</code>：傳遞是否為 https 請求</li>
+  </ul>
+
+  <h3>🔁 第 2 章：反向代理深入理解</h3>
+  <table>
+    <tr><th>類型</th><th>說明</th><th>用戶端可見性</th></tr>
+    <tr><td>正向代理</td><td>使用者連線先通過代理伺服器</td><td>用戶端知道代理存在</td></tr>
+    <tr><td>反向代理</td><td>外部請求由反向代理伺服器代為處理</td><td>用戶端不直接知道內部伺服器</td></tr>
+  </table>
+  <pre><code>Client → Reverse Proxy → Backend Server</code></pre>
+<pre><code>location /api/ {
+    proxy_pass http://127.0.0.1:8080;
+    include proxy.conf;
+}</code></pre>
+  <p>🚨 注意：proxy_pass 結尾是否有 / 會影響路徑拼接；建議使用 include proxy.conf 統一管理標頭資訊；須搭配 upstream 進行負載平衡。</p>
+
+  <h3>🌐 第 3 章：upstream 與負載平衡</h3>
+<pre><code>upstream backend_api {
+    server 127.0.0.1:8081;
+    server 127.0.0.1:8082;
+}
+
+location /api/ {
+    proxy_pass http://backend_api;
+    include proxy.conf;
+}</code></pre>
+  <p>負載平衡演算法（預設 round-robin）：<code>weight=2</code>（權重）、<code>ip_hash</code>（依來源 IP 一致性轉發）、<code>least_conn</code>（選連線最少的 server）</p>
+  <p>⛑ OpenResty 不內建 health check，可搭配 <code>lua-resty-upstream-healthcheck</code> 模組或 NGINX Plus（商業版）。</p>
+
+  <h3>⏱ 第 4 章：timeout 與連線控制</h3>
+<pre><code>proxy_connect_timeout 5s;
+proxy_send_timeout 10s;
+proxy_read_timeout 10s;
+send_timeout 10s;</code></pre>
+  <table>
+    <tr><th>參數</th><th>說明</th></tr>
+    <tr><td>proxy_connect_timeout</td><td>Nginx 與後端建立連線的等待時間</td></tr>
+    <tr><td>proxy_send_timeout</td><td>向後端送出請求資料的等待時間</td></tr>
+    <tr><td>proxy_read_timeout</td><td>從後端讀取回應資料的等待時間</td></tr>
+    <tr><td>send_timeout</td><td>傳送給 client 的 timeout 限制</td></tr>
+  </table>
+
+  <h3>🔐 第 5 章：JWT 與 Lua 權限驗證</h3>
+<pre><code>local jwt = require "resty.jwt"
+
+local token = ngx.var.http_Authorization
+if not token then
+    return ngx.exit(401)
+end
+
+local jwt_obj = jwt:verify("my_secret", token)
+if not jwt_obj.verified then
+    return ngx.exit(403)
+end</code></pre>
+  <p>常用套件：<code>lua-resty-jwt</code>、<code>lua-resty-session</code>（管理登入狀態）</p>
+
+  <h3>💾 第 6 章：Redis 快取 Proxy 回應</h3>
+  <p>用途：減少後端壓力，加速靜態 API 回應速度。基本流程：先嘗試從 Redis 取得快取資料，若無資料則呼叫後端並儲存至 Redis。</p>
+<pre><code>local redis = require "resty.redis"
+local red = redis:new()
+red:connect("127.0.0.1", 6379)
+
+local res = red:get("/api/data")
+if res and res ~= ngx.null then
+    ngx.say(res)
+    return
+end
+
+-- call backend, assume result = "hello"
+red:set("/api/data", "hello")
+ngx.say("hello")</code></pre>
+
+  <h3>🧾 附錄：常用 Lua 語法速查表</h3>
+  <table>
+    <tr><th>類別</th><th>範例</th><th>說明</th></tr>
+    <tr><td>輸出</td><td><code>ngx.say("text")</code></td><td>輸出文字到 client</td></tr>
+    <tr><td>路由參數</td><td><code>ngx.var.uri</code></td><td>取得目前 URI</td></tr>
+    <tr><td>查詢字串</td><td><code>ngx.var.arg_name</code></td><td>取得 ?name=xxx</td></tr>
+    <tr><td>標頭</td><td><code>ngx.req.get_headers()</code></td><td>取得所有 header</td></tr>
+    <tr><td>Body 讀取</td><td><code>ngx.req.get_body_data()</code></td><td>讀取 POST 資料</td></tr>
+    <tr><td>JSON 編碼</td><td><code>cjson.encode(table)</code></td><td>將 Lua table 轉為 JSON</td></tr>
+    <tr><td>JSON 解碼</td><td><code>cjson.decode(json_str)</code></td><td>JSON 字串轉 Lua table</td></tr>
+    <tr><td>Redis 連線</td><td><code>require "resty.redis"</code></td><td>使用 Redis client</td></tr>
+    <tr><td>JWT 驗證</td><td><code>require "resty.jwt"</code></td><td>驗證與解碼 JWT</td></tr>
+  </table>
+
+  <p>如需更深入每一段語法或模組使用方式，可搭配官方文件或 awesome-openresty 清單進行探索。</p>
+</section>
+`;
+showSection('overview');
+</script>
+
+</body>
+</html>
