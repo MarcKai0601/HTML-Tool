@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="給中文母語初學者的英文單字學習工具書：從形式、語意、用法三張網，建立真正可用的詞彙。">
+  <title>英文單字學習工具書｜從「翻譯」走向真正會用</title>
+  <style>
+    :root{--ink:#17211b;--muted:#5f6b63;--paper:#f7f4ec;--card:#fffdf7;--green:#245a43;--green2:#dfece3;--orange:#d9693b;--yellow:#f2d57b;--line:#d9d9cc;--shadow:0 10px 30px rgba(34,50,40,.08);--radius:18px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:20px}body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"PingFang TC","Noto Sans TC",sans-serif;line-height:1.75}button,input{font:inherit}a{color:inherit}.skip{position:absolute;left:-999px}.skip:focus{left:12px;top:12px;z-index:99;background:#fff;padding:10px}
+    .sidebar{position:fixed;inset:0 auto 0 0;width:276px;background:#173f31;color:#f8f5ec;padding:28px 20px;overflow:auto;z-index:20}.brand{font-weight:900;font-size:1.18rem;line-height:1.35;margin-bottom:22px}.brand small{display:block;color:#bcd5c6;font-size:.76rem;letter-spacing:.08em;margin-top:6px}.search{width:100%;border:1px solid #72907f;border-radius:12px;background:#fff;color:#17211b;padding:10px 12px;margin-bottom:12px}.nav a{display:block;text-decoration:none;color:#dce9e1;padding:7px 10px;border-radius:9px;font-size:.92rem}.nav a:hover,.nav a:focus{background:#2b5946;color:#fff}.side-note{font-size:.75rem;color:#aac5b5;margin-top:18px;padding-top:16px;border-top:1px solid #3f6b58}.main{margin-left:276px}.hero{padding:68px clamp(28px,6vw,88px) 54px;background:linear-gradient(135deg,#f4d879 0 18%,#f8efe0 18% 68%,#dcecdf 68%)}.eyebrow{font-size:.78rem;font-weight:800;letter-spacing:.14em;color:var(--green);text-transform:uppercase}.hero h1{font-family:Georgia,"Noto Serif TC",serif;font-size:clamp(2.3rem,5vw,4.8rem);line-height:1.08;max-width:860px;margin:12px 0 18px}.lead{font-size:1.15rem;max-width:720px}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.btn{display:inline-block;border:0;border-radius:999px;padding:11px 18px;background:var(--green);color:#fff;text-decoration:none;font-weight:800;cursor:pointer}.btn.alt{background:#fff;color:var(--green);border:1px solid var(--green)}
+    .content{max-width:1040px;margin:auto;padding:48px clamp(22px,5vw,64px) 90px}section{margin:0 0 66px}.section-kicker{color:var(--orange);font-weight:900;font-size:.78rem;letter-spacing:.12em}.section-title{font-family:Georgia,"Noto Serif TC",serif;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.2;margin:4px 0 14px}.section-intro{color:var(--muted);max-width:760px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}.card h3{margin:0 0 7px;color:var(--green)}.card p:last-child{margin-bottom:0}.tag{display:inline-block;background:var(--green2);color:var(--green);padding:3px 9px;border-radius:999px;font-size:.77rem;font-weight:800;margin:2px}.callout{border-left:6px solid var(--orange);background:#fff6e7;padding:18px 20px;border-radius:0 14px 14px 0;margin:22px 0}.formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#17211b;color:#f5f1e7;padding:16px 18px;border-radius:14px;overflow:auto}.good{color:#176b43;font-weight:800}.bad{color:#b6462b;font-weight:800}.compare{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden}.compare th,.compare td{text-align:left;padding:13px;border-bottom:1px solid var(--line);vertical-align:top}.compare th{background:var(--green);color:#fff}.steps{counter-reset:step;display:grid;gap:12px}.step{counter-increment:step;display:grid;grid-template-columns:48px 1fr;gap:14px;background:var(--card);border:1px solid var(--line);padding:17px;border-radius:16px}.step:before{content:counter(step);display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--yellow);font-weight:900}.step h3{margin:0}.step p{margin:3px 0;color:var(--muted)}.example-word{font-family:Georgia,serif;font-size:1.45rem;font-weight:800}.mini{font-size:.86rem;color:var(--muted)}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.filter{border:1px solid var(--green);color:var(--green);background:#fff;border-radius:999px;padding:7px 12px;cursor:pointer}.filter.active{background:var(--green);color:#fff}.template{background:#edf3ee;border:2px dashed #9ab2a2;border-radius:18px;padding:24px}.blank{display:inline-block;min-width:160px;border-bottom:1px solid #62736a}.checklist{list-style:none;padding:0}.checklist li{padding-left:28px;position:relative;margin:7px 0}.checklist li:before{content:'□';position:absolute;left:0;color:var(--green);font-weight:900}.cheat{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.cheat div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}.kbd{border:1px solid #bbb;border-bottom-width:3px;border-radius:6px;padding:1px 6px;background:#fff;font-size:.8em}.empty{display:none;background:#fff3d5;border-radius:14px;padding:18px}.footer{text-align:center;color:var(--muted);padding:24px}.mobile-top{display:none}
+    .workbench{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:18px;align-items:start}.form-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}.field{display:block;margin-bottom:15px}.field span{display:block;font-weight:800;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;padding:10px 12px;border:1px solid #aeb8b0;border-radius:10px;background:#fff;color:var(--ink)}.field textarea{min-height:82px;resize:vertical}.field small{display:block;color:var(--muted);margin-top:4px}.tool-panel{position:sticky;top:20px;background:#173f31;color:#fff;border-radius:18px;padding:20px}.tool-panel h3{color:#fff}.tool-panel p{color:#d7e5dc}.tool-link{display:block;text-decoration:none;background:#fff;color:var(--green);padding:10px 12px;border-radius:10px;margin:8px 0;font-weight:800}.tool-link:hover{background:#f2d57b}.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.status{min-height:1.6em;color:#176b43;font-weight:800;margin-top:8px}.privacy{font-size:.8rem;background:#fff6e7;color:#56351f!important;padding:10px;border-radius:10px}
+    @media(max-width:820px){.sidebar{transform:translateX(-100%);transition:.25s;width:290px}.sidebar.open{transform:none}.main{margin-left:0}.mobile-top{display:flex;position:sticky;top:0;z-index:15;background:#173f31;color:white;padding:10px 14px;align-items:center;justify-content:space-between}.menu{border:1px solid #8ba899;background:transparent;color:white;border-radius:9px;padding:6px 10px}.hero{padding-top:45px}.grid,.grid.three,.cheat,.workbench{grid-template-columns:1fr}.tool-panel{position:static}.compare{font-size:.88rem}.content{padding-bottom:60px}}
+    @media print{.sidebar,.mobile-top,.hero-actions,.filters{display:none}.main{margin:0}.hero{padding:24px;background:#fff}.content{padding:20px}section{break-inside:avoid}.card{box-shadow:none}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">跳到主要內容</a>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">英文單字學習工具書<small>LEARN WORDS AS A NETWORK</small></div>
+    <label for="search" class="mini" style="color:#dce9e1">搜尋關鍵字或例子</label>
+    <input class="search" id="search" type="search" placeholder="例：necessary、拼字、近義詞">
+    <nav class="nav" aria-label="章節導覽">
+      <a href="#start">開始使用</a><a href="#principle">核心原則</a><a href="#networks">三張網</a><a href="#relations">家族 vs 語意場</a><a href="#dual">發音 × 拼字</a><a href="#chunking">正確拆字</a><a href="#lexical">Lexical unit</a><a href="#workflow">完整 10 步流程</a><a href="#examples">例子庫</a><a href="#mistakes">常見誤區</a><a href="#template">單字分析模板</a><a href="#cheat">快速查表</a>
+    </nav>
+    <div class="side-note">提示：按 <span class="kbd">Ctrl/⌘</span> + <span class="kbd">F</span> 也可使用瀏覽器搜尋。此檔案可離線使用與列印。</div>
+  </aside>
+  <div class="mobile-top"><strong>英文單字工具書</strong><button class="menu" id="menu" aria-controls="sidebar" aria-expanded="false">☰ 目錄</button></div>
+  <main class="main" id="main">
+    <header class="hero">
+      <div class="eyebrow">給中文母語初學者的隨手指南</div>
+      <h1>不要只背翻譯，<br>要替單字建立一張網。</h1>
+      <p class="lead">一邊讀英文，一邊用這本工具書檢查：我記住它的形式、真正意思，以及母語者怎麼用嗎？</p>
+      <div class="hero-actions"><a class="btn" href="#workflow">直接開始 10 步流程</a><a class="btn alt" href="#cheat">看一頁快速表</a></div>
+    </header>
+    <div class="content">
+      <section id="start" data-search="開始 使用方式 初學者">
+        <div class="section-kicker">HOW TO USE</div><h2 class="section-title">這本工具書怎麼用？</h2>
+        <div class="grid three">
+          <article class="card"><h3>正在遇到新單字</h3><p>照「10 步流程」走一次；第一次不必全做，先完成核心意思、發音、常見搭配與一句自己的例句。</p></article>
+          <article class="card"><h3>卡在拼字</h3><p>跳到「正確拆字」：依構詞、家族詞幹、拼字模式、音節的順序判斷，切塊必須有依據。</p></article>
+          <article class="card"><h3>不知道該用哪個字</h3><p>跳到「Meaning Network」，把近義詞放進同一個場景比較，不要只比中文翻譯。</p></article>
+        </div>
+        <div class="callout"><strong>最低可行學習：</strong>時間少時，只回答四題：它的核心畫面是什麼？怎麼唸？最常跟哪些字一起出現？我能不能造一句真的會說的話？</div>
+      </section>
+
+      <section id="principle" data-search="核心 原則 English Chinese 中文 翻譯 概念 場景">
+        <div class="section-kicker">01 · CORE PRINCIPLE</div><h2 class="section-title">不是 English = Chinese</h2>
+        <p class="section-intro">中文翻譯是入口，不是單字本身。真正要記的是英文單字所指向的核心概念、行為特徵與使用場景。</p>
+        <div class="grid"><article class="card"><h3 class="bad">低效率模型</h3><div class="formula">look = 看<br>see = 看<br>watch = 看</div><p>翻譯把差異壓平；遇到真正句子時，仍不知道選哪一個。</p></article><article class="card"><h3 class="good">可用的模型</h3><div class="formula">word → 核心畫面<br>→ 和鄰近詞的差異<br>→ 常見用法與場景</div><p>中文可以做提示，但記憶主體是英文概念網。</p></article></div>
+      </section>
+
+      <section id="networks" data-search="三張網 Form Meaning Usage 形式 語意 用法">
+        <div class="section-kicker">02 · THREE NETWORKS</div><h2 class="section-title">每個單字建立三張網</h2>
+        <div class="grid three">
+          <article class="card"><span class="tag">FORM</span><h3>形式網</h3><p><strong>它長怎樣、怎麼唸、怎麼拼？</strong></p><p>發音、重音、拼字、prefix/root/suffix、word family、拼字模式。</p><p class="mini">例：predict → prediction → predictable → unpredictable</p></article>
+          <article class="card"><span class="tag">MEANING</span><h3>語意網</h3><p><strong>它描述什麼？附近的字差在哪？</strong></p><p>核心意思、場景、近義詞、反義詞、語氣與細微差別。</p><p class="mini">例：look / see / watch / stare / glance</p></article>
+          <article class="card"><span class="tag">USAGE</span><h3>用法網</h3><p><strong>母語者通常怎麼把它放進句子？</strong></p><p>搭配詞、介系詞、文法結構、句型框架與語域。</p><p class="mini">例：look at、prepare for、make a decision</p></article>
+        </div>
+        <div class="callout">判斷自己是否「會」一個字：不只看得懂，還要能辨別、說出、拼出，並放進自然的詞組與句子。</div>
+      </section>
+
+      <section id="relations" data-search="Word Family Semantic Field morphological family semantic contrast 家族 語意場 decide choose pick select">
+        <div class="section-kicker">03 · TWO DIRECTIONS</div><h2 class="section-title">Word Family ≠ Semantic Field</h2>
+        <table class="compare"><thead><tr><th>關係</th><th>你在問什麼？</th><th>例子</th><th>用途</th></tr></thead><tbody><tr><td><strong>Word Family<br>構詞家族</strong></td><td>同一個英文詞幹如何變化？</td><td>decide → decision → decisive → indecisive</td><td>掌握詞性、構詞與穩定拼法</td></tr><tr><td><strong>Semantic Field<br>語意場</strong></td><td>不同英文單字如何描述鄰近概念？</td><td>decide / choose / select / pick</td><td>比較語意、語氣與情境</td></tr></tbody></table>
+        <p class="formula">縱向：一個字的家族變化　＋　橫向：附近單字的語意對比</p>
+      </section>
+
+      <section id="dual" data-search="發音 拼字 phonological orthographic representation necessary nesasary 雙表徵">
+        <div class="section-kicker">04 · DUAL REPRESENTATION</div><h2 class="section-title">發音與拼字，是兩套互相連結的表徵</h2>
+        <div class="grid"><article class="card"><h3>聲音表徵</h3><p>能聽出、唸出音節、重音與弱化。它幫助口說與聽力。</p></article><article class="card"><h3>拼字表徵</h3><p>能看見字母模式、構詞邊界與家族共同拼法。它幫助閱讀與書寫。</p></article></div>
+        <div class="callout"><strong>會唸 ≠ 會拼。</strong> 英文不是「一個聲音固定對應一種拼法」。例如知道 <em>necessary</em> 的讀音，仍可能寫成 <span class="bad">nesasary</span>。兩套表徵要分別練，再彼此連結。</div>
+      </section>
+
+      <section id="chunking" data-search="拆字 切塊 morpheme word-family stem spelling pattern syllable necessary interesting unpredictable tion 不能亂切">
+        <div class="section-kicker">05 · CHUNKING</div><h2 class="section-title">拼字拆解的優先順序</h2>
+        <p class="formula">Morpheme 構詞單位 ＞ Word-family stem 家族詞幹 ＞ Spelling pattern 拼字模式 ＞ Syllable 音節</p>
+        <div class="steps">
+          <article class="step"><div><h3>Morpheme：有功能的構詞單位</h3><p><strong>un + predict + able</strong>：un- 表「不」，predict 是核心，-able 表「可以……的」。每一塊都能在其他字重複使用。</p></div></article>
+          <article class="step"><div><h3>Word-family stem：穩定的家族拼字錨點</h3><p><strong>necess + ary / arily / ity</strong>。necess- 不必是能單獨使用的字；它的價值是跨家族保持穩定。</p></div></article>
+          <article class="step"><div><h3>Spelling pattern：高頻拼字模式</h3><p><strong>sta + tion</strong> 中的 -tion 是常見模式。聲音只能提示「可能」的拼法：mission 用的是 -sion。</p></div></article>
+          <article class="step"><div><h3>Syllable：最後才用音節協助</h3><p>音節主要幫助發音與節奏；音節邊界不一定等於構詞邊界，因此不能取代前面三種分析。</p></div></article>
+        </div>
+        <div class="grid" style="margin-top:16px"><article class="card"><h3 class="good">有依據的切法</h3><p>interesting → <strong>interest + ing</strong></p><p>unpredictable → <strong>un + predict + able</strong></p><p>necessary → <strong>necess + ary</strong>（家族錨點）</p></article><article class="card"><h3 class="bad">為切而切</h3><p>inter | est | ing：破壞完整詞 interest。</p><p>nec | ess | ary：若沒有說明只是視覺切塊，會假裝每塊都有構詞意義。</p><p><strong>規則：</strong>說得出每一刀的理由，才切。</p></article></div>
+      </section>
+
+      <section id="lexical" data-search="lexical unit 詞彙單位 collocation 搭配 介系詞 sentence frame">
+        <div class="section-kicker">06 · REAL LEARNING UNIT</div><h2 class="section-title">真正要學的是 lexical unit</h2>
+        <p class="section-intro">單字很少孤零零出現。把常見搭配與句型一起收進記憶，取用速度會比只背字義更快。</p>
+        <div class="grid three"><article class="card"><h3>word + preposition</h3><p>look <strong>at</strong><br>prepare <strong>for</strong><br>stare <strong>at</strong></p></article><article class="card"><h3>collocation</h3><p><strong>make</strong> a decision<br><strong>heavy</strong> rain<br><strong>strong</strong> evidence</p></article><article class="card"><h3>sentence frame</h3><p>prepare <strong>to do</strong> something<br>It is necessary <strong>to...</strong><br>I glanced <strong>at...</strong></p></article></div>
+      </section>
+
+      <section id="workflow" data-search="10步 流程 學習 新單字">
+        <div class="section-kicker">07 · 10-STEP WORKFLOW</div><h2 class="section-title">完整 10 步學習流程</h2>
+        <p class="section-intro">第一次用 5–10 分鐘建立核心，之後用間隔回想補強。不是每個字都要寫成論文；高頻、常用、容易混淆的字才做完整版。</p>
+        <div class="steps">
+          <article class="step"><div><h3>保留原句</h3><p>先抄下遇見它的句子與情境，不要立即把單字抽離。</p></div></article>
+          <article class="step"><div><h3>猜核心畫面</h3><p>根據上下文先猜；用一句簡單中文或英文描述概念，不求字典式完整。</p></div></article>
+          <article class="step"><div><h3>核對詞性與核心義</h3><p>確認這一次是名詞、動詞、形容詞或副詞；只記當下最重要的義項。</p></div></article>
+          <article class="step"><div><h3>建立聲音表徵</h3><p>聽發音、跟讀、標重音；把字遮住後仍能說出來。</p></div></article>
+          <article class="step"><div><h3>建立拼字表徵</h3><p>按拆字優先順序找可靠的塊；看一遍、遮住、寫出、立即核對。</p></div></article>
+          <article class="step"><div><h3>連到 Word Family</h3><p>找 2–4 個實用家族成員，標出詞性與共同詞幹，不必無限擴充。</p></div></article>
+          <article class="step"><div><h3>放進 Semantic Field</h3><p>挑 1–3 個最容易混淆的近義詞，用「何時用／何時不用」比較。</p></div></article>
+          <article class="step"><div><h3>收集 lexical units</h3><p>記 2–3 個高頻搭配、介系詞或句型，優先選你真的會說的。</p></div></article>
+          <article class="step"><div><h3>產出自己的句子</h3><p>寫一個和自己生活有關的句子；再口頭說一次，避免只認不會用。</p></div></article>
+          <article class="step"><div><h3>間隔回想與對比測驗</h3><p>隔天、數天後、再一週後：看概念回想字、聽音拼字、在近義詞中選字。答錯就只補弱網。</p></div></article>
+        </div>
+      </section>
+
+      <section id="examples" data-search="例子 necessary interesting unpredictable look see watch stare glance">
+        <div class="section-kicker">08 · EXAMPLE LIBRARY</div><h2 class="section-title">例子庫：把方法實際跑一次</h2>
+        <div class="filters" role="group" aria-label="篩選例子"><button class="filter active" data-filter="all">全部</button><button class="filter" data-filter="form">形式</button><button class="filter" data-filter="meaning">語意</button><button class="filter" data-filter="usage">用法</button></div>
+        <div class="grid" id="exampleGrid">
+          <article class="card example" data-type="form usage"><div class="example-word">necessary</div><p><span class="tag">FORM</span> necess + ary；家族：necessarily, necessity。</p><p><span class="tag">USAGE</span> It is necessary to check the details.</p><p class="mini">記憶點：聲音不足以保證拼字，抓住 necess- 這個家族錨點。</p></article>
+          <article class="card example" data-type="form usage"><div class="example-word">interesting</div><p><span class="tag">FORM</span> interest + ing，不是 inter | est | ing。</p><p><span class="tag">USAGE</span> an interesting idea；The book is interesting.</p><p class="mini">對比：interested 描述人的感受；interesting 描述引發興趣的人事物。</p></article>
+          <article class="card example" data-type="form meaning"><div class="example-word">unpredictable</div><p><span class="tag">FORM</span> un + predict + able。</p><p><span class="tag">MEANING</span> 無法可靠預測的；可指天氣、行為、結果。</p><p class="mini">家族：predict, prediction, predictable, unpredictably。</p></article>
+          <article class="card example" data-type="meaning usage"><div class="example-word">look / see / watch</div><p><strong>look</strong>：主動移動視線 → look at the screen</p><p><strong>see</strong>：自然接收到視覺資訊 → I can see a bird.</p><p><strong>watch</strong>：持續觀察變化 → watch a movie / the game</p></article>
+          <article class="card example" data-type="meaning usage"><div class="example-word">stare / glance</div><p><strong>stare</strong>：長時間集中盯著，常帶強烈或不禮貌感 → stare at someone</p><p><strong>glance</strong>：快速看一下 → glance at the clock</p><p class="mini">不要只記兩個都是「看」；記時間長短、注意力與社交語氣。</p></article>
+        </div>
+      </section>
+
+      <section id="mistakes" data-search="誤區 錯誤 中文 翻譯 字根 近義詞 例句 復習">
+        <div class="section-kicker">09 · COMMON TRAPS</div><h2 class="section-title">常見誤區與修正</h2>
+        <div class="grid">
+          <article class="card"><h3>只背中文翻譯</h3><p><strong>修正：</strong>補一個核心畫面、一組近義詞對比與一個使用場景。</p></article>
+          <article class="card"><h3>看到長字就隨便切</h3><p><strong>修正：</strong>依四層優先順序；不能說明邊界功能，就不要假裝是構詞分析。</p></article>
+          <article class="card"><h3>以為會唸就會拼</h3><p><strong>修正：</strong>做「聽音→寫字→核對」與「看詞幹→回想家族」兩種練習。</p></article>
+          <article class="card"><h3>收集太多冷門字根</h3><p><strong>修正：</strong>只保留能在常見家族中重複利用、確實幫助理解或拼字的結構。</p></article>
+          <article class="card"><h3>一次背完所有義項</h3><p><strong>修正：</strong>先學當下語境與最高頻核心義，之後每次遇見再擴張網路。</p></article>
+          <article class="card"><h3>抄例句，卻不產出</h3><p><strong>修正：</strong>最後一定造一句與自己相關的句子，並隔一段時間閉卷回想。</p></article>
+        </div>
+      </section>
+
+      <section id="template" data-search="模板 分析 單字 筆記 線上 AI 字典 發音">
+        <div class="section-kicker">10 · INTERACTIVE WORKBENCH</div><h2 class="section-title">互動式單字分析工作台</h2>
+        <p class="section-intro">先自己分析，再使用線上資源核對。內容會自動保存在這台裝置；也能產生完整提示詞，請 AI 針對你的思考補充。</p>
+        <div class="workbench">
+          <form class="form-card" id="analysisForm">
+            <label class="field"><span>目標單字 *</span><input id="word" name="word" autocomplete="off" placeholder="例如：necessary" required><small>輸入後，右側線上連結會自動更新。</small></label>
+            <label class="field"><span>詞性</span><select name="pos"><option value="">尚未確認</option><option>noun 名詞</option><option>verb 動詞</option><option>adjective 形容詞</option><option>adverb 副詞</option><option>其他／多種</option></select></label>
+            <label class="field"><span>遇見它的原句／場景</span><textarea name="context" placeholder="把原句留下來，語境是分析的起點。"></textarea></label>
+            <label class="field"><span>我猜的核心畫面</span><textarea name="core" placeholder="先用自己的話說，不要只抄中文翻譯。"></textarea></label>
+            <h3>Form Network｜形式網</h3>
+            <label class="field"><span>發音、音節與重音</span><textarea name="pronunciation" placeholder="例：/ˈnes.ə.ser.i/；重音在第一音節"></textarea></label>
+            <label class="field"><span>有依據的拆法</span><textarea name="chunks" placeholder="morpheme ＞ family stem ＞ spelling pattern ＞ syllable"></textarea></label>
+            <label class="field"><span>Word Family 與拼字提醒</span><textarea name="family" placeholder="列 2–4 個家族成員；標出容易拼錯之處。"></textarea></label>
+            <h3>Meaning Network｜語意網</h3>
+            <label class="field"><span>核心義與典型場景</span><textarea name="meaning" placeholder="什麼情況會使用？概念邊界在哪裡？"></textarea></label>
+            <label class="field"><span>近義詞對比</span><textarea name="contrast" placeholder="挑 1–3 個：何時用這個字，何時用另一個？"></textarea></label>
+            <h3>Usage Network｜用法網</h3>
+            <label class="field"><span>常見搭配、介系詞與句型</span><textarea name="usage" placeholder="例：It is necessary to...；necessary for..."></textarea></label>
+            <label class="field"><span>我的句子</span><textarea name="sentence" placeholder="寫一句和自己生活有關的句子。"></textarea></label>
+            <div class="action-row"><button class="btn" type="button" id="saveAnalysis">儲存分析</button><button class="btn alt" type="button" id="copyAnalysis">複製筆記</button><button class="btn alt" type="button" id="clearAnalysis">清空</button><button class="btn alt" type="button" onclick="window.print()">列印／另存 PDF</button></div>
+            <div class="status" id="analysisStatus" aria-live="polite"></div>
+          </form>
+          <aside class="tool-panel">
+            <h3>線上輔助分析</h3><p>先寫下猜測，再用不同來源核對發音、真實語境與用法。</p>
+            <a class="tool-link online" data-base="https://dictionary.cambridge.org/dictionary/english/" target="_blank" rel="noopener">查 Cambridge Dictionary ↗</a>
+            <a class="tool-link online" data-base="https://youglish.com/pronounce/" data-suffix="/english" target="_blank" rel="noopener">在 YouGlish 聽真實發音 ↗</a>
+            <a class="tool-link online" data-base="https://en.wiktionary.org/wiki/" target="_blank" rel="noopener">查 Wiktionary 構詞與詞源 ↗</a>
+            <button class="tool-link" style="width:100%;border:0;text-align:left;cursor:pointer" type="button" id="aiPrompt">產生 AI 輔助分析提示詞</button>
+            <p class="privacy">外部連結只會查詢目標單字，不會傳送整份筆記。只有你主動把提示詞貼給 AI，筆記內容才會離開此頁。</p>
+            <p class="mini" style="color:#c8dbcf">建議：自己猜 → 字典核對 → 聽真實發音 → AI 補缺口 → 自己重寫結論。</p>
+          </aside>
+        </div>
+      </section>
+
+      <section id="cheat" data-search="快速 查表 cheat sheet 一頁 判斷">
+        <div class="section-kicker">ONE-PAGE CHEAT SHEET</div><h2 class="section-title">學一個字時，快速問這些</h2>
+        <div class="cheat">
+          <div><strong>核心</strong><br>我記的是概念與場景，還是只有中文？</div><div><strong>Form</strong><br>會唸嗎？會拼嗎？拆法有依據嗎？</div>
+          <div><strong>Meaning</strong><br>最像的字是哪個？差異在動作、時間、語氣還是場景？</div><div><strong>Usage</strong><br>它最常跟誰一起出現？介系詞和句型是什麼？</div>
+          <div><strong>家族</strong><br>同一詞幹有哪些實用詞性變化？</div><div><strong>語意場</strong><br>有哪些不同字描述相近概念？</div>
+          <div><strong>拆字順序</strong><br>Morpheme ＞ family stem ＞ spelling pattern ＞ syllable</div><div><strong>完成標準</strong><br>能辨別、能回想、能拼、能放進自己的句子。</div>
+        </div>
+        <div class="callout"><strong>最後一句：</strong>單字不是「英文標籤＋中文標籤」，而是一個會隨每次閱讀、聆聽與使用而變密的網路。</div>
+      </section>
+      <div class="empty" id="empty">找不到符合的章節。試試「拼字」、「用法」、「necessary」或「近義詞」。</div>
+    </div>
+    <footer class="footer">英文單字學習工具書 · 可離線使用 · 適合列印與手機查閱</footer>
+  </main>
+  <script>
+    const search=document.getElementById('search'), sections=[...document.querySelectorAll('section')], empty=document.getElementById('empty');
+    function runSearch(){const q=search.value.trim().toLowerCase();let n=0;sections.forEach(s=>{const hit=!q||(s.textContent+' '+(s.dataset.search||'')).toLowerCase().includes(q);s.style.display=hit?'':'none';if(hit)n++});empty.style.display=n?'none':'block'}
+    search.addEventListener('input',runSearch);
+    document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');const f=b.dataset.filter;document.querySelectorAll('.example').forEach(x=>x.style.display=f==='all'||x.dataset.type.includes(f)?'':'none')}));
+    const menu=document.getElementById('menu'), side=document.getElementById('sidebar');menu.addEventListener('click',()=>{const open=side.classList.toggle('open');menu.setAttribute('aria-expanded',open)});document.querySelectorAll('.nav a').forEach(a=>a.addEventListener('click',()=>{side.classList.remove('open');menu.setAttribute('aria-expanded','false')}));
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){side.classList.remove('open');menu.setAttribute('aria-expanded','false')}});
+    const form=document.getElementById('analysisForm'), word=document.getElementById('word'), status=document.getElementById('analysisStatus'), storageKey='vocabulary-workbench-v1';
+    function formData(){return Object.fromEntries(new FormData(form).entries())}
+    function updateLinks(){const q=encodeURIComponent(word.value.trim()||'necessary');document.querySelectorAll('.online').forEach(a=>a.href=a.dataset.base+q+(a.dataset.suffix||''))}
+    function save(){localStorage.setItem(storageKey,JSON.stringify(formData()));status.textContent='已儲存在這台裝置。'}
+    function restore(){try{const data=JSON.parse(localStorage.getItem(storageKey)||'{}');Object.entries(data).forEach(([k,v])=>{if(form.elements[k])form.elements[k].value=v});updateLinks()}catch(e){}}
+    function note(){const d=formData();return `單字：${d.word||'（未填）'}\n詞性：${d.pos||'（未確認）'}\n原句／場景：${d.context||'（未填）'}\n核心畫面：${d.core||'（未填）'}\n\n【Form Network】\n發音與重音：${d.pronunciation||'（未填）'}\n拆法：${d.chunks||'（未填）'}\nWord Family／拼字：${d.family||'（未填）'}\n\n【Meaning Network】\n核心義與場景：${d.meaning||'（未填）'}\n近義詞對比：${d.contrast||'（未填）'}\n\n【Usage Network】\n搭配與句型：${d.usage||'（未填）'}\n我的句子：${d.sentence||'（未填）'}`}
+    async function copy(text,msg){try{await navigator.clipboard.writeText(text);status.textContent=msg}catch(e){status.textContent='瀏覽器無法自動複製，請手動選取內容。'}}
+    word.addEventListener('input',updateLinks);form.addEventListener('input',()=>{clearTimeout(form._t);form._t=setTimeout(save,500)});
+    document.getElementById('saveAnalysis').addEventListener('click',save);
+    document.getElementById('copyAnalysis').addEventListener('click',()=>copy(note(),'筆記已複製。'));
+    document.getElementById('clearAnalysis').addEventListener('click',()=>{if(confirm('確定要清空目前分析嗎？')){form.reset();localStorage.removeItem(storageKey);updateLinks();status.textContent='已清空。'}});
+    document.getElementById('aiPrompt').addEventListener('click',()=>{const prompt=`你是英文詞彙學習教練。請依據我目前的分析協助核對與補充，不要只給中文翻譯，也不要把沒有構詞依據的片段當作 morpheme。請：
+1. 先指出我分析正確之處；
+2. 修正錯誤或不自然處；
+3. 依 Form／Meaning／Usage 三張網補缺口；
+4. 拆字嚴格依 Morpheme ＞ Word-family stem ＞ spelling pattern ＞ syllable，並說明每個邊界的依據；
+5. 比較最容易混淆的近義詞；
+6. 提供 3 個高頻 lexical units 與 2 個適合初學者的自然例句；
+7. 最後出 3 題小測驗，但先不要公布答案。
+
+這是我的分析：
+${note()}`;copy(prompt,'AI 輔助分析提示詞已複製，可貼到你使用的 AI 對話中。')});
+    restore();
+  </script>
+</body>
+</html>
